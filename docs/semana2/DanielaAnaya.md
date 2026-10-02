@@ -1,6 +1,6 @@
 # Historias de usuario individuales
 
-**Nombre:** Escribe aquí tu nombre
+**Nombre:** Daniela Anaya Rojas
 
 **Usuario de GitHub:** @DanielaAnayaRojas
 ---
