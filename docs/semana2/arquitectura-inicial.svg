@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="860" viewBox="0 0 1200 860">
+  <rect width="1200" height="860" fill="#ffffff"/>
+  <style>
+    .box { fill:#f8fafc; stroke:#0f172a; stroke-width:2; rx:18; }
+    .title { font:700 28px Arial, sans-serif; fill:#0f172a; }
+    .label { font:700 22px Arial, sans-serif; fill:#0f172a; }
+    .body { font:18px Arial, sans-serif; fill:#334155; }
+    .arrow { stroke:#0f172a; stroke-width:3; fill:none; marker-end:url(#a); }
+    .side { stroke:#475569; stroke-width:2.5; fill:none; marker-end:url(#a); }
+  </style>
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#0f172a"/>
+    </marker>
+  </defs>
+
+  <text x="600" y="48" text-anchor="middle" class="title">Arquitectura inicial de Stellar-Verify</text>
+
+  <rect x="350" y="90" width="500" height="105" class="box"/>
+  <text x="600" y="128" text-anchor="middle" class="label">Usuario / organización</text>
+  <text x="600" y="160" text-anchor="middle" class="body">Emite, revisa o verifica una certificación</text>
+
+  <path d="M600 195 L600 240" class="arrow"/>
+
+  <rect x="350" y="240" width="500" height="115" class="box"/>
+  <text x="600" y="280" text-anchor="middle" class="label">Frontend Stellar-Verify</text>
+  <text x="600" y="312" text-anchor="middle" class="body">Panel institucional y verificación pública</text>
+
+  <path d="M600 355 L600 400" class="arrow"/>
+
+  <rect x="350" y="400" width="500" height="130" class="box"/>
+  <text x="600" y="440" text-anchor="middle" class="label">Backend / API Verify</text>
+  <text x="600" y="474" text-anchor="middle" class="body">Lógica de negocio, validación y orquestación</text>
+  <text x="600" y="503" text-anchor="middle" class="body">Adaptador ACTA y control de acceso</text>
+
+  <path d="M350 465 L195 465" class="side"/>
+  <rect x="25" y="405" width="170" height="120" class="box"/>
+  <text x="110" y="445" text-anchor="middle" class="label">Off-chain</text>
+  <text x="110" y="477" text-anchor="middle" class="body">Evidencia</text>
+  <text x="110" y="505" text-anchor="middle" class="body">y datos sensibles</text>
+
+  <path d="M600 530 L600 575" class="arrow"/>
+
+  <rect x="350" y="575" width="500" height="105" class="box"/>
+  <text x="600" y="615" text-anchor="middle" class="label">ACTA Testnet</text>
+  <text x="600" y="647" text-anchor="middle" class="body">Credenciales verificables y flujo prepare/sign/submit</text>
+
+  <path d="M850 628 L1010 628" class="side"/>
+  <rect x="1010" y="570" width="165" height="115" class="box"/>
+  <text x="1092" y="610" text-anchor="middle" class="label">Wallet</text>
+  <text x="1092" y="642" text-anchor="middle" class="body">Firma del</text>
+  <text x="1092" y="669" text-anchor="middle" class="body">emisor autorizado</text>
+
+  <path d="M600 680 L600 725" class="arrow"/>
+
+  <rect x="350" y="725" width="500" height="105" class="box"/>
+  <text x="600" y="765" text-anchor="middle" class="label">Stellar / Soroban</text>
+  <text x="600" y="797" text-anchor="middle" class="body">Prueba, autorización y estado verificable públicamente</text>
+</svg>
