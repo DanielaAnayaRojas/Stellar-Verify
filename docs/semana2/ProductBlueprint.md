@@ -56,19 +56,18 @@ Qué resultado obtiene el usuario y por qué elegiría esta solución. En qué s
 
 | Paso | Rol | Qué hace | Punto de interacción |
 | :---: | :---: | --- | --- |
-| 1 | Institución emisora | Registra la credencial de la persona que terminó su programa. | Panel de la institución (con su billetera) |
-| 2 | Titular | Recibe su credencial de la institución y la guarda. | Entrega de la institución (correo) |
-| 3 | Titular | Entrega su credencial a quien se la pide, sea empleador o entidad. | Correo o mensajería |
-| 4 | Verificador | Carga la credencial que recibió en la página de verificación. | Página de verificación, sin cuenta |
-| 5 | Verificador | Ve si la credencial es válida, qué institución la emitió y en qué fecha. | Página de verificación |
+| 1 | Institución emisora | Inicia una certificación y registra los datos del emisor, del titular y del logro que desea certificar. | Panel institucional de Stellar-Verify |
+| 2 | Institución emisora | Adjunta o referencia la evidencia que respalda la certificación. Los documentos sensibles permanecen fuera de la blockchain. | Formulario de evidencia |
+| 3 | Institución emisora | Revisa el resumen y confirma que la información es correcta antes de emitir. | Pantalla de revisión |
+| 4 | Emisor autorizado | Autoriza la operación cuando ACTA/Stellar requiere firma criptográfica. | Wallet o cuenta Stellar autorizada |
+| 5 | Stellar-Verify / ACTA | Verify envía la operación a ACTA, que gestiona la infraestructura de credenciales verificables sobre Stellar/Soroban. | Backend de Verify y ACTA Testnet |
+| 6 | Titular / Verificador | El titular comparte su credencial y un tercero consulta emisor, fecha, estado y prueba sin crear una cuenta. | Enlace, QR o página pública de verificación |
 
-**Entrada:** la institución tiene la credencial de quien terminó su programa. La persona tiene un celular o computador con internet y sabe abrir un enlace o cargar un archivo.
+**Entrada:** la organización ya posee en sus sistemas la información y evidencia necesarias para respaldar una certificación.
 
-**Salida:** el titular queda con una credencial que cualquiera puede comprobar en segundos, y quien verifica confirma sin llamar a nadie.
+**Salida:** queda una credencial vinculada a una prueba criptográfica verificable y el titular puede compartirla con terceros sin depender de una llamada o correo a la institución.
 
-**Puntos de interacción clave:** el paso 1, cuando la institución deja el registro, y los pasos 4 y 5, cuando el verificador consulta.
-
-**Fuera del camino principal (anotadas):** anular una credencial (camino alterno de la institución, dentro del MVP), credencial no encontrada y titular que pierde su archivo.
+**Camino alterno:** si una credencial fue emitida por error o deja de ser válida, la institución puede cambiar su estado o revocarla; el verificador debe observar ese estado actualizado al consultar la credencial.
 
 ---
 
@@ -78,11 +77,13 @@ Qué resultado obtiene el usuario y por qué elegiría esta solución. En qué s
 
 | Dentro del MVP (funcionalidad central) | Fuera del MVP (deseable, para después) |
 | -------------------------------------- | -------------------------------------- |
-| Escriban aquí su respuesta.            | Escriban aquí su respuesta.            |
-| Escriban aquí su respuesta.            | Escriban aquí su respuesta.            |
-| Escriban aquí su respuesta.            | Escriban aquí su respuesta.            |
+| Creación manual de una certificación desde el panel institucional. | Integraciones automáticas con ERP, SIS, bases de datos y registros externos. |
+| Registro de emisor, titular, datos de la certificación y referencia de evidencia. | Emisión masiva por lotes y automatizaciones avanzadas. |
+| Evidencia y datos sensibles almacenados fuera de la blockchain, usando referencias o huellas cuando corresponda. | Repositorio documental avanzado, analítica y gestión compleja de evidencias. |
+| Integración con ACTA Testnet y Stellar/Soroban para emitir y comprobar una credencial verificable. | Mainnet, múltiples proveedores de credenciales y múltiples redes. |
+| Verificación pública del emisor, fecha y estado, más la posibilidad de revocar o invalidar una credencial. | Marketplace, pagos, aplicación móvil nativa y funciones comerciales avanzadas. |
 
-**Por qué el recorte sigue entregando valor:** Escriban aquí su respuesta.
+**Por qué el recorte sigue entregando valor:** el MVP conserva el ciclo que valida la hipótesis principal del producto: una institución puede tomar una certificación respaldada por información real, convertirla en una prueba digital verificable y permitir que un tercero la compruebe sin depender únicamente de Stellar-Verify. Se excluyen integraciones, automatización y escalamiento porque aumentan el esfuerzo, pero no son necesarios para demostrar el valor central. Primero se valida emisión, autorización, estado y verificación en Testnet; después se conectan los sistemas institucionales y se amplía la operación.
 
 ---
 
@@ -108,15 +109,17 @@ El lienzo debe cubrir: problema, segmento de usuarios, propuesta de valor única
 
 > Cómo se conectan las partes (interfaz, lógica, Stellar) y en qué punto entra la red. Diagrama simple en imagen. Extensión: 150–300 palabras en total.
 
-**Diagrama (imagen o enlace):** Escriban aquí el enlace o inserten la imagen.
+**Diagrama:** ![Arquitectura inicial de Stellar-Verify](./arquitectura-inicial.svg)
 
-|   Capa   | Componente                  | Qué hace                    |
-| :------: | --------------------------- | --------------------------- |
-| Interfaz | Escriban aquí su respuesta. | Escriban aquí su respuesta. |
-|  Lógica  | Escriban aquí su respuesta. | Escriban aquí su respuesta. |
-| Stellar  | Escriban aquí su respuesta. | Escriban aquí su respuesta. |
+|   Capa   | Componente | Qué hace |
+| :------: | ----------- | -------- |
+| Interfaz | Aplicación web de Stellar-Verify | Permite a la institución crear y revisar certificaciones y ofrece al verificador una consulta pública sin exponer secretos ni complejidad blockchain. |
+| Lógica | Backend/API de Verify, almacenamiento off-chain y adaptador ACTA | Valida datos, aplica reglas del producto, conserva evidencia sensible fuera de la red y encapsula la comunicación con ACTA. |
+| Stellar | ACTA Testnet + Stellar/Soroban | ACTA aporta la infraestructura de credenciales verificables y Stellar/Soroban la capa pública donde se anclan autorización, prueba o estado según el flujo. |
 
-**En qué punto entra la red:** Escriban aquí su respuesta.
+La interfaz nunca debe manejar la API key de ACTA ni almacenar claves secretas del emisor. Las operaciones sensibles salen del navegador hacia el backend de Verify. Allí se normaliza la certificación, se vincula la evidencia y se llama al adaptador de ACTA.
+
+**En qué punto entra la red:** Stellar entra después de que la institución revisa la certificación y autoriza la operación. ACTA prepara la interacción requerida y, cuando corresponde, la wallet del emisor firma antes del envío a Stellar/Soroban. La información privada permanece off-chain; en la red solo se utiliza el estado criptográfico necesario para que un tercero pueda verificar la credencial de forma independiente.
 
 ---
 
@@ -124,9 +127,13 @@ El lienzo debe cubrir: problema, segmento de usuarios, propuesta de valor única
 
 > Qué componentes de Stellar usaría y por qué cada uno. Apoyado en el criterio de pertinencia del Problem Brief. Extensión: 150–300 palabras en total.
 
-**Criterio de pertinencia (del Problem Brief):** Escriban aquí el criterio en el que se apoyan.
+**Criterio de pertinencia (del Problem Brief):** el problema requiere que la autenticidad y el estado de una credencial puedan comprobarse sin depender de una respuesta manual, de un PDF aislado o de una única base de datos privada. Stellar es pertinente cuando aporta una referencia pública, resistente a alteraciones y verificable por terceros.
 
-| Componente de Stellar       | Para qué lo usamos          | Por qué ese y no otra alternativa |
-| --------------------------- | --------------------------- | --------------------------------- |
-| Escriban aquí su respuesta. | Escriban aquí su respuesta. | Escriban aquí su respuesta.       |
-| Escriban aquí su respuesta. | Escriban aquí su respuesta. | Escriban aquí su respuesta.       |
+| Componente de Stellar | Para qué lo usamos | Por qué ese y no otra alternativa |
+| --------------------- | ------------------- | --------------------------------- |
+| Cuentas y firmas Stellar | Autorizar criptográficamente operaciones del emisor cuando el flujo lo requiera. | Una contraseña de la aplicación solo prueba acceso a Verify; una firma demuestra control de la cuenta autorizada. |
+| Soroban, consumido a través de ACTA | Gestionar la lógica y el estado criptográfico asociado a credenciales, incluyendo verificación o revocación según la infraestructura de ACTA. | Evita construir contratos propios para primitivas que ACTA ya ofrece y mantiene la solución componible. |
+| Ledger de Stellar | Dar una referencia pública y verificable al estado que deba ser comprobable independientemente. | Una base de datos privada obliga al verificador a confiar en quien opera esa base. |
+| Stellar Testnet | Probar emisión, firma, envío y verificación sin usar fondos ni operaciones de producción. | Permite validar el MVP de forma segura antes de considerar Mainnet. |
+
+Stellar no se usa para publicar diplomas, documentos o datos personales. Esos elementos permanecen fuera de cadena; la red se reserva para la prueba, autorización y estado que hacen posible la verificación independiente.
