@@ -20,7 +20,7 @@
 
 6. Como titular de una credencial quiero compartir mi certificado mediante un enlace o código QR para poder demostrarlo fácilmente ante empresas, instituciones o gobiernos de cualquier país.
 
-7. Como organización que ya utiliza sistemas propios quiero integrar Stellar-Verify mediante una API para emitir y consultar certificados sin tener que reemplazar mi infraestructura actual.
+7. Como organización que ya utiliza sistemas propios quiero integrar Stellar-Verify mediante una API para emitir y consultar certificados sin tener que reemplazar mi infraestructura del presente
 
 ## La más importante y por qué
 
