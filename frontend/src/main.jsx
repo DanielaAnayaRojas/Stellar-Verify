@@ -13,6 +13,7 @@ import "./styles/tokens.css";
 import "./styles/global.css";
 import "./styles/layout.css";
 import "./styles/verificar.css";
+import "./styles/panel.css";
 
 import App from "./App.jsx";
 

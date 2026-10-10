@@ -2,6 +2,7 @@ import { NavLink, Link, Route, Routes } from "react-router-dom";
 import textos from "./content/textos.json";
 import Verificar from "./pages/Verificar.jsx";
 import Panel from "./pages/Panel.jsx";
+import Emitir from "./pages/Emitir.jsx";
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
           <Route path="/" element={<Verificar />} />
           <Route path="/verificar/:huella" element={<Verificar />} />
           <Route path="/panel" element={<Panel />} />
+          <Route path="/panel/emitir" element={<Emitir />} />
           <Route path="*" element={<Verificar />} />
         </Routes>
       </main>

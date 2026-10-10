@@ -73,13 +73,53 @@
     }
   },
   "emision": {
+    "pasoDe": "Paso {n} de {total}",
+    "listaPasos": "Pasos para emitir una credencial",
+    "pasos": [
+      "Datos",
+      "Evidencia",
+      "Revisión",
+      "Firma",
+      "Resultado"
+    ],
+    "continuar": "Continuar",
+    "volver": "Volver",
+    "volverLista": "Volver a la lista de credenciales",
     "botonEmitir": "Emitir credencial",
-    "avisoEmitida": "Credencial emitida"
+    "avisoEmitida": "Credencial emitida",
+    "datos": {
+      "titulo": "Datos de la credencial"
+    },
+    "evidencia": {
+      "titulo": "Evidencia",
+      "zonaTitulo": "Suelta aquí el diploma del titular",
+      "zonaAyuda": "O toca esta zona para elegir el archivo. La huella se calcula en tu dispositivo y el archivo no se sube.",
+      "boton": "Elegir archivo",
+      "elegido": "Archivo elegido",
+      "huella": "Huella del documento",
+      "cambiar": "Cambiar archivo"
+    },
+    "revision": {
+      "titulo": "Revisión",
+      "ayuda": "Comprueba los datos antes de continuar. Después de emitir no se pueden cambiar.",
+      "archivo": "Archivo de evidencia"
+    },
+    "resultado": {
+      "ayuda": "La credencial ya se puede verificar. Comparte el enlace o el código QR con el titular.",
+      "enlace": "Enlace para verificar",
+      "copiarEnlace": "Copiar enlace",
+      "enlaceCopiado": "Enlace copiado",
+      "qr": "Código QR",
+      "qrAlt": "Código QR que abre la verificación de la credencial de {titular}",
+      "verVerificacion": "Ver la verificación",
+      "otra": "Emitir otra credencial"
+    }
   },
   "firma": {
     "titulo": "Firma del emisor",
     "texto": "Autoriza la emisión con la firma de tu institución. En esta demostración la firma es simulada.",
-    "botonFirmar": "Firmar y continuar"
+    "casilla": "Autorizo emitir esta credencial con la firma de {institucion}.",
+    "emitiendo": "Firmando y registrando la credencial."
   },
   "revocacion": {
     "botonRevocar": "Revocar credencial",
@@ -92,6 +132,19 @@
     "huella-invalida": "La huella debe tener 64 caracteres, con números y letras de la a a la f. Revisa que esté completa.",
     "enlace-invalido": "No encontramos una huella en ese enlace. Copia el enlace completo, tal como te lo enviaron.",
     "archivo-ilegible": "No pudimos leer el archivo. Elige el documento otra vez o prueba con otro.",
-    "sin-crypto": "Este navegador no puede calcular la huella. Abre la página con https o desde localhost."
+    "sin-crypto": "Este navegador no puede calcular la huella. Abre la página con https o desde localhost.",
+    "institucion-vacia": "Elige la institución que emite la credencial.",
+    "titular-vacio": "Escribe el nombre del titular.",
+    "logro-vacio": "Escribe el logro que se reconoce.",
+    "ya-emitida": "Este documento ya tiene una credencial emitida. Elige otro archivo o revisa la lista.",
+    "autorizacion-faltante": "Marca la casilla para autorizar la emisión."
+  },
+  "panel": {
+    "titulo": "Panel de la institución",
+    "intro": "Emite credenciales y consulta las que ya emitiste.",
+    "botonNueva": "Nueva credencial",
+    "listaTitulo": "Credenciales emitidas",
+    "verificacion": "Ver verificación",
+    "emitidaEl": "Emitida el {fecha}"
   }
 }

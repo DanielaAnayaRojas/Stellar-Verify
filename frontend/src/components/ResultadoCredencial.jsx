@@ -1,41 +1,7 @@
-import { useEffect, useRef, useState } from "react";
 import textos from "../content/textos.json";
 import { formatearFecha } from "../services/formato.js";
 import Sello from "./Sello.jsx";
-
-function Huella({ valor, etiqueta }) {
-  const [copia, setCopia] = useState("");
-  const temporizador = useRef(null);
-
-  useEffect(() => () => clearTimeout(temporizador.current), []);
-
-  async function copiar() {
-    try {
-      await navigator.clipboard.writeText(valor);
-      setCopia("ok");
-    } catch {
-      setCopia("fallo");
-    }
-    clearTimeout(temporizador.current);
-    temporizador.current = setTimeout(() => setCopia(""), 3000);
-  }
-
-  return (
-    <div className="documento__campo documento__campo--huella">
-      <dt>{etiqueta}</dt>
-      <dd>
-        <span className="mono huella">{valor}</span>
-        <button type="button" className="boton boton--secundario" onClick={copiar}>
-          {textos.resultados.copiar}
-        </button>
-        <span className="copia" role="status">
-          {copia === "ok" && textos.resultados.copiada}
-          {copia === "fallo" && textos.resultados.copiaFallida}
-        </span>
-      </dd>
-    </div>
-  );
-}
+import CampoCopiable from "./CampoCopiable.jsx";
 
 export default function ResultadoCredencial({ huella, credencial }) {
   const campos = textos.resultados.campos;
@@ -50,7 +16,12 @@ export default function ResultadoCredencial({ huella, credencial }) {
         </header>
         <p>{t.explicacion}</p>
         <dl className="documento__campos">
-          <Huella valor={huella} etiqueta={campos.huellaArchivo} />
+          <CampoCopiable
+            etiqueta={campos.huellaArchivo}
+            valor={huella}
+            boton={textos.resultados.copiar}
+            copiado={textos.resultados.copiada}
+          />
         </dl>
       </article>
     );
@@ -86,7 +57,12 @@ export default function ResultadoCredencial({ huella, credencial }) {
           <dt>{campos.fechaEmision}</dt>
           <dd>{formatearFecha(credencial.fechaEmision)}</dd>
         </div>
-        <Huella valor={credencial.huella} etiqueta={campos.huella} />
+        <CampoCopiable
+          etiqueta={campos.huella}
+          valor={credencial.huella}
+          boton={textos.resultados.copiar}
+          copiado={textos.resultados.copiada}
+        />
       </dl>
     </article>
   );

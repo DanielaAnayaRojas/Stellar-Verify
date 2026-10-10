@@ -1,7 +1,12 @@
 import { useState } from "react";
 import textos from "../content/textos.json";
 
-export default function ZonaArchivo({ alElegir }) {
+export default function ZonaArchivo({
+  alElegir,
+  titulo = textos.verificar.zonaTitulo,
+  ayuda = textos.verificar.zonaAyuda,
+  boton = textos.verificar.botonVerificar,
+}) {
   const [encima, setEncima] = useState(false);
 
   function alSoltar(evento) {
@@ -28,9 +33,9 @@ export default function ZonaArchivo({ alElegir }) {
       onDrop={alSoltar}
     >
       <input className="solo-lectores" type="file" onChange={alCambiar} />
-      <span className="zona__titulo">{textos.verificar.zonaTitulo}</span>
-      <span className="zona__ayuda">{textos.verificar.zonaAyuda}</span>
-      <span className="boton">{textos.verificar.botonVerificar}</span>
+      <span className="zona__titulo">{titulo}</span>
+      <span className="zona__ayuda">{ayuda}</span>
+      <span className="boton">{boton}</span>
     </label>
   );
 }
