@@ -1,0 +1,22 @@
+:root {
+  --tinta: #0e1a33;
+  --tinta-suave: #3d4863;
+  --indigo: #3b4cca;
+  --indigo-oscuro: #2f3da8;
+  --ambar: #e8a317;
+  --papel: #eef1f7;
+  --blanco: #ffffff;
+  --linea: #cfd5e3;
+
+  --valida: #1f7a5c;
+  --revocada: #b3402f;
+  --no-encontrada: #5b667a;
+
+  --fuente-titulo: "Bricolage Grotesque", system-ui, sans-serif;
+  --fuente-texto: "Public Sans", system-ui, sans-serif;
+  --fuente-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --columna: 640px;
+  --objetivo: 44px;
+  --radio: 8px;
+}

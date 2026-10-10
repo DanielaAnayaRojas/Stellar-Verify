@@ -1,0 +1,5 @@
+Certificado de ejemplo (documento ficticio)
+Instituto de Ejemplo
+Titular: Andrés Muestra Demo
+Logro: Certificado en análisis de datos
+Fecha: 2026-01-20
