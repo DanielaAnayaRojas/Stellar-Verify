@@ -1,0 +1,97 @@
+{
+  "marca": "Stellar-Verify",
+  "demo": "Datos de demostración: nada de esto es real.",
+  "nav": {
+    "verificar": "Verificar",
+    "panel": "Soy una institución"
+  },
+  "home": {
+    "titulo": "Verifica un diploma o certificado en segundos",
+    "subtitulo": "Sube el documento y comprueba si una institución lo emitió y sigue vigente. Sin cuenta."
+  },
+  "verificar": {
+    "botonVerificar": "Verificar documento",
+    "calculando": "Calculando la huella en tu dispositivo. El archivo no se sube.",
+    "consultando": "Consultando el registro.",
+    "tituloResultado": "Resultado de la verificación",
+    "zonaTitulo": "Suelta aquí el diploma o certificado",
+    "zonaAyuda": "O toca esta zona para elegir el archivo en tu dispositivo.",
+    "otrasFormas": "Otras formas de verificar",
+    "huellaEtiqueta": "Huella del documento",
+    "huellaAyuda": "Son 64 caracteres, con números y letras de la a a la f.",
+    "botonHuella": "Verificar huella",
+    "enlaceEtiqueta": "Enlace de la credencial",
+    "enlaceAyuda": "Pega el enlace que te dio la institución. Si tienes un código QR, escanéalo con la cámara del celular: abre esta página con el resultado.",
+    "botonEnlace": "Abrir enlace",
+    "otroDocumento": "Verificar otro documento"
+  },
+  "resultados": {
+    "valida": {
+      "sello": "Válida",
+      "explicacion": "La institución emitió esta credencial y sigue vigente.",
+      "titulo": "Credencial válida"
+    },
+    "revocada": {
+      "sello": "Revocada",
+      "explicacion": "La institución anuló esta credencial el {fecha}.",
+      "significado": "Ya no sirve para demostrar estudios: el documento existe, pero la institución lo retiró.",
+      "titulo": "Credencial revocada"
+    },
+    "noEncontrada": {
+      "sello": "No encontrada",
+      "explicacion": "No encontramos este documento. Puede que no esté registrado o que el archivo haya cambiado. Prueba con el original o pregunta a la institución.",
+      "titulo": "No hay credencial para este documento"
+    },
+    "campos": {
+      "institucion": "Institución",
+      "titular": "Titular",
+      "logro": "Logro",
+      "fechaEmision": "Fecha de emisión",
+      "huella": "Huella",
+      "huellaArchivo": "Huella de este archivo"
+    },
+    "copiar": "Copiar huella",
+    "copiada": "Huella copiada",
+    "copiaFallida": "No se pudo copiar. Toca la huella para seleccionarla y cópiala a mano."
+  },
+  "formulario": {
+    "emisor": {
+      "etiqueta": "Institución",
+      "ayuda": "Quien emite la credencial."
+    },
+    "titular": {
+      "etiqueta": "Titular",
+      "ayuda": "Nombre de la persona que recibe la credencial."
+    },
+    "logro": {
+      "etiqueta": "Logro",
+      "ayuda": "Título, curso o certificado que se reconoce."
+    },
+    "evidencia": {
+      "etiqueta": "Documento de evidencia",
+      "ayuda": "El archivo no sale de tu dispositivo. Solo se guarda su huella."
+    }
+  },
+  "emision": {
+    "botonEmitir": "Emitir credencial",
+    "avisoEmitida": "Credencial emitida"
+  },
+  "firma": {
+    "titulo": "Firma del emisor",
+    "texto": "Autoriza la emisión con la firma de tu institución. En esta demostración la firma es simulada.",
+    "botonFirmar": "Firmar y continuar"
+  },
+  "revocacion": {
+    "botonRevocar": "Revocar credencial",
+    "avisoRevocada": "Credencial revocada"
+  },
+  "vacio": {
+    "credenciales": "Aún no has emitido credenciales. Emite la primera."
+  },
+  "errores": {
+    "huella-invalida": "La huella debe tener 64 caracteres, con números y letras de la a a la f. Revisa que esté completa.",
+    "enlace-invalido": "No encontramos una huella en ese enlace. Copia el enlace completo, tal como te lo enviaron.",
+    "archivo-ilegible": "No pudimos leer el archivo. Elige el documento otra vez o prueba con otro.",
+    "sin-crypto": "Este navegador no puede calcular la huella. Abre la página con https o desde localhost."
+  }
+}
