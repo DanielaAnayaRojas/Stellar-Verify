@@ -1,0 +1,35 @@
+{
+  "instituciones": [
+    { "id": "inst-01", "nombre": "Instituto de Ejemplo", "pais": "País de ejemplo" }
+  ],
+  "credenciales": [
+    {
+      "huella": "a068ed6242b38ebaeaaa9e539ec60a85ea9675691dbb844da55ab7064fd96dca",
+      "institucionId": "inst-01",
+      "titular": "Mariana Ejemplo Prueba",
+      "logro": "Técnico en gestión de proyectos",
+      "fechaEmision": "2026-03-15",
+      "estado": "valida",
+      "evidenciaRef": "ref-001"
+    },
+    {
+      "huella": "2bd75411867d1d0c2ed6a968d8e248e1c241f5914ccdf463d3832741d66a6e6b",
+      "institucionId": "inst-01",
+      "titular": "Andrés Muestra Demo",
+      "logro": "Certificado en análisis de datos",
+      "fechaEmision": "2026-01-20",
+      "estado": "valida",
+      "evidenciaRef": "ref-002"
+    },
+    {
+      "huella": "05830aa4f35aa2a609eb771c558d7096b7e2ca7e1e7c551042a8f52f3b2b709e",
+      "institucionId": "inst-01",
+      "titular": "Lucía Simulada Dato",
+      "logro": "Curso de diseño de interfaces",
+      "fechaEmision": "2025-11-05",
+      "estado": "revocada",
+      "fechaRevocacion": "2026-02-10",
+      "evidenciaRef": "ref-003"
+    }
+  ]
+}
