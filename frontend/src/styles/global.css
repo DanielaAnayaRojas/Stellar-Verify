@@ -76,6 +76,16 @@ a {
   border-color: var(--indigo-oscuro);
 }
 
+.boton--peligro {
+  background: var(--revocada);
+  border-color: var(--revocada);
+}
+
+.boton--peligro:hover {
+  background: #8f3224;
+  border-color: #8f3224;
+}
+
 .boton--secundario {
   background: transparent;
   color: var(--indigo);

@@ -123,7 +123,11 @@
   },
   "revocacion": {
     "botonRevocar": "Revocar credencial",
-    "avisoRevocada": "Credencial revocada"
+    "avisoRevocada": "Credencial revocada",
+    "confirmacion": "¿Revocar la credencial de {titular}? La verificación pasará a mostrarla como revocada y no se puede deshacer.",
+    "cancelar": "Cancelar",
+    "revocando": "Revocando la credencial.",
+    "avisoDetalle": "La verificación ya muestra el cambio."
   },
   "vacio": {
     "credenciales": "Aún no has emitido credenciales. Emite la primera."
@@ -137,7 +141,8 @@
     "titular-vacio": "Escribe el nombre del titular.",
     "logro-vacio": "Escribe el logro que se reconoce.",
     "ya-emitida": "Este documento ya tiene una credencial emitida. Elige otro archivo o revisa la lista.",
-    "autorizacion-faltante": "Marca la casilla para autorizar la emisión."
+    "autorizacion-faltante": "Marca la casilla para autorizar la emisión.",
+    "no-existe": "No encontramos esa credencial en el registro. Vuelve a la lista y elígela de nuevo."
   },
   "panel": {
     "titulo": "Panel de la institución",
@@ -145,6 +150,7 @@
     "botonNueva": "Nueva credencial",
     "listaTitulo": "Credenciales emitidas",
     "verificacion": "Ver verificación",
-    "emitidaEl": "Emitida el {fecha}"
+    "emitidaEl": "Emitida el {fecha}",
+    "detalle": "Ver detalle"
   }
 }

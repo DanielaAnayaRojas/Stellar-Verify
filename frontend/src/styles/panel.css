@@ -240,3 +240,36 @@ a.boton--secundario {
   min-height: var(--objetivo);
   font-size: 0.9375rem;
 }
+
+.lista__titular a {
+  color: var(--tinta);
+}
+
+.aviso {
+  margin: 0.75rem 0;
+  padding: 0.625rem 0.75rem;
+  background: var(--blanco);
+  border-left: 4px solid var(--revocada);
+  font-weight: 600;
+}
+
+.confirmacion {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--blanco);
+  border: 1px solid var(--revocada);
+  border-radius: var(--radio);
+}
+
+.confirmacion p {
+  margin: 0;
+}
+
+.confirmacion .acciones {
+  margin-top: 1rem;
+}
+
+.confirmacion:focus {
+  outline: 3px solid var(--indigo);
+  outline-offset: 2px;
+}

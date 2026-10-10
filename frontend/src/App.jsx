@@ -3,6 +3,7 @@ import textos from "./content/textos.json";
 import Verificar from "./pages/Verificar.jsx";
 import Panel from "./pages/Panel.jsx";
 import Emitir from "./pages/Emitir.jsx";
+import Detalle from "./pages/Detalle.jsx";
 
 export default function App() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
           <Route path="/verificar/:huella" element={<Verificar />} />
           <Route path="/panel" element={<Panel />} />
           <Route path="/panel/emitir" element={<Emitir />} />
+          <Route path="/panel/credencial/:huella" element={<Detalle />} />
           <Route path="*" element={<Verificar />} />
         </Routes>
       </main>

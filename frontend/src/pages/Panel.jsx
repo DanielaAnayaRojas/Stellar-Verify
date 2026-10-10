@@ -35,7 +35,9 @@ export default function Panel() {
             return (
               <li key={c.huella} className="lista__item">
                 <div>
-                  <p className="lista__titular">{c.titular}</p>
+                  <p className="lista__titular">
+                    <Link to={`/panel/credencial/${c.huella}`}>{c.titular}</Link>
+                  </p>
                   <p className="lista__logro">{c.logro}</p>
                   <p className="lista__fecha">
                     {textos.panel.emitidaEl.replace("{fecha}", formatearFecha(c.fechaEmision))}
