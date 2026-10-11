@@ -84,7 +84,7 @@ Hay tres archivos ficticios en [`frontend/public/ejemplos/`](../../frontend/publ
 
 - **Simulación separada de las pantallas.** Las pantallas piden los datos a `services/`, así que cuando conectemos ACTA el cambio se concentra ahí. Aun así, algunas pantallas dependen de cómo están organizados hoy los datos (por ejemplo, la lista de instituciones en `Emitir.jsx`) y habrá que ajustarlas.
 - **Lenguaje más claro para el usuario.** Usamos «huella», «emisión» y «revocación» en lugar de términos técnicos como hash o contrato.
-- **Accesibilidad.** Campos con etiqueta, avisos que leen los lectores de pantalla, cursor guiado entre pasos y estados que no dependen del color. Revisamos el código con este criterio ([informe](./Informe_Gus_ACTA_Usabilidad.md)).
+- **Accesibilidad.** Campos con etiqueta, avisos que leen los lectores de pantalla, cursor guiado entre pasos y estados que no dependen del color. Revisamos el código con este criterio.
 
 ### Front desplegado
 
