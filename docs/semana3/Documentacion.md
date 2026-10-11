@@ -44,25 +44,37 @@ Si el archivo no se puede leer, la huella está incompleta o el enlace no trae h
 
 **Detalle y revocación.** Muestra los datos, el enlace y el QR. Para revocar hay que confirmar de forma explícita, y desde ese momento la verificación muestra «Revocada».
 
-### Cómo se conecta con el flujo del Blueprint
+### Cómo se conecta con el MVP del Blueprint
 
-| Paso del Blueprint | Qué hay en el front | ¿Coincide? | ⚠️ Diferencia |
-| :---: | --- | :---: | --- |
-| 1. Registrar emisor, titular y logro | Pantalla «Datos» | Parcial | El emisor se elige de una lista con una sola institución ficticia («Instituto de Ejemplo»); no se pueden registrar instituciones |
-| 2. Adjuntar o referenciar evidencia, sin subir documentos sensibles | Pantalla «Evidencia» | Parcial | Solo se calcula y guarda la huella; la referencia (`ref-001`…) la inventa la simulación |
-| 3. Revisar resumen | Pantalla «Revisión» | **Sí** | — |
-| 4. Firma criptográfica (wallet Stellar) | Pantalla «Firma» | No | Es una casilla, y el texto aclara que está simulada |
-| 5. Envío a ACTA (Testnet) | Espera simulada | No | No hay conexión real; este paso no tiene pantalla propia |
-| 6. El titular comparte y un tercero consulta emisor, fecha, estado y prueba | Enlace, QR y `/verificar/:huella` | Parcial | Se muestra la huella, que localiza la credencial pero **no** es una prueba registrada en Stellar |
-| Camino alterno: cambiar estado o revocar | Detalle con revocación | Parcial | Solo se puede revocar |
+El Blueprint planteó un MVP con cinco funciones y un flujo de seis pasos. A continuación se indica cómo quedó cada una en el front y qué parte funciona de verdad y cuál es una simulación.
 
-**Otras diferencias:**
-- Los 5 pasos de la pantalla de emisión **no equivalen** a los pasos 1–5 del Blueprint: su paso 5 («Resultado») corresponde al paso 6 del Blueprint.
-- El panel **no pide iniciar sesión**.
-- Una credencial emitida en la demo solo se puede verificar desde el mismo navegador; entre dispositivos funcionan únicamente las tres de ejemplo.
-- La historia 5 del Blueprint (confirmar que la institución es quien dice ser, prioridad «Debería») no está implementada.
+**Las cinco funciones del MVP**
 
-**Sí coincide** con el Blueprint: la creación manual desde el panel, la revisión previa, no subir documentos sensibles, la verificación pública sin cuenta, la revocación y el enlace con QR (historia 6).
+| Lo planteado en el Blueprint | Dónde está en el front | Estado actual |
+| --- | --- | --- |
+| Que la institución cree una credencial a mano desde su panel | `/panel` y `/panel/emitir` | Completa. El botón «Nueva credencial» abre el asistente de emisión. |
+| Registrar emisor, titular, logro y referencia de evidencia | Pasos «Datos» y «Evidencia» | Presente, con dos limitaciones. Solo existe una institución de ejemplo («Instituto de Ejemplo») y la referencia de evidencia (`ref-001`…) la genera la simulación, no la institución. |
+| Mantener los documentos sensibles fuera de la blockchain, usando huellas | Paso «Evidencia» | Completa. El navegador calcula la huella y el archivo no sale del dispositivo. |
+| Conectar con ACTA y Stellar (Testnet) para emitir y comprobar | Paso «Firma» y la espera posterior | Pendiente. La firma es una casilla y no existe conexión con ACTA ni con Stellar. |
+| Que cualquiera verifique sin cuenta y que la institución pueda revocar | `/`, `/verificar/:huella` y `/panel/credencial/:huella` | Operativa en pantalla. La huella permite localizar la credencial, pero aún no es una prueba registrada en Stellar. Del camino alterno («cambiar estado o revocar») solo se implementó la revocación. |
+
+**Del flujo de seis pasos a las pantallas**
+
+La emisión consta de cinco pantallas y el Blueprint de seis pasos, por lo que la numeración no coincide:
+
+| Paso del Blueprint | Pantalla | Cómo quedó en el front |
+| --- | --- | --- |
+| 1. Registrar emisor, titular y logro | «Datos» | Según lo planteado. |
+| 2. Adjuntar o referenciar evidencia | «Evidencia» | Según lo planteado. |
+| 3. Revisar el resumen | «Revisión» | Según lo planteado. |
+| 4. Firmar con una wallet Stellar | «Firma» | La pantalla existe, pero la firma es una casilla simulada. |
+| 5. Enviar a ACTA | Ninguna | Se representa con una espera simulada, sin pantalla propia. |
+| 6. El titular comparte y un tercero consulta | «Resultado» y `/verificar/:huella` | La pantalla «Resultado» (enlace y QR) corresponde a este paso, no al 5. |
+
+**Otras diferencias**
+- El panel no solicita inicio de sesión: cualquier persona que abra `/panel` accede a él.
+- Una credencial creada en la demo solo puede verificarse desde el mismo navegador. Entre dispositivos funcionan únicamente las tres credenciales de ejemplo.
+- La historia 5 (confirmar que la institución es quien dice ser), que en el Blueprint tenía prioridad «Debería», no se alcanzó a implementar.
 
 ### Datos de demostración
 
