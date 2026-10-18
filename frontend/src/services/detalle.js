@@ -3,11 +3,11 @@
 
 import { prepararHuella } from "./verificacion.js";
 import { armarEnlace, generarQR } from "./emision.js";
-import { fetchVerification } from "./verifyApi.js";
+import { fetchPanelVerification } from "./verifyApi.js";
 
 export async function cargarDetalle(texto) {
   const huella = prepararHuella(texto, "no-existe");
-  const verificacion = await fetchVerification(huella);
+  const verificacion = await fetchPanelVerification(huella);
   const enlace = armarEnlace(huella);
 
   // El QR solo tiene sentido para una credencial de la institución.
@@ -22,14 +22,15 @@ export async function cargarDetalle(texto) {
   return { huella, verificacion, enlace, qr };
 }
 
-// Tras revocar, el estado se vuelve a leer, pero una lectura que falla ("no_verificable") no debe pisar lo
-// que ya se sabe: se reintenta unas veces y, si no se logra, devuelve null y la pantalla marca "revocada".
+// Tras revocar, el estado se vuelve a leer, pero una lectura que falla o que aún dice otra cosa (dato viejo) no
+// debe pisar lo que ya se sabe: se reintenta unas veces y, si no sale "revocada", devuelve null y la pantalla
+// se queda con "revocada", que es lo confirmado.
 export async function recargarTrasRevocar(huella, { cargar = cargarDetalle, intentos = 3, esperaMs = 2000, sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms)) } = {}) {
   for (let intento = 0; intento < intentos; intento += 1) {
     if (intento > 0) await sleep(esperaMs);
     try {
       const cargado = await cargar(huella);
-      if (cargado.verificacion.estado !== "no_verificable") return cargado;
+      if (cargado.verificacion.estado === "revocada") return cargado;
     } catch {
       // Se reintenta.
     }

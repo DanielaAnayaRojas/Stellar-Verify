@@ -31,6 +31,17 @@ describe("detalle tras revocar", () => {
     assert.equal(llamadas, 3);
   });
 
+  it("una lectura que aún dice 'valida' (dato viejo) no se acepta: se reintenta hasta ver 'revocada'", async () => {
+    const respuestas = [() => detalle("valida"), () => detalle("valida"), () => detalle("revocada")];
+    let llamadas = 0;
+    const result = await recargarTrasRevocar(HUELLA, { cargar: async () => respuestas[llamadas++](), intentos: 3, sleep });
+    assert.equal(result.verificacion.estado, "revocada");
+    assert.equal(llamadas, 3);
+
+    const siempreVieja = await recargarTrasRevocar(HUELLA, { cargar: async () => detalle("valida"), intentos: 3, sleep });
+    assert.equal(siempreVieja, null, "si solo llegan datos viejos, no pisa lo confirmado");
+  });
+
   it("no espera ni reintenta si la primera lectura sirve", async () => {
     let esperas = 0;
     const result = await recargarTrasRevocar(HUELLA, { cargar: async () => detalle("revocada"), sleep: async () => { esperas += 1; } });

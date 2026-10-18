@@ -14,6 +14,7 @@ import { assertXdrMatches, transactionExpiry } from "../_lib/xdrGuard.js";
 //   POST /api/panel/revoke-prepare  { huella }                    -> { xdr, networkPassphrase, expiresAt, ticket }
 //   POST /api/panel/revoke-submit   { huella, signedXdr, ticket } -> { txId, confirmed }
 //   GET  /api/panel/status?huella=...&expect=valid|revoked        -> { confirmed }
+//   GET  /api/panel/credential?huella=...                         -> { estado, institucion?, curso?, fecha? } (sin caché)
 //
 // El servidor fija owner, issuer y sourcePublicKey desde el entorno: lo que mande el navegador se ignora.
 
@@ -72,6 +73,12 @@ async function submit(operation, { request, runtime }) {
   return jsonResponse(200, { txId, confirmed });
 }
 
+// Estado de una credencial para el panel, sin caché (misma forma que la verificación pública).
+async function credential({ request, runtime }) {
+  const huella = validateHuella(new URL(request.url).searchParams.get("huella"));
+  return jsonResponse(200, await runtime.verifier.verifyFresh(huella));
+}
+
 // Consulta directa (sin caché) para que la pantalla espere la confirmación.
 async function status({ request, runtime }) {
   const params = new URL(request.url).searchParams;
@@ -94,6 +101,7 @@ const ACTIONS = {
   "revoke-prepare": { method: "POST", handler: prepareRevoke },
   "revoke-submit": { method: "POST", handler: (input) => submit("revoke", input) },
   status: { method: "GET", handler: status },
+  credential: { method: "GET", handler: credential },
 };
 
 async function handle(request, context) {
@@ -118,5 +126,8 @@ async function handle(request, context) {
     return errorResponse(error);
   }
 }
+
+// Con los reintentos a ACTA una petición puede tardar más que el límite por defecto de algunos planes.
+export const config = { maxDuration: 30 };
 
 export default { fetch: handleRoute("panel", handle) };

@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { fetchVerification } from "../../src/services/verifyApi.js";
+import { fetchPanelVerification, fetchVerification } from "../../src/services/verifyApi.js";
 import { HUELLA_VALID, jsonReply } from "../fixtures.js";
 
 const withReply = (reply) => ({ fetchImpl: async () => reply });
@@ -88,5 +88,27 @@ describe("cliente de /api/verify", () => {
       () => fetchVerification("xyz", withReply(jsonReply(400, { error: "huella_invalida" }))),
       (error) => error.codigo === "huella-invalida",
     );
+  });
+});
+
+describe("lectura del panel (sin caché)", () => {
+  it("consulta /api/panel/credential con la huella y manda la cookie de sesión", async () => {
+    let requested;
+    let credentials;
+    const result = await fetchPanelVerification(HUELLA_VALID, {
+      fetchImpl: async (url, init) => {
+        requested = url;
+        credentials = init.credentials;
+        return jsonReply(200, { estado: "no_encontrada" });
+      },
+    });
+    assert.equal(requested, `/api/panel/credential?huella=${HUELLA_VALID}`);
+    assert.equal(credentials, "same-origin");
+    assert.deepEqual(result, { estado: "noEncontrada" });
+  });
+
+  it("sin sesión (401) o con error devuelve 'sin comprobar', nunca 'no válida'", async () => {
+    const result = await fetchPanelVerification(HUELLA_VALID, withReply(jsonReply(401, { error: "no_autenticado" })));
+    assert.deepEqual(result, { estado: "noVerificable" });
   });
 });

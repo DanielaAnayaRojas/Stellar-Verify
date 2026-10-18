@@ -26,10 +26,13 @@ function unverifiable() {
   return { estado: "noVerificable" };
 }
 
-export async function fetchVerification(huella, { fetchImpl = (...args) => globalThis.fetch(...args) } = {}) {
+export async function fetchVerification(
+  huella,
+  { fetchImpl = (...args) => globalThis.fetch(...args), url = `/api/verify/${huella}` } = {},
+) {
   let response;
   try {
-    response = await fetchImpl(`/api/verify/${huella}`, { headers: { accept: "application/json" } });
+    response = await fetchImpl(url, { headers: { accept: "application/json" }, credentials: "same-origin" });
   } catch {
     return unverifiable();
   }
@@ -55,4 +58,9 @@ export async function fetchVerification(huella, { fetchImpl = (...args) => globa
 
   const revocadaEl = estado === "revocada" ? textField(body.revocadaEl) : null;
   return { estado, institucion, curso, fecha, ...(revocadaEl ? { revocadaEl } : {}) };
+}
+
+// Para las pantallas del panel (con sesión): lectura sin caché, igual que la verificación pública pero siempre fresca.
+export function fetchPanelVerification(huella, options = {}) {
+  return fetchVerification(huella, { ...options, url: `/api/panel/credential?huella=${huella}` });
 }

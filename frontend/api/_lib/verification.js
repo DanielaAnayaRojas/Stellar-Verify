@@ -110,6 +110,11 @@ export function createVerifier({ provider, config, onProviderError = logProvider
         shouldCache: (result) => result.estado !== ESTADOS.NO_VERIFICABLE,
       });
     },
+    // Lectura sin caché, para el panel: cada función de Vercel tiene su propia memoria, así que `forget` de una
+    // no limpia la caché de otra. El panel siempre lee fresco y no deja guardado nada en la caché pública.
+    verifyFresh(huella) {
+      return compute(huella);
+    },
     // Tras escribir (F2), la misma instancia deja de servir lo anterior.
     forget(huella) {
       resultCache.delete(huella);

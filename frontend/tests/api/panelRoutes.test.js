@@ -616,3 +616,44 @@ describe("revocar", () => {
     assert.equal((await call(panel, "/api/panel/status?huella=abc&expect=valid", { cookie })).status, 400);
   });
 });
+
+describe("credential (lectura fresca del panel)", () => {
+  const stored = () => ({ vcId: HUELLA_VALID, vcData: JSON.stringify({ credentialSubject: { institution: "Institucion de prueba", course: COURSE, issueDate: "2026-10-16" } }) });
+
+  it("exige sesión", async () => {
+    const response = await call(panel, `/api/panel/credential?huella=${HUELLA_VALID}`);
+    assert.equal(response.status, 401);
+  });
+
+  it("huella inválida: 400", async () => {
+    const { cookie } = await login();
+    assert.equal((await call(panel, "/api/panel/credential?huella=abc", { cookie })).status, 400);
+    assert.equal((await call(panel, "/api/panel/credential", { cookie })).status, 400);
+  });
+
+  it("lee sin caché: ve el cambio aunque la verificación pública siga con el dato viejo", async () => {
+    const { cookie } = await login();
+    acta.status = "valid";
+    acta.lastIssue = stored();
+    assert.equal((await (await call(verify, `/api/verify/${HUELLA_VALID}`)).json()).estado, "valida", "la pública la deja en caché");
+
+    // Otra función (otra instancia) revoca: esta instancia no se entera y su caché pública sigue con "válida".
+    acta.status = "revoked";
+    assert.equal((await (await call(verify, `/api/verify/${HUELLA_VALID}`)).json()).estado, "valida", "caché pública vieja");
+
+    const fresh = await (await call(panel, `/api/panel/credential?huella=${HUELLA_VALID}`, { cookie })).json();
+    assert.equal(fresh.estado, "revocada", "el panel lee fresco");
+  });
+
+  it("antes de emitir no deja 'no encontrada' en la caché pública", async () => {
+    const { cookie } = await login();
+    acta.status = "invalid";
+    const before = await (await call(panel, `/api/panel/credential?huella=${HUELLA_VALID}`, { cookie })).json();
+    assert.equal(before.estado, "no_encontrada");
+
+    acta.status = "valid";
+    acta.lastIssue = stored();
+    const publicRead = await (await call(verify, `/api/verify/${HUELLA_VALID}`)).json();
+    assert.equal(publicRead.estado, "valida", "la pública no heredó el dato del panel");
+  });
+});

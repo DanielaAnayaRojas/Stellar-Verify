@@ -4,7 +4,7 @@
 
 import QRCode from "qrcode";
 import { calcularHuella } from "./huella.js";
-import { fetchVerification } from "./verifyApi.js";
+import { fetchPanelVerification } from "./verifyApi.js";
 
 const MAX_CURSO = 120;
 const CARACTERES_DE_CONTROL = /[\u0000-\u001f\u007f-\u009f]/;
@@ -42,7 +42,8 @@ export async function prepararEvidencia(archivo) {
     error.codigo = codigo;
     throw error;
   }
-  const verificacion = await fetchVerification(huella);
+  // Lectura fresca del panel: no deja "no encontrada" guardado en la caché de la verificación pública.
+  const verificacion = await fetchPanelVerification(huella);
   return { huella, nombreArchivo: archivo.name, yaEmitida: YA_REGISTRADO.has(verificacion.estado) };
 }
 

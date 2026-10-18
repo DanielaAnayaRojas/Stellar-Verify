@@ -156,6 +156,21 @@ describe("verificación pública (los 5 estados)", () => {
     assert.equal((await verifier.verify(HUELLA_REVOKED)).estado, "revocada");
   });
 
+  it("verifyFresh lee siempre de ACTA, sin usar ni llenar la caché pública", async () => {
+    let status = { status: "invalid" };
+    const provider = fakeProvider({ status: () => status, credential: record() });
+    const { verifier } = verifierFor(provider);
+
+    assert.equal((await verifier.verifyFresh(HUELLA_VALID)).estado, "no_encontrada");
+    assert.equal((await verifier.verifyFresh(HUELLA_VALID)).estado, "no_encontrada");
+    assert.equal(provider.calls.getStatus, 2, "cada lectura fresca consulta a ACTA");
+
+    // Lo escrito después se ve de inmediato en la lectura fresca, y la caché pública no quedó con el dato viejo.
+    status = { status: "valid" };
+    assert.equal((await verifier.verifyFresh(HUELLA_VALID)).estado, "valida");
+    assert.equal((await verifier.verify(HUELLA_VALID)).estado, "valida", "la pública no heredó 'no encontrada'");
+  });
+
   it("no encontrada: no consulta el registro ni el vault", async () => {
     const provider = fakeProvider({ status: { status: "invalid" } });
     const { verifier } = verifierFor(provider);
