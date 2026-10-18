@@ -1,10 +1,11 @@
 import { createTtlCache } from "./cache.js";
+import { PROOF_TYPE, verifyIssuanceSignature } from "./issuerSignature.js";
 import { logProviderError } from "./log.js";
 
 // Verificación pública. Regla N2: "válida" solo si
 //   (a) el issuer_did del registro es el DID de la institución, y
 //   (b) el did_uri del vault es el DID de la institución, y
-//   (c) [F3] la firma de la institución sobre la huella verifica (SIGNATURE_LAYER=on).
+//   (c) con SIGNATURE_LAYER=on, la firma de la institución sobre huella + DID + fecha verifica.
 // Cualquier otra combinación NO es "válida", aunque el registro esté revocado.
 // Mientras no exista (c), quien escriba directo en la red puede copiar el issuer_did: el hueco queda
 // cerrado solo cuando la capa de firma esté activa.
@@ -58,7 +59,7 @@ function readSubject(data) {
 }
 
 // Clasifica un registro que existe en el vault (valid o revoked). Función pura: se prueba con fixtures.
-export function classifyCredential({ status, credential, vault, config }) {
+export function classifyCredential({ huella, status, credential, vault, config }) {
   const untrusted = { estado: ESTADOS.EMISOR_NO_RECONOCIDO };
   if (!credential || credential.data === null) return untrusted;
   if (credential.issuerDid !== config.institutionDid) return untrusted;
@@ -66,6 +67,16 @@ export function classifyCredential({ status, credential, vault, config }) {
 
   const subject = readSubject(credential.data);
   if (!subject) return untrusted;
+
+  // (c) Capa de firma: la institución firmó esta huella, su DID y esta fecha. Sin firma válida no es suya.
+  if (config.signatureLayer === "on") {
+    const proof = isObject(credential.data.proof) ? credential.data.proof : null;
+    const signed =
+      proof !== null &&
+      proof.type === PROOF_TYPE &&
+      verifyIssuanceSignature({ huella, issueDate: subject.issueDate, signature: proof.signature, config });
+    if (!signed) return untrusted;
+  }
 
   const visible = { institucion: subject.institution, curso: subject.course, fecha: subject.issueDate };
   if (status.status === "revoked") {
@@ -96,7 +107,7 @@ export function createVerifier({ provider, config, onProviderError = logProvider
       // verify-vc dice que existe pero get-vc no lo entrega: inconsistente, no se afirma nada.
       if (!credential) return { estado: ESTADOS.NO_VERIFICABLE };
 
-      return classifyCredential({ status, credential, vault, config });
+      return classifyCredential({ huella, status, credential, vault, config });
     } catch (error) {
       onProviderError(error);
       return { estado: ESTADOS.NO_VERIFICABLE };

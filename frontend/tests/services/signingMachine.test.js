@@ -27,6 +27,31 @@ describe("máquina de estados de la firma", () => {
     assert.deepEqual(state.result, { txId: "abc" });
   });
 
+  it("con la capa de firma: simulando → esperando-firma (mensaje) → simulando → esperando-firma (transacción)", () => {
+    let state = signingReducer(initialSigningState, { type: "START" });
+    assert.equal(state.total, 1);
+
+    state = signingReducer(state, { type: "MESSAGE_REQUESTED" });
+    assert.equal(state.status, ESTADO.ESPERANDO_FIRMA);
+    assert.equal(state.step, "mensaje");
+    assert.equal(state.total, 2);
+    assert.equal(state.expiresAt, null, "la firma del mensaje no tiene límite de 60 s");
+
+    state = signingReducer(state, { type: "MESSAGE_SIGNED" });
+    assert.equal(state.status, ESTADO.SIMULANDO);
+
+    state = signingReducer(state, { type: "PREPARED", expiresAt: "2026-10-18T10:01:00.000Z" });
+    assert.equal(state.step, "transaccion");
+    assert.equal(state.total, 2, "sigue siendo un flujo de dos firmas");
+    assert.equal(state.expiresAt, "2026-10-18T10:01:00.000Z");
+  });
+
+  it("MESSAGE_REQUESTED / MESSAGE_SIGNED fuera de su paso no hacen nada", () => {
+    assert.equal(signingReducer(initialSigningState, { type: "MESSAGE_REQUESTED" }), initialSigningState);
+    const waiting = run([{ type: "START" }, { type: "PREPARED" }]);
+    assert.equal(signingReducer(waiting, { type: "MESSAGE_SIGNED" }), waiting);
+  });
+
   it("un fallo en cualquier paso en curso lleva a error con el TxError", () => {
     for (const steps of [["START"], ["START", "PREPARED"], ["START", "PREPARED", "SIGNED"]]) {
       const state = run([...steps.map((type) => ({ type })), { type: "FAILED", error }]);

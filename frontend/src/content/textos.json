@@ -129,7 +129,7 @@
   },
   "firma": {
     "titulo": "Firma",
-    "explicacion": "Freighter abrirá una ventana para firmar el envío de esta credencial a la red de pruebas. Firma enseguida y no cierres esta página hasta ver el resultado.",
+    "explicacion": "Freighter te pedirá firmar para emitir esta credencial: primero un mensaje que prueba que la emite la institución (no envía nada y no cuesta nada) y después el envío a la red de pruebas. Firma cada ventana enseguida y no cierres esta página hasta ver el resultado.",
     "explicacionRevocar": "Freighter abrirá una ventana para firmar la anulación. Firma enseguida y no cierres esta página hasta ver el resultado.",
     "botonEmitir": "Firmar y emitir",
     "reintentar": "Intentar de nuevo",
@@ -137,6 +137,8 @@
     "estados": {
       "simulando": "Comprobando Freighter y preparando la operación.",
       "esperando-firma": "Esperando tu firma en Freighter. Firma ahora: la ventana vale 60 segundos.",
+      "esperando-mensaje": "Paso 1 de 2: firma el mensaje en Freighter. No envía nada y no cuesta nada.",
+      "esperando-envio": "Paso 2 de 2: firma el envío en Freighter. Hazlo ahora: la ventana vale 60 segundos.",
       "enviando": "Enviando a la red y esperando la confirmación. No cierres esta página."
     },
     "errores": {

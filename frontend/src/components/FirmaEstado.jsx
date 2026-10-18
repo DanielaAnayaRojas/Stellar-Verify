@@ -9,6 +9,15 @@ export function mensajeDeError(error) {
   return plantilla.replace("{request_id}", error.requestId || "sin código");
 }
 
+// Con dos firmas (capa del emisor) cada espera dice cuál es: "Paso 1 de 2" (mensaje) y "Paso 2 de 2" (envío).
+function textoDeEstado(estado) {
+  if (estado.status === "esperando-firma") {
+    if (estado.step === "mensaje") return textos.firma.estados["esperando-mensaje"];
+    if (estado.total === 2) return textos.firma.estados["esperando-envio"];
+  }
+  return textos.firma.estados[estado.status];
+}
+
 // Muestra el estado de una operación firmada: avisos que leen los lectores de pantalla, error con
 // reintento (que vuelve a preparar) y, si la operación ya salió, el enlace a la transacción.
 export default function FirmaEstado({ estado, alReintentar }) {
@@ -21,7 +30,7 @@ export default function FirmaEstado({ estado, alReintentar }) {
       {enCurso && (
         <div className="carga" role="status">
           <div className="carga__barra" aria-hidden="true" />
-          <p>{textos.firma.estados[estado.status]}</p>
+          <p>{textoDeEstado(estado)}</p>
         </div>
       )}
 

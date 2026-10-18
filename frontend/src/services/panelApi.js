@@ -57,8 +57,13 @@ export function createPanelApi({ fetchImpl = (...args) => globalThis.fetch(...ar
       request("/api/auth/verify", { method: "POST", body: { nonce, expiresAt, tag, signature } }),
     getSession: () => request("/api/auth/session"),
     logout: () => request("/api/auth/logout", { method: "POST" }),
-    prepareIssue: ({ huella, course, issueDate }) =>
-      request("/api/panel/issue-prepare", { method: "POST", body: { huella, course, issueDate } }),
+    startIssue: ({ huella, course, issueDate }) =>
+      request("/api/panel/issue-start", { method: "POST", body: { huella, course, issueDate } }),
+    prepareIssue: ({ huella, course, issueDate, signature }) =>
+      request("/api/panel/issue-prepare", {
+        method: "POST",
+        body: { huella, course, issueDate, ...(signature ? { signature } : {}) },
+      }),
     submitIssue: ({ huella, signedXdr, ticket }) =>
       request("/api/panel/issue-submit", { method: "POST", body: { huella, signedXdr, ticket } }),
     prepareRevoke: ({ huella }) => request("/api/panel/revoke-prepare", { method: "POST", body: { huella } }),

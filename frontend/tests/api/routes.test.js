@@ -157,6 +157,7 @@ describe("GET /api/health", () => {
       institutionKeyListed: true,
       vaultDidOk: true,
       session: "ok",
+      signatureLayer: "off",
     });
   });
 

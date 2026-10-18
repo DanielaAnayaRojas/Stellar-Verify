@@ -5,11 +5,13 @@ import { errorResponse } from "../_lib/panelErrors.js";
 import { logSubmit } from "../_lib/log.js";
 import { GuardError, HttpError, ProviderError } from "../_lib/errors.js";
 import { createTicket, readTicket } from "../_lib/ticket.js";
-import { buildVcData, validateHuella } from "../_lib/vcData.js";
+import { buildVcData, validateCourse, validateHuella, validateIssueDate } from "../_lib/vcData.js";
+import { issuanceMessage } from "../_lib/issuerSignature.js";
 import { assertXdrMatches, transactionExpiry } from "../_lib/xdrGuard.js";
 
 // Panel de la institución. TODAS las rutas exigen sesión (401 sin ella) y las escrituras, la cabecera propia.
-//   POST /api/panel/issue-prepare   { huella, course, issueDate } -> { xdr, networkPassphrase, expiresAt, ticket }
+//   POST /api/panel/issue-start     { huella, course, issueDate } -> { message } (texto a firmar; null con la capa apagada)
+//   POST /api/panel/issue-prepare   { huella, course, issueDate, signature? } -> { xdr, networkPassphrase, expiresAt, ticket }
 //   POST /api/panel/issue-submit    { huella, signedXdr, ticket } -> { txId, confirmed }
 //   POST /api/panel/revoke-prepare  { huella }                    -> { xdr, networkPassphrase, expiresAt, ticket }
 //   POST /api/panel/revoke-submit   { huella, signedXdr, ticket } -> { txId, confirmed }
@@ -31,10 +33,23 @@ function preparedResponse(operation, prepared, runtime) {
   });
 }
 
-async function prepareIssue({ request, runtime }) {
+// Primera firma (solo con SIGNATURE_LAYER=on): entrega el texto que la institución firma con su wallet.
+// Con la capa apagada responde { message: null } y la pantalla se salta este paso.
+async function issueStart({ request, runtime }) {
   const { huella, course, issueDate } = await readJsonBody(request);
   validateHuella(huella);
-  const vcDataText = buildVcData({ course, issueDate }, runtime.config);
+  validateCourse(course);
+  validateIssueDate(issueDate);
+  if (runtime.config.signatureLayer !== "on") return jsonResponse(200, { message: null });
+  const message = issuanceMessage({ huella, institutionDid: runtime.config.institutionDid, issueDate });
+  return jsonResponse(200, { message });
+}
+
+async function prepareIssue({ request, runtime }) {
+  const { huella, course, issueDate, signature } = await readJsonBody(request);
+  validateHuella(huella);
+  // Con la capa de firma, buildVcData comprueba la firma ANTES de preparar nada con ACTA.
+  const vcDataText = buildVcData({ huella, course, issueDate, signature }, runtime.config);
   return preparedResponse("issue", await runtime.provider.prepareIssue({ huella, vcDataText }), runtime);
 }
 
@@ -96,6 +111,7 @@ async function status({ request, runtime }) {
 }
 
 const ACTIONS = {
+  "issue-start": { method: "POST", handler: issueStart },
   "issue-prepare": { method: "POST", handler: prepareIssue },
   "issue-submit": { method: "POST", handler: (input) => submit("issue", input) },
   "revoke-prepare": { method: "POST", handler: prepareRevoke },

@@ -52,12 +52,10 @@ export function loadConfig(env = process.env) {
     problems.push(`INSTITUTION_NAME: supera ${MAX_NAME_LENGTH} caracteres`);
   }
 
-  // La capa de firma del emisor (opción A) se construye en F3. Hasta entonces 'on' no se acepta:
-  // así nunca se aparenta una comprobación que el código no hace.
+  // Capa de firma del emisor (opción A): con 'on', cada credencial lleva la firma de la institución y la
+  // verificación la exige; con 'off' (por defecto) solo rige la regla del emisor y del vault.
   const signatureLayer = text("SIGNATURE_LAYER").toLowerCase() || "off";
-  if (signatureLayer === "on") {
-    problems.push("SIGNATURE_LAYER: 'on' aún no está disponible en esta versión; usa 'off'");
-  } else if (signatureLayer !== "off") {
+  if (signatureLayer !== "on" && signatureLayer !== "off") {
     problems.push("SIGNATURE_LAYER: debe ser 'on' u 'off'");
   }
 

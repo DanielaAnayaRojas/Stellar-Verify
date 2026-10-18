@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { ValidationError, HttpError } from "./errors.js";
+import { PROOF_TYPE, normalizeSignature, verifyIssuanceSignature } from "./issuerSignature.js";
 
 // ÚNICO lugar que construye el `vcData` que se escribe en la cadena (D17, privacidad mínima).
 // Lleva: institución, curso, fecha y un identificador opaco del titular. NUNCA el nombre del titular,
@@ -41,7 +42,8 @@ export function validateIssueDate(value, now = Date.now()) {
 }
 
 // Devuelve el texto JSON que se envía a ACTA como `vcData`.
-export function buildVcData({ course, issueDate }, config, { subjectId = `urn:uuid:${randomUUID()}`, now } = {}) {
+// Con SIGNATURE_LAYER=on exige la firma de la institución sobre `SV1|huella|DID|fecha` y la guarda en `proof`.
+export function buildVcData({ huella, course, issueDate, signature }, config, { subjectId = `urn:uuid:${randomUUID()}`, now } = {}) {
   if (!config.institutionName) throw new HttpError(503, "institucion_sin_nombre");
 
   const data = {
@@ -55,6 +57,14 @@ export function buildVcData({ course, issueDate }, config, { subjectId = `urn:uu
       issueDate: validateIssueDate(issueDate, now),
     },
   };
+
+  if (config.signatureLayer === "on") {
+    const normalized = normalizeSignature(signature);
+    if (!normalized || !verifyIssuanceSignature({ huella, issueDate: data.credentialSubject.issueDate, signature: normalized, config })) {
+      throw new HttpError(400, "firma_invalida");
+    }
+    data.proof = { type: PROOF_TYPE, signature: normalized };
+  }
 
   const text = JSON.stringify(data);
   if (Buffer.byteLength(text) > MAX_VC_DATA_BYTES) throw new ValidationError("course", "curso_invalido");

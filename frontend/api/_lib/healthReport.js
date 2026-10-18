@@ -46,5 +46,7 @@ export async function buildHealthReport({ provider, config }) {
     vaultDidOk,
     // "ok" | "missing" | "too_short": el secreto de sesión del panel (nunca su valor).
     session: config.session,
+    // "on" | "off": si la verificación exige la firma de la institución (opción A).
+    signatureLayer: config.signatureLayer,
   };
 }

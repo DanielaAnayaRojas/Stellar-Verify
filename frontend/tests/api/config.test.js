@@ -62,10 +62,11 @@ describe("configuración del servidor", () => {
     assert.equal(short.config.sessionSecret, null);
   });
 
-  it("SIGNATURE_LAYER=on no se acepta hasta que exista la capa de firma", () => {
-    const result = loadConfig({ ...ENV, SIGNATURE_LAYER: "on" });
-    assert.equal(result.ok, false);
-    assert.match(result.problems.join("\n"), /SIGNATURE_LAYER/);
-    assert.equal(loadConfig({ ...ENV, SIGNATURE_LAYER: "quizas" }).ok, false);
+  it("SIGNATURE_LAYER acepta solo 'on' y 'off' (sin importar mayúsculas)", () => {
+    assert.equal(loadConfig({ ...ENV, SIGNATURE_LAYER: "on" }).config.signatureLayer, "on");
+    assert.equal(loadConfig({ ...ENV, SIGNATURE_LAYER: "ON" }).config.signatureLayer, "on");
+    const bad = loadConfig({ ...ENV, SIGNATURE_LAYER: "quizas" });
+    assert.equal(bad.ok, false);
+    assert.match(bad.problems.join("\n"), /SIGNATURE_LAYER/);
   });
 });

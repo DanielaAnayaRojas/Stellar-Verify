@@ -657,3 +657,112 @@ describe("credential (lectura fresca del panel)", () => {
     assert.equal(publicRead.estado, "valida", "la pública no heredó el dato del panel");
   });
 });
+
+describe("capa de firma del emisor (SIGNATURE_LAYER=on)", () => {
+  const DATE = "2026-10-16";
+  const messageFor = (huella = HUELLA_VALID) => `SV1|${huella}|${INSTITUTION_DID}|${DATE}`;
+  const signText = (text, pair = institution) => Buffer.from(pair.signMessage(text)).toString("base64");
+  const body = (extra = {}) => ({ huella: HUELLA_VALID, course: COURSE, issueDate: DATE, ...extra });
+  const unsignedData = () =>
+    JSON.stringify({
+      "@context": ["https://www.w3.org/ns/credentials/v2"],
+      type: ["VerifiableCredential", "StellarVerifyCredential"],
+      issuer: INSTITUTION_DID,
+      credentialSubject: { id: "urn:uuid:3a13cd79-f623-4fea-8a77-35cf8fe2240c", institution: "Institucion de prueba", course: COURSE, issueDate: DATE },
+    });
+
+  beforeEach(() => {
+    useEnv({ ...env, SIGNATURE_LAYER: "on" });
+    seedRuntime();
+  });
+
+  it("issue-start entrega el texto canónico a firmar (y exige sesión y datos válidos)", async () => {
+    assert.equal((await call(panel, "/api/panel/issue-start", { method: "POST", body: body() })).status, 401);
+
+    const { cookie } = await login();
+    const response = await call(panel, "/api/panel/issue-start", { method: "POST", cookie, body: body() });
+    assert.deepEqual(await response.json(), { message: messageFor() });
+
+    for (const bad of [{ huella: "abc" }, { course: "" }, { issueDate: "2026-02-31" }]) {
+      const rejected = await call(panel, "/api/panel/issue-start", { method: "POST", cookie, body: body(bad) });
+      assert.equal(rejected.status, 400);
+    }
+  });
+
+  it("con la capa apagada issue-start responde message null y la pantalla se salta la primera firma", async () => {
+    useEnv({ ...env, SIGNATURE_LAYER: "off" });
+    seedRuntime();
+    const { cookie } = await login();
+    const response = await call(panel, "/api/panel/issue-start", { method: "POST", cookie, body: body() });
+    assert.deepEqual(await response.json(), { message: null });
+  });
+
+  it("flujo completo: firma del mensaje → preparar → firma de la transacción → la verificación pública dice 'válida'", async () => {
+    const { cookie } = await login();
+    const signature = signText(messageFor());
+    const prepared = await call(panel, "/api/panel/issue-prepare", { method: "POST", cookie, body: body({ signature }) });
+    assert.equal(prepared.status, 200);
+    const { xdr, ticket } = await prepared.json();
+
+    const stored = JSON.parse(acta.lastIssue.vcData);
+    assert.deepEqual(stored.proof, { type: "StellarSignMessageV1", signature }, "la firma viaja dentro del vcData");
+
+    const submitted = await call(panel, "/api/panel/issue-submit", { method: "POST", cookie, body: { huella: HUELLA_VALID, signedXdr: sign(xdr), ticket } });
+    assert.equal((await submitted.json()).confirmed, true);
+
+    const verified = await (await call(verify, `/api/verify/${HUELLA_VALID}`)).json();
+    assert.deepEqual(verified, { estado: "valida", institucion: "Institucion de prueba", curso: COURSE, fecha: DATE });
+  });
+
+  it("preparar sin firma, con firma de otra huella, de otra fecha o de otra wallet: 400 y NO se llama a ACTA", async () => {
+    const { cookie } = await login();
+    const cases = [
+      undefined,
+      "basura",
+      signText(messageFor(HUELLA_FOREIGN)),
+      signText(`SV1|${HUELLA_VALID}|${INSTITUTION_DID}|2026-10-17`),
+      signText(messageFor(), randomKeypair()),
+    ];
+    for (const signature of cases) {
+      const response = await call(panel, "/api/panel/issue-prepare", { method: "POST", cookie, body: body({ signature }) });
+      assert.equal(response.status, 400, String(signature).slice(0, 12));
+      assert.equal((await response.json()).error, "firma_invalida");
+    }
+    assert.equal(acta.lastIssue, null, "ACTA no recibió nada");
+  });
+
+  it("registro hostil con el issuer_did copiado pero SIN firma: 'emisor no reconocido', sin mostrar sus datos", async () => {
+    acta.status = "valid";
+    acta.lastIssue = { vcId: HUELLA_VALID, vcData: unsignedData() };
+    const result = await (await call(verify, `/api/verify/${HUELLA_VALID}`)).json();
+    assert.deepEqual(result, { estado: "emisor_no_reconocido" });
+  });
+
+  it("registro hostil con una firma copiada de otra credencial: 'emisor no reconocido'", async () => {
+    const copied = signText(messageFor(HUELLA_FOREIGN));
+    acta.status = "valid";
+    acta.lastIssue = { vcId: HUELLA_VALID, vcData: JSON.stringify({ ...JSON.parse(unsignedData()), proof: { type: "StellarSignMessageV1", signature: copied } }) };
+    assert.deepEqual(await (await call(verify, `/api/verify/${HUELLA_VALID}`)).json(), { estado: "emisor_no_reconocido" });
+  });
+
+  it("una credencial sin firma queda 'no reconocida' también si está revocada", async () => {
+    acta.status = "revoked";
+    acta.lastIssue = { vcId: HUELLA_VALID, vcData: unsignedData() };
+    assert.deepEqual(await (await call(verify, `/api/verify/${HUELLA_VALID}`)).json(), { estado: "emisor_no_reconocido" });
+  });
+
+  it("una credencial bien firmada y revocada sigue saliendo 'revocada'", async () => {
+    const proof = { type: "StellarSignMessageV1", signature: signText(messageFor()) };
+    acta.status = "revoked";
+    acta.lastIssue = { vcId: HUELLA_VALID, vcData: JSON.stringify({ ...JSON.parse(unsignedData()), proof }) };
+    const result = await (await call(verify, `/api/verify/${HUELLA_VALID}`)).json();
+    assert.equal(result.estado, "revocada");
+    assert.equal(result.curso, COURSE);
+  });
+
+  it("la salud informa que la capa está activa", async () => {
+    const health = (await import("../../api/health.js")).default;
+    const report = await (await health.fetch(new Request(`${ORIGIN}/api/health`))).json();
+    assert.equal(report.signatureLayer, "on");
+  });
+});

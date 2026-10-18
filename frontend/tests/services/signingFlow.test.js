@@ -21,6 +21,7 @@ function setup({ api = {}, wallet = {} } = {}) {
     return result;
   };
   const fakeApi = {
+    startIssue: track("startIssue", { message: null }),
     prepareIssue: track("prepareIssue", { xdr: "XDR", networkPassphrase: "p", expiresAt: "2026-10-18T10:01:00.000Z", ticket: "TICKET-I" }),
     submitIssue: track("submitIssue", { txId: "tx1", confirmed: true }),
     prepareRevoke: track("prepareRevoke", { xdr: "XDR", expiresAt: null, ticket: "TICKET-R" }),
@@ -30,6 +31,7 @@ function setup({ api = {}, wallet = {} } = {}) {
   };
   const fakeWallet = {
     connect: track("connect", { address: ADDRESS }),
+    signMessage: track("signMessage", "FIRMA_MENSAJE"),
     signTransaction: track("signTransaction", "SIGNED_XDR"),
     ...Object.fromEntries(Object.entries(wallet).map(([key, value]) => [key, track(key, value)])),
   };
@@ -58,10 +60,49 @@ describe("flujo de firma", () => {
     const t = setup();
     const result = await t.run("issue");
     assert.deepEqual(result, { txId: "tx1" });
-    assert.deepEqual(t.log, ["connect", "prepareIssue", "signTransaction", "submitIssue"]);
+    assert.deepEqual(t.log, ["connect", "startIssue", "prepareIssue", "signTransaction", "submitIssue"]);
     assert.deepEqual(t.received.submitIssue, { huella: HUELLA, signedXdr: "SIGNED_XDR", ticket: "TICKET-I" }, "el ticket de la preparación viaja al envío");
     assert.deepEqual(t.history, [ESTADO.SIMULANDO, ESTADO.ESPERANDO_FIRMA, ESTADO.ENVIANDO, ESTADO.CONFIRMADO]);
     assert.deepEqual(t.state.result, { txId: "tx1" });
+  });
+
+  it("con la capa de firma: firma el mensaje, lo manda al preparar y luego firma la transacción (2 firmas, 2 pasos)", async () => {
+    const t = setup({ api: { startIssue: { message: `SV1|${HUELLA}|did:stellar:testnet:abc|2026-10-16` } } });
+    const result = await t.run("issue");
+    assert.deepEqual(result, { txId: "tx1" });
+    assert.deepEqual(t.log, ["connect", "startIssue", "signMessage", "prepareIssue", "signTransaction", "submitIssue"]);
+    assert.equal(t.received.signMessage, `SV1|${HUELLA}|did:stellar:testnet:abc|2026-10-16`, "firma el texto que entregó el servidor");
+    assert.equal(t.received.prepareIssue.signature, "FIRMA_MENSAJE", "la firma del mensaje viaja al preparar");
+    assert.deepEqual(t.history, [ESTADO.SIMULANDO, ESTADO.ESPERANDO_FIRMA, ESTADO.SIMULANDO, ESTADO.ESPERANDO_FIRMA, ESTADO.ENVIANDO, ESTADO.CONFIRMADO]);
+  });
+
+  it("sin la capa de firma no se pide la firma del mensaje ni se manda 'signature'", async () => {
+    const t = setup();
+    await t.run("issue");
+    assert.equal(t.log.includes("signMessage"), false);
+    assert.equal("signature" in t.received.prepareIssue, false);
+  });
+
+  it("si se cancela la firma del mensaje: error 'rejected', no se prepara ni se envía nada", async () => {
+    const t = setup({ api: { startIssue: { message: "SV1|texto" } }, wallet: { signMessage: new WalletError("rejected") } });
+    assert.equal(await t.run("issue"), null);
+    assert.equal(t.state.error.kind, "rejected");
+    assert.equal(t.log.includes("prepareIssue"), false);
+    assert.equal(t.log.includes("submitIssue"), false);
+  });
+
+  it("si el servidor rechaza la firma del mensaje: error 'bad_signature' reintentable", async () => {
+    const t = setup({ api: { startIssue: { message: "SV1|texto" }, prepareIssue: new ApiError(400, "firma_invalida") } });
+    assert.equal(await t.run("issue"), null);
+    assert.equal(t.state.error.kind, "bad_signature");
+    assert.equal(t.state.error.retryable, true);
+  });
+
+  it("revocar no pide la firma del mensaje", async () => {
+    const t = setup({ api: { startIssue: { message: "SV1|texto" } } });
+    await t.run("revoke");
+    assert.equal(t.log.includes("startIssue"), false);
+    assert.equal(t.log.includes("signMessage"), false);
   });
 
   it("revocar usa las rutas de revocar y espera 'revoked'", async () => {

@@ -2,7 +2,9 @@
 //   idle → simulando → esperando-firma → enviando → confirmado
 //   y, desde cualquier paso en curso, → error (con un TxError). Desde error se puede volver a empezar:
 //   "Intentar de nuevo" siempre vuelve a preparar (nunca reutiliza un XDR caducado).
-// Acciones: START, PREPARED, SIGNED, CONFIRMED, FAILED, RESET.
+// Con la capa de firma del emisor, emitir lleva dos firmas: primero el mensaje (step "mensaje", sin límite de
+// tiempo) y luego la transacción (step "transaccion", vale 60 s). `total` dice cuántas firmas hay (1 o 2).
+// Acciones: START, MESSAGE_REQUESTED, MESSAGE_SIGNED, PREPARED, SIGNED, CONFIRMED, FAILED, RESET.
 
 export const ESTADO = Object.freeze({
   IDLE: "idle",
@@ -16,6 +18,7 @@ export const ESTADO = Object.freeze({
 export const initialSigningState = Object.freeze({
   status: ESTADO.IDLE,
   step: null,
+  total: 1,
   expiresAt: null,
   result: null,
   error: null,
@@ -29,9 +32,16 @@ export function signingReducer(state, action) {
       if (state.status !== ESTADO.IDLE && state.status !== ESTADO.ERROR) return state;
       return { ...initialSigningState, status: ESTADO.SIMULANDO };
 
+    case "MESSAGE_REQUESTED":
+      if (state.status !== ESTADO.SIMULANDO) return state;
+      return { ...state, status: ESTADO.ESPERANDO_FIRMA, step: "mensaje", total: 2 };
+
+    case "MESSAGE_SIGNED":
+      if (state.status !== ESTADO.ESPERANDO_FIRMA || state.step !== "mensaje") return state;
+      return { ...state, status: ESTADO.SIMULANDO, step: null };
+
     case "PREPARED":
       if (state.status !== ESTADO.SIMULANDO) return state;
-      // Hoy hay una sola firma (la transacción); la firma del mensaje de la huella llega con la capa del emisor.
       return { ...state, status: ESTADO.ESPERANDO_FIRMA, step: "transaccion", expiresAt: action.expiresAt ?? null };
 
     case "SIGNED":
