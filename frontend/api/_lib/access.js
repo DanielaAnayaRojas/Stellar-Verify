@@ -11,6 +11,19 @@ export function isSecureRequest(request) {
   return (forwarded ? forwarded.split(",")[0].trim() : new URL(request.url).protocol.replace(":", "")) === "https";
 }
 
+// Host público de la petición. Detrás de un proxy (Vercel) la dirección interna de `request.url` puede no ser la
+// que ve el navegador, así que se prefiere `x-forwarded-host`; en local solo existe `host`.
+export function requestHost(request) {
+  const forwarded = request.headers.get("x-forwarded-host");
+  if (forwarded) return forwarded.split(",")[0].trim();
+  return request.headers.get("host") || new URL(request.url).host;
+}
+
+// Origen público esperado (esquema + host) para comparar con la cabecera `Origin` del navegador.
+export function requestOrigin(request) {
+  return `${isSecureRequest(request) ? "https" : "http"}://${requestHost(request)}`;
+}
+
 // Devuelve { valid, expiresAt } según la cookie de sesión.
 export function readSession(request, secret) {
   const token = parseCookies(request.headers.get("cookie")).get(SESSION_COOKIE);
@@ -29,7 +42,7 @@ export function requireSession(request, secret) {
 export function requireSameOriginWrite(request) {
   if (request.headers.get(WRITE_HEADER) !== "1") throw new HttpError(403, "peticion_no_permitida");
   const origin = request.headers.get("origin");
-  if (origin !== null && origin !== new URL(request.url).origin) throw new HttpError(403, "origen_no_permitido");
+  if (origin !== null && origin !== requestOrigin(request)) throw new HttpError(403, "origen_no_permitido");
 }
 
 // Lee el cuerpo JSON con tope de tamaño (20 KB).

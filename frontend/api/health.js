@@ -13,4 +13,7 @@ async function handle(request, context) {
   return jsonResponse(200, await runtime.health());
 }
 
+// Con los reintentos a ACTA una petición puede tardar más que el límite por defecto de algunos planes.
+export const config = { maxDuration: 30 };
+
 export default { fetch: handleRoute("health", handle) };

@@ -13,7 +13,15 @@ import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 
 const raizFrontend = fileURLToPath(new URL('../', import.meta.url));
-const ejemplos = ['diploma-ejemplo-1.txt', 'certificado-ejemplo-2.txt', 'constancia-ejemplo-3.txt'];
+const ejemplos = [
+  'diploma-ejemplo-1.txt',
+  'certificado-ejemplo-2.txt',
+  'constancia-ejemplo-3.txt',
+  // Evidencia final (D-day y video): 2 válidas y 1 revocada, emitidas con la capa de firma activa.
+  'diploma-demo-1.txt',
+  'certificado-demo-2.txt',
+  'constancia-demo-3.txt',
+];
 
 async function calcular() {
   const huellas = new Set();

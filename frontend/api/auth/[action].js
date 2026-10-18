@@ -1,6 +1,6 @@
 import { handleRoute, jsonResponse } from "../_lib/http.js";
 import { getRuntime } from "../_lib/runtime.js";
-import { isSecureRequest, readSession, requireSameOriginWrite, readJsonBody } from "../_lib/access.js";
+import { isSecureRequest, readSession, requestHost, requireSameOriginWrite, readJsonBody } from "../_lib/access.js";
 import {
   buildClearedSessionCookie,
   buildSessionCookie,
@@ -21,7 +21,7 @@ function identity(config) {
 }
 
 async function challenge({ request, runtime }) {
-  const host = new URL(request.url).host;
+  const host = requestHost(request);
   const issued = createChallenge({ secret: runtime.config.sessionSecret, host });
   return jsonResponse(200, { ...issued, ...identity(runtime.config) });
 }
@@ -33,7 +33,7 @@ async function login({ request, runtime }) {
   const body = await readJsonBody(request);
   const result = verifyChallengeResponse({
     secret: runtime.config.sessionSecret,
-    host: new URL(request.url).host,
+    host: requestHost(request),
     institutionPublicKey: runtime.config.institutionPublicKey,
     body,
   });
@@ -94,5 +94,8 @@ async function handle(request, context) {
     return errorResponse(error);
   }
 }
+
+// Con los reintentos a ACTA una petición puede tardar más que el límite por defecto de algunos planes.
+export const config = { maxDuration: 30 };
 
 export default { fetch: handleRoute("auth", handle) };
