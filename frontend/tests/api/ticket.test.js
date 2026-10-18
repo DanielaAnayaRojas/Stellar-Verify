@@ -8,7 +8,18 @@ const REQUEST = { vcId: "a".repeat(64), owner: "GABC", vcData: "{}" };
 describe("ticket de operación", () => {
   it("un ticket válido devuelve exactamente el cuerpo que se preparó", () => {
     const ticket = createTicket({ secret: SECRET, operation: "issue", request: REQUEST });
-    assert.deepEqual(readTicket({ secret: SECRET, ticket, operation: "issue" }), { ok: true, request: REQUEST });
+    assert.deepEqual(readTicket({ secret: SECRET, ticket, operation: "issue" }), { ok: true, request: REQUEST, vaultAddress: null });
+  });
+
+  it("puede llevar la dirección del vault, y no se puede cambiar sin romper la firma", () => {
+    const vaultAddress = "C" + "A".repeat(55);
+    const ticket = createTicket({ secret: SECRET, operation: "issue", request: REQUEST, vaultAddress });
+    assert.equal(readTicket({ secret: SECRET, ticket, operation: "issue" }).vaultAddress, vaultAddress);
+
+    const [payload, tag] = ticket.split(".");
+    const content = JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
+    const forged = Buffer.from(JSON.stringify({ ...content, vault: "C" + "B".repeat(55) })).toString("base64url");
+    assert.equal(readTicket({ secret: SECRET, ticket: `${forged}.${tag}`, operation: "issue" }).reason, "bad_tag");
   });
 
   it("se rechaza con otra clave, otra operación, alterado, mal formado o ausente", () => {

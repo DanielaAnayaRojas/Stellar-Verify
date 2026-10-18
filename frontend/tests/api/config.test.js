@@ -70,3 +70,24 @@ describe("configuración del servidor", () => {
     assert.match(bad.problems.join("\n"), /SIGNATURE_LAYER/);
   });
 });
+
+describe("INSTITUTION_VAULT_ADDRESS (opcional)", () => {
+  const VAULT = "CABXSPQQ32TS74EM52DGAQLXCWZWYPRECUJ5C2BN3G6GWTH4PU3TPI7W";
+
+  it("vacío o ausente: no está fijada (se lee de ACTA)", () => {
+    assert.equal(loadConfig(ENV).config.institutionVaultAddress, null);
+    assert.equal(loadConfig({ ...ENV, INSTITUTION_VAULT_ADDRESS: "" }).config.institutionVaultAddress, null);
+  });
+
+  it("una dirección de contrato válida se acepta", () => {
+    assert.equal(loadConfig({ ...ENV, INSTITUTION_VAULT_ADDRESS: VAULT }).config.institutionVaultAddress, VAULT);
+  });
+
+  it("una dirección que no es de contrato se rechaza y el mensaje nombra la variable, no el valor", () => {
+    const result = loadConfig({ ...ENV, INSTITUTION_VAULT_ADDRESS: "valor-raro-que-no-debe-salir" });
+    assert.equal(result.ok, false);
+    assert.match(result.problems.join("\n"), /INSTITUTION_VAULT_ADDRESS/);
+    assert.equal(result.problems.join("\n").includes("valor-raro"), false);
+    assert.equal(loadConfig({ ...ENV, INSTITUTION_VAULT_ADDRESS: ENV.INSTITUTION_PUBLIC_KEY }).ok, false, "una cuenta G... no es un contrato");
+  });
+});

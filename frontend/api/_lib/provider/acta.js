@@ -17,6 +17,7 @@ import { ed25519AddressFromMultibase } from "../didKey.js";
  * @property {() => Promise<{networkType: string, registryId: string|null}>} getNetworkInfo
  * @property {() => Promise<{registryId: string|null}>} getResolverInfo
  * @property {() => Promise<{owner: string, vaultAddress: string, didUri: string|null, version: number|null, vcCount: number|null}>} getVaultInfo
+ * @property {() => Promise<string>} getVaultAddress  Dirección del contrato del vault (en caché 10 min).
  * @property {(huella: string) => Promise<{status: "valid"|"revoked"|"invalid"|"unknown", since?: string}>} getStatus
  * @property {(huella: string) => Promise<{id: string, issuerDid: string|null, issuanceContract: string|null, data: object|null}|null>} getCredential
  *   `data` es el objeto ya leído, o null si el texto guardado no es un JSON válido (credencial no confiable).
@@ -38,6 +39,7 @@ const ACTA_CODE_PATTERN = /^[a-z0-9_]{1,64}$/;
 const REQUEST_ID_PATTERN = /^[A-Za-z0-9._-]{1,64}$/;
 const CONTRACT_ID_PATTERN = /^C[A-Z2-7]{55}$/;
 const NETWORK_TTL_MS = 5 * 60 * 1000;
+const VAULT_ADDRESS_TTL_MS = 10 * 60 * 1000;
 // Medido en vivo (18 oct): a veces una petición de ACTA se queda colgada (8 s sin respuesta) mientras las
 // siguientes responden bien. Por eso se corta pronto y se reintenta una vez, en vez de esperar más.
 const DEFAULT_TIMEOUT_MS = 5000;
@@ -154,6 +156,7 @@ export function createActaProvider(
   } = {},
 ) {
   const networkCache = createTtlCache({ ttlMs: NETWORK_TTL_MS });
+  const vaultAddressCache = createTtlCache({ ttlMs: VAULT_ADDRESS_TTL_MS });
   // `owner` lo fija el servidor desde el entorno: nunca viene del navegador.
   const owner = config.institutionPublicKey;
 
@@ -240,6 +243,13 @@ export function createActaProvider(
       version: Number.isFinite(json.version) ? json.version : null,
       vcCount: Number.isFinite(json.vc_count) ? json.vc_count : null,
     };
+  }
+
+  // Dirección del contrato del vault: no cambia, así que se guarda 10 min (o se toma de la configuración).
+  function getVaultAddress() {
+    // Si la dirección está fijada en la configuración (dato público), no se pregunta a ACTA.
+    if (config.institutionVaultAddress) return Promise.resolve(config.institutionVaultAddress);
+    return vaultAddressCache.getOrLoad("vault", async () => (await getVaultInfo()).vaultAddress);
   }
 
   // Decide siempre con verify-vc: tras revocar, get-vc sigue devolviendo la ficha.
@@ -455,6 +465,7 @@ export function createActaProvider(
     getNetworkInfo,
     getResolverInfo,
     getVaultInfo,
+    getVaultAddress,
     getStatus,
     getCredential,
     resolveDid,

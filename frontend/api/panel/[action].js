@@ -23,8 +23,8 @@ import { assertXdrMatches, transactionExpiry } from "../_lib/xdrGuard.js";
 const EXPECTED_STATUS = { issue: "valid", revoke: "revoked" };
 
 // Lo preparado sale hacia el navegador con un ticket: el cuerpo que ACTA pedirá al enviar, firmado por el servidor.
-function preparedResponse(operation, prepared, runtime) {
-  const ticket = createTicket({ secret: runtime.config.sessionSecret, operation, request: prepared.request });
+function preparedResponse(operation, prepared, runtime, vaultAddress) {
+  const ticket = createTicket({ secret: runtime.config.sessionSecret, operation, request: prepared.request, vaultAddress });
   return jsonResponse(200, {
     xdr: prepared.xdr,
     networkPassphrase: prepared.networkPassphrase,
@@ -50,14 +50,17 @@ async function prepareIssue({ request, runtime }) {
   validateHuella(huella);
   // Con la capa de firma, buildVcData comprueba la firma ANTES de preparar nada con ACTA.
   const vcDataText = buildVcData({ huella, course, issueDate, signature }, runtime.config);
-  return preparedResponse("issue", await runtime.provider.prepareIssue({ huella, vcDataText }), runtime);
+  // La dirección del vault se lee ANTES de preparar: un fallo aquí no cuesta nada (la transacción aún no existe).
+  const vaultAddress = await runtime.provider.getVaultAddress();
+  return preparedResponse("issue", await runtime.provider.prepareIssue({ huella, vcDataText }), runtime, vaultAddress);
 }
 
 async function prepareRevoke({ request, runtime }) {
   const { huella } = await readJsonBody(request);
   validateHuella(huella);
+  const vaultAddress = await runtime.provider.getVaultAddress();
   const prepared = await runtime.provider.prepareRevoke({ huella, dateIso: new Date().toISOString() });
-  return preparedResponse("revoke", prepared, runtime);
+  return preparedResponse("revoke", prepared, runtime, vaultAddress);
 }
 
 // Envía lo firmado SOLO si es exactamente lo preparado, y confirma contra verify-vc.
@@ -70,13 +73,14 @@ async function submit(operation, { request, runtime }) {
   if (!read.ok) throw new GuardError(read.reason === "expired" ? "expired" : "ticket_invalid");
   if (read.request.vcId !== huella) throw new GuardError("vc_id_mismatch");
 
-  const vault = await runtime.provider.getVaultInfo();
+  // La dirección sale del ticket firmado: no se lee nada de ACTA mientras corre el reloj de la transacción.
+  const contractId = read.vaultAddress ?? (await runtime.provider.getVaultAddress());
   assertXdrMatches({
     signedXdr,
     functionName: operation,
     huella,
     source: runtime.config.institutionPublicKey,
-    contractId: vault.vaultAddress,
+    contractId,
   });
 
   const { txId, via } = await runtime.provider.submit({ operation, huella, request: read.request, signedXdr });

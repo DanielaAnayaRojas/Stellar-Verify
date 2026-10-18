@@ -3,6 +3,8 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 // Para enviar una transacción firmada, la API de ACTA pide el mismo cuerpo con que se preparó. Como el servidor
 // no guarda estado, la preparación entrega un "ticket": ese cuerpo, firmado con HMAC y con caducidad. El navegador
 // solo lo devuelve; no puede cambiarlo (la firma lo delata) y nada de lo que contiene es secreto.
+// También lleva la dirección del contrato del vault: así el envío no depende de una lectura a ACTA justo cuando
+// corre el reloj de los 60 s de la transacción firmada.
 
 export const TICKET_TTL_MS = 3 * 60 * 1000;
 
@@ -11,8 +13,10 @@ function tagOf(secret, payload) {
 }
 
 // operation: "issue" | "revoke". request: el cuerpo enviado a ACTA al preparar.
-export function createTicket({ secret, operation, request, now = Date.now() }) {
-  const payload = Buffer.from(JSON.stringify({ op: operation, req: request, exp: now + TICKET_TTL_MS })).toString("base64url");
+export function createTicket({ secret, operation, request, vaultAddress = null, now = Date.now() }) {
+  const payload = Buffer.from(
+    JSON.stringify({ op: operation, req: request, vault: vaultAddress, exp: now + TICKET_TTL_MS }),
+  ).toString("base64url");
   return `${payload}.${tagOf(secret, payload).toString("base64url")}`;
 }
 
@@ -35,5 +39,6 @@ export function readTicket({ secret, ticket, operation, now = Date.now() }) {
   if (content.op !== operation) return { ok: false, reason: "wrong_operation" };
   if (!Number.isFinite(content.exp) || now >= content.exp) return { ok: false, reason: "expired" };
   if (content.req === null || typeof content.req !== "object") return { ok: false, reason: "malformed" };
-  return { ok: true, request: content.req };
+  const vaultAddress = typeof content.vault === "string" ? content.vault : null;
+  return { ok: true, request: content.req, vaultAddress };
 }

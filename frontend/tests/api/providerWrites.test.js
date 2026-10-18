@@ -380,3 +380,40 @@ describe("proveedor ACTA: una petición colgada se reintenta una vez", () => {
     assert.equal(urls.filter((url) => url.includes("/contracts/vc/issue")).length, 1, "un solo intento a la API de envío");
   });
 });
+
+describe("proveedor ACTA: dirección del vault en caché", () => {
+  it("getVaultAddress lee una vez y reutiliza el valor; un fallo no se guarda", async () => {
+    let reads = 0;
+    let failNext = true;
+    const fetchImpl = createFakeFetch({
+      "GET /config": configOk,
+      [`GET /contracts/vault/${INSTITUTION_PUBLIC_KEY}`]: () => {
+        reads += 1;
+        if (failNext) {
+          failNext = false;
+          return jsonReply(500, { error: "tx_submit_error" });
+        }
+        return jsonReply(200, { owner: INSTITUTION_PUBLIC_KEY, vault_address: "C" + "A".repeat(55), did_uri: INSTITUTION_DID, version: 1, vc_count: 0 });
+      },
+    });
+    const provider = createActaProvider(CONFIG, { fetchImpl, sleep: async () => {} });
+
+    await assert.rejects(() => provider.getVaultAddress());
+    assert.equal(await provider.getVaultAddress(), "C" + "A".repeat(55));
+    assert.equal(await provider.getVaultAddress(), "C" + "A".repeat(55));
+    assert.equal(reads, 2, "el fallo no se guardó y el éxito se reutilizó");
+  });
+});
+
+describe("proveedor ACTA: dirección del vault fijada en la configuración", () => {
+  it("si INSTITUTION_VAULT_ADDRESS está, getVaultAddress no llama a ACTA ni siquiera si ACTA no responde", async () => {
+    const pinned = "CABXSPQQ32TS74EM52DGAQLXCWZWYPRECUJ5C2BN3G6GWTH4PU3TPI7W";
+    let calls = 0;
+    const provider = createActaProvider(
+      { ...CONFIG, institutionVaultAddress: pinned },
+      { fetchImpl: async () => { calls += 1; throw new Error("ACTA caído"); }, sleep: async () => {} },
+    );
+    assert.equal(await provider.getVaultAddress(), pinned);
+    assert.equal(calls, 0);
+  });
+});

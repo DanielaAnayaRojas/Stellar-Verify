@@ -90,6 +90,18 @@ export function classifyCredential({ huella, status, credential, vault, config }
 export function createVerifier({ provider, config, onProviderError = logProviderError }) {
   const resultCache = createTtlCache({ ttlMs: RESULT_TTL_MS });
   const vaultCache = createTtlCache({ ttlMs: VAULT_TTL_MS });
+  // El DID del vault casi nunca cambia: si ACTA no responde al renovarlo, se usa el último valor bueno conocido
+  // en vez de decir "sin comprobar". Solo aplica a esta lectura; el estado de la credencial siempre es fresco.
+  let lastKnownVault = null;
+  async function loadVault() {
+    try {
+      lastKnownVault = await provider.getVaultInfo();
+      return lastKnownVault;
+    } catch (error) {
+      if (lastKnownVault) return lastKnownVault;
+      throw error;
+    }
+  }
 
   async function compute(huella) {
     try {
@@ -102,7 +114,7 @@ export function createVerifier({ provider, config, onProviderError = logProvider
 
       const [credential, vault] = await Promise.all([
         provider.getCredential(huella),
-        vaultCache.getOrLoad("vault", () => provider.getVaultInfo()),
+        vaultCache.getOrLoad("vault", loadVault),
       ]);
       // verify-vc dice que existe pero get-vc no lo entrega: inconsistente, no se afirma nada.
       if (!credential) return { estado: ESTADOS.NO_VERIFICABLE };

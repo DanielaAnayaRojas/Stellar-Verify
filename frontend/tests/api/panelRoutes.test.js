@@ -57,7 +57,9 @@ function createActa() {
   state.routes = {
     "GET /config": () => jsonReply(200, { networkType: "testnet", didStellarRegistryId: REGISTRY_ID }),
     [`GET /contracts/vault/${publicKey}`]: () =>
-      jsonReply(200, { owner: publicKey, vault_address: VAULT_ADDRESS, did_uri: INSTITUTION_DID, version: 1, vc_count: 0 }),
+      state.vaultError
+        ? state.vaultError()
+        : jsonReply(200, { owner: publicKey, vault_address: VAULT_ADDRESS, did_uri: INSTITUTION_DID, version: 1, vc_count: 0 }),
     "POST /contracts/vault/verify-vc": () => jsonReply(200, { status: state.status }),
     "POST /contracts/vault/get-vc": () =>
       jsonReply(200, {
@@ -322,6 +324,23 @@ describe("emitir", () => {
     // La caché de esta instancia se olvidó: la verificación pública ya ve la credencial.
     const verified = await (await call(verify, `/api/verify/${HUELLA_VALID}`)).json();
     assert.deepEqual(verified, { estado: "valida", institucion: "Institucion de prueba", curso: COURSE, fecha: "2026-10-16" });
+  });
+
+  it("el envío no consulta el vault: la dirección viaja en el ticket, así que una lectura lenta de ACTA no lo rompe", async () => {
+    const { cookie } = await login();
+    const { xdr, ticket } = await prepareIssue(cookie);
+    acta.vaultError = () => jsonReply(500, { error: "tx_submit_error" });
+    const submitted = await submitIssue(cookie, { huella: HUELLA_VALID, signedXdr: sign(xdr), ticket });
+    assert.equal(submitted.status, 200);
+    assert.equal((await submitted.json()).confirmed, true);
+  });
+
+  it("si leer el vault falla al PREPARAR, el error sale antes de crear la transacción y no se llama a ACTA para emitir", async () => {
+    const { cookie } = await login();
+    acta.vaultError = () => jsonReply(500, { error: "tx_submit_error" });
+    const response = await call(panel, "/api/panel/issue-prepare", { method: "POST", cookie, body: { huella: HUELLA_VALID, course: COURSE, issueDate: "2026-10-16" } });
+    assert.equal(response.status, 503);
+    assert.equal(acta.lastIssue, null);
   });
 
   it("al enviar, ACTA recibe el cuerpo de la preparación (fijado por el servidor) + signedXdr + Idempotency-Key", async () => {

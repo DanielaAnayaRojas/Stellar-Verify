@@ -171,6 +171,30 @@ describe("verificación pública (los 5 estados)", () => {
     assert.equal((await verifier.verify(HUELLA_VALID)).estado, "valida", "la pública no heredó 'no encontrada'");
   });
 
+  it("si ACTA no responde al renovar el vault, usa el último vault conocido en vez de 'sin comprobar'", async () => {
+    let vaultCalls = 0;
+    const provider = fakeProvider({ status: { status: "valid" }, credential: record() });
+    provider.getVaultInfo = async () => {
+      vaultCalls += 1;
+      if (vaultCalls > 1) throw new Error("ACTA colgado");
+      return VAULT;
+    };
+    const errors = [];
+    const verifier = createVerifier({ provider, config: CONFIG, onProviderError: (error) => errors.push(error) });
+    assert.equal((await verifier.verify(HUELLA_VALID)).estado, "valida", "primera lectura: el vault se lee bien");
+    verifier.forget(HUELLA_VALID); // olvida resultado y vault, como al pasar el tiempo de la caché
+    assert.equal((await verifier.verify(HUELLA_VALID)).estado, "valida", "con ACTA colgado usa el último vault conocido");
+    assert.equal(vaultCalls, 2);
+    assert.equal(errors.length, 0);
+  });
+
+  it("si nunca se pudo leer el vault, sigue siendo 'sin comprobar' (no se inventa nada)", async () => {
+    const provider = fakeProvider({ status: { status: "valid" }, credential: record() });
+    provider.getVaultInfo = async () => { throw new Error("ACTA colgado"); };
+    const { verifier } = verifierFor(provider);
+    assert.equal((await verifier.verify(HUELLA_VALID)).estado, "no_verificable");
+  });
+
   it("no encontrada: no consulta el registro ni el vault", async () => {
     const provider = fakeProvider({ status: { status: "invalid" } });
     const { verifier } = verifierFor(provider);

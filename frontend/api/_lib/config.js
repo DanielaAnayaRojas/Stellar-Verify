@@ -47,6 +47,14 @@ export function loadConfig(env = process.env) {
     problems.push("INSTITUTION_DID: falta o no es un did:stellar:testnet válido");
   }
 
+  // Opcional (dato público): dirección del contrato del vault. Si está, la emisión y la revocación no necesitan
+  // preguntársela a ACTA; si falta, se lee de ACTA como antes.
+  const vaultAddressText = text("INSTITUTION_VAULT_ADDRESS");
+  const institutionVaultAddress = vaultAddressText || null;
+  if (institutionVaultAddress && !StrKey.isValidContract(institutionVaultAddress)) {
+    problems.push("INSTITUTION_VAULT_ADDRESS: no es una dirección de contrato Stellar (C...)");
+  }
+
   const institutionName = text("INSTITUTION_NAME");
   if (institutionName.length > MAX_NAME_LENGTH) {
     problems.push(`INSTITUTION_NAME: supera ${MAX_NAME_LENGTH} caracteres`);
@@ -76,6 +84,7 @@ export function loadConfig(env = process.env) {
       stellarRpcUrl,
       institutionPublicKey,
       institutionDid,
+      institutionVaultAddress,
       institutionName,
       signatureLayer,
       session,
