@@ -4,12 +4,13 @@ import Verificar from "./pages/Verificar.jsx";
 import Panel from "./pages/Panel.jsx";
 import Emitir from "./pages/Emitir.jsx";
 import Detalle from "./pages/Detalle.jsx";
+import PanelGate from "./components/PanelGate.jsx";
 
 export default function App() {
   return (
     <>
       <div className="franja-demo" role="note">
-        <p>{textos.demo}</p>
+        <p>{textos.testnet}</p>
       </div>
       <header className="cabecera">
         <div className="cabecera__interior">
@@ -30,9 +31,11 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Verificar />} />
           <Route path="/verificar/:huella" element={<Verificar />} />
-          <Route path="/panel" element={<Panel />} />
-          <Route path="/panel/emitir" element={<Emitir />} />
-          <Route path="/panel/credencial/:huella" element={<Detalle />} />
+          <Route element={<PanelGate />}>
+            <Route path="/panel" element={<Panel />} />
+            <Route path="/panel/emitir" element={<Emitir />} />
+            <Route path="/panel/credencial/:huella" element={<Detalle />} />
+          </Route>
           <Route path="*" element={<Verificar />} />
         </Routes>
       </main>

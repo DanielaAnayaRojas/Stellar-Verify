@@ -1,6 +1,6 @@
 {
   "marca": "Stellar-Verify",
-  "demo": "Datos de demostración: nada de esto es real.",
+  "testnet": "Red de pruebas (testnet): estas credenciales no tienen valor legal.",
   "nav": {
     "verificar": "Verificar",
     "panel": "Soy una institución"
@@ -12,7 +12,7 @@
   "verificar": {
     "botonVerificar": "Verificar documento",
     "calculando": "Calculando la huella en tu dispositivo. El archivo no se sube.",
-    "consultando": "Consultando el registro.",
+    "consultando": "Consultando el registro. Puede tardar unos segundos: no cierres esta página.",
     "tituloResultado": "Resultado de la verificación",
     "zonaTitulo": "Suelta aquí el diploma o certificado",
     "zonaAyuda": "O toca esta zona para elegir el archivo en tu dispositivo.",
@@ -34,8 +34,20 @@
     "revocada": {
       "sello": "Revocada",
       "explicacion": "La institución anuló esta credencial el {fecha}.",
+      "explicacionSinFecha": "La institución anuló esta credencial.",
       "significado": "Ya no sirve para demostrar estudios: el documento existe, pero la institución lo retiró.",
       "titulo": "Credencial revocada"
+    },
+    "emisorNoReconocido": {
+      "sello": "Emisor no reconocido",
+      "explicacion": "Existe un registro con esta huella, pero no fue emitido por la institución. No lo tomes como válido.",
+      "titulo": "Emisor no reconocido"
+    },
+    "noVerificable": {
+      "sello": "Sin comprobar",
+      "explicacion": "El servicio no respondió. Intenta de nuevo en unos minutos.",
+      "titulo": "No se pudo comprobar",
+      "reintentar": "Intentar de nuevo"
     },
     "noEncontrada": {
       "sello": "No encontrada",
@@ -44,8 +56,7 @@
     },
     "campos": {
       "institucion": "Institución",
-      "titular": "Titular",
-      "logro": "Logro",
+      "curso": "Curso",
       "fechaEmision": "Fecha de emisión",
       "huella": "Huella",
       "huellaArchivo": "Huella de este archivo"
@@ -57,15 +68,15 @@
   "formulario": {
     "emisor": {
       "etiqueta": "Institución",
-      "ayuda": "Quien emite la credencial."
+      "ayuda": "Quien emite la credencial. Es la institución de esta sesión."
     },
-    "titular": {
-      "etiqueta": "Titular",
-      "ayuda": "Nombre de la persona que recibe la credencial."
+    "curso": {
+      "etiqueta": "Curso o programa",
+      "ayuda": "Nombre del curso o certificado que se reconoce. Máximo 120 caracteres. No escribas el nombre de la persona: no se registra."
     },
-    "logro": {
-      "etiqueta": "Logro",
-      "ayuda": "Título, curso o certificado que se reconoce."
+    "fecha": {
+      "etiqueta": "Fecha de emisión",
+      "ayuda": "El día en que se emite la credencial."
     },
     "evidencia": {
       "etiqueta": "Documento de evidencia",
@@ -84,8 +95,7 @@
     ],
     "continuar": "Continuar",
     "volver": "Volver",
-    "volverLista": "Volver a la lista de credenciales",
-    "botonEmitir": "Emitir credencial",
+    "volverPanel": "Volver al panel",
     "avisoEmitida": "Credencial emitida",
     "datos": {
       "titulo": "Datos de la credencial"
@@ -110,47 +120,93 @@
       "copiarEnlace": "Copiar enlace",
       "enlaceCopiado": "Enlace copiado",
       "qr": "Código QR",
-      "qrAlt": "Código QR que abre la verificación de la credencial de {titular}",
+      "qrAlt": "Código QR que abre la verificación de la credencial «{curso}»",
       "verVerificacion": "Ver la verificación",
+      "transaccion": "Transacción en la red de pruebas",
+      "verTransaccion": "Ver la transacción en el explorador",
       "otra": "Emitir otra credencial"
     }
   },
   "firma": {
-    "titulo": "Firma del emisor",
-    "texto": "Autoriza la emisión con la firma de tu institución. En esta demostración la firma es simulada.",
-    "casilla": "Autorizo emitir esta credencial con la firma de {institucion}.",
-    "emitiendo": "Firmando y registrando la credencial."
+    "titulo": "Firma",
+    "explicacion": "Freighter abrirá una ventana para firmar el envío de esta credencial a la red de pruebas. Firma enseguida y no cierres esta página hasta ver el resultado.",
+    "explicacionRevocar": "Freighter abrirá una ventana para firmar la anulación. Firma enseguida y no cierres esta página hasta ver el resultado.",
+    "botonEmitir": "Firmar y emitir",
+    "reintentar": "Intentar de nuevo",
+    "verTransaccion": "Ver la transacción en el explorador",
+    "estados": {
+      "simulando": "Comprobando Freighter y preparando la operación.",
+      "esperando-firma": "Esperando tu firma en Freighter. Firma ahora: la ventana vale 60 segundos.",
+      "enviando": "Enviando a la red y esperando la confirmación. No cierres esta página."
+    },
+    "errores": {
+      "expired": "La firma tardó demasiado. Vuelve a intentarlo y firma enseguida.",
+      "rejected": "Cancelaste la firma. No se envió nada.",
+      "wrong_wallet": "Esta wallet no es la de la institución. Cambia de cuenta en Freighter e inténtalo de nuevo.",
+      "wrong_network": "Freighter está en otra red. Cámbiala a Testnet e inténtalo de nuevo.",
+      "no_wallet": "No encontramos Freighter. Instálala o actívala en este navegador, ponla en Testnet y vuelve a intentarlo.",
+      "wallet_error": "Freighter no pudo firmar. Ábrela, revisa que esté desbloqueada y vuelve a intentarlo.",
+      "duplicate": "Ya existe una credencial para este archivo.",
+      "already_revoked": "Esta credencial ya estaba revocada.",
+      "not_found": "No encontramos esa credencial en el registro.",
+      "rate_limited": "Hay muchas consultas. Intenta de nuevo en un minuto.",
+      "unavailable": "El servicio no respondió. Intenta de nuevo en unos minutos.",
+      "unauthorized": "Tu sesión terminó. Entra de nuevo.",
+      "invalid_input": "Revisa los datos del formulario e inténtalo de nuevo.",
+      "insufficient_funds": "La wallet de la institución no tiene saldo suficiente en testnet para pagar esta operación.",
+      "issuer_blocked": "Esta institución no está autorizada para emitir en este registro.",
+      "service_key": "El servidor no tiene permiso para operar en ACTA. Quien administra la llave debe revisar sus permisos de emitir y revocar. Código: {request_id}.",
+      "unexpected_response": "ACTA respondió algo que no esperábamos. No se envió nada. Avísanos con este código: {request_id}.",
+      "tx_rejected": "La red rechazó la operación. No se hizo ningún cambio. Avísanos con este código: {request_id}.",
+      "unconfirmed": "La operación se envió, pero todavía no se ve confirmada. Revisa la verificación en unos minutos.",
+      "bad_signature": "No pudimos comprobar la firma. Revisa que sea la wallet de la institución e inténtalo de nuevo.",
+      "challenge_expired": "El mensaje caducó antes de firmarlo. Inténtalo de nuevo.",
+      "unknown": "Algo salió mal. No se envió nada. Avísanos con este código: {request_id}."
+    }
   },
   "revocacion": {
     "botonRevocar": "Revocar credencial",
     "avisoRevocada": "Credencial revocada",
-    "confirmacion": "¿Revocar la credencial de {titular}? La verificación pasará a mostrarla como revocada y no se puede deshacer.",
+    "confirmacion": "¿Revocar la credencial «{curso}»? La verificación pasará a mostrarla como revocada y no se puede deshacer.",
+    "confirmacionAjena": "¿Revocar este registro, que no emitió la institución? La verificación pasará a mostrarlo como revocado y no se puede deshacer.",
     "cancelar": "Cancelar",
-    "revocando": "Revocando la credencial.",
     "avisoDetalle": "La verificación ya muestra el cambio."
-  },
-  "vacio": {
-    "credenciales": "Aún no has emitido credenciales. Emite la primera."
   },
   "errores": {
     "huella-invalida": "La huella debe tener 64 caracteres, con números y letras de la a a la f. Revisa que esté completa.",
     "enlace-invalido": "No encontramos una huella en ese enlace. Copia el enlace completo, tal como te lo enviaron.",
     "archivo-ilegible": "No pudimos leer el archivo. Elige el documento otra vez o prueba con otro.",
     "sin-crypto": "Este navegador no puede calcular la huella. Abre la página con https o desde localhost.",
-    "institucion-vacia": "Elige la institución que emite la credencial.",
-    "titular-vacio": "Escribe el nombre del titular.",
-    "logro-vacio": "Escribe el logro que se reconoce.",
-    "ya-emitida": "Este documento ya tiene una credencial emitida. Elige otro archivo o revisa la lista.",
-    "autorizacion-faltante": "Marca la casilla para autorizar la emisión.",
-    "no-existe": "No encontramos esa credencial en el registro. Vuelve a la lista y elígela de nuevo."
+    "curso-vacio": "Escribe el curso o programa que se reconoce.",
+    "curso-invalido": "El curso no puede pasar de 120 caracteres ni llevar saltos de línea.",
+    "fecha-invalida": "Escribe una fecha válida que no sea posterior a mañana.",
+    "ya-emitida": "Este documento ya tiene una credencial emitida. Elige otro archivo o consulta su estado en el panel.",
+    "no-existe": "No encontramos esa credencial en el registro. Vuelve al panel y revisa la huella."
+  },
+  "entrar": {
+    "titulo": "Entrar como institución",
+    "texto": "Para entrar, firma un mensaje con la wallet de la institución en Freighter. No se envía ninguna transacción y no cuesta nada.",
+    "boton": "Entrar con Freighter",
+    "comprobando": "Comprobando tu sesión.",
+    "firmando": "Abre Freighter y firma el mensaje de entrada.",
+    "sesionTerminada": "Tu sesión terminó. Entra de nuevo.",
+    "sinServicio": "No pudimos comprobar tu sesión. Revisa tu conexión e inténtalo de nuevo.",
+    "reintentar": "Intentar de nuevo"
+  },
+  "sesion": {
+    "avisoTitulo": "Tu sesión termina en menos de 5 minutos",
+    "avisoTexto": "Por seguridad, la sesión dura 30 minutos. Si estás emitiendo una credencial, termínala enseguida. Si se acaba el tiempo, vuelve a entrar con Freighter y empieza de nuevo.",
+    "avisoBoton": "Entendido"
   },
   "panel": {
     "titulo": "Panel de la institución",
-    "intro": "Emite credenciales y consulta las que ya emitiste.",
+    "intro": "Emite credenciales y revoca las que ya emitiste.",
+    "sesion": "Sesión de {institucion}",
+    "salir": "Salir",
     "botonNueva": "Nueva credencial",
-    "listaTitulo": "Credenciales emitidas",
-    "verificacion": "Ver verificación",
-    "emitidaEl": "Emitida el {fecha}",
-    "detalle": "Ver detalle"
+    "consultarTitulo": "Ver o revocar una credencial",
+    "consultarAyuda": "Escribe la huella de la credencial para ver su estado o revocarla.",
+    "consultarEtiqueta": "Huella de la credencial",
+    "consultarBoton": "Abrir credencial"
   }
 }

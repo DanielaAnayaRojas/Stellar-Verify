@@ -1,24 +1,25 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import textos from "../content/textos.json";
 import Pasos from "../components/Pasos.jsx";
 import ZonaArchivo from "../components/ZonaArchivo.jsx";
 import CampoCopiable from "../components/CampoCopiable.jsx";
 import IconoEstado from "../components/IconoEstado.jsx";
-import { listarInstituciones } from "../services/credencialesService.js";
-import {
-  validarDatos,
-  prepararEvidencia,
-  emitirCredencial,
-  armarEnlace,
-  generarQR,
-} from "../services/emision.js";
+import FirmaEstado from "../components/FirmaEstado.jsx";
+import { useSesionPanel } from "../components/PanelGate.jsx";
+import { validarDatos, prepararEvidencia, armarEnlace, enlaceTransaccion, generarQR } from "../services/emision.js";
+import { fechaLocalHoy, formatearFecha } from "../services/formato.js";
+import { panelApi } from "../services/panelApi.js";
+import { wallet } from "../services/freighter.js";
+import { runSigning } from "../services/signingFlow.js";
+import { initialSigningState, signingReducer } from "../services/signingMachine.js";
 
 const TOTAL = textos.emision.pasos.length;
+const ESTADOS_EN_CURSO = ["simulando", "esperando-firma", "enviando"];
 
 export default function Emitir() {
-  const [instituciones] = useState(listarInstituciones);
-  const vacio = { institucionId: instituciones[0] ? instituciones[0].id : "", titular: "", logro: "" };
+  const { sesion, expirar } = useSesionPanel();
+  const vacio = () => ({ curso: "", fecha: fechaLocalHoy() });
 
   const [paso, setPaso] = useState(1);
   const [datos, setDatos] = useState(vacio);
@@ -26,17 +27,36 @@ export default function Emitir() {
   const [evidencia, setEvidencia] = useState(null);
   const [trabajo, setTrabajo] = useState("");
   const [error, setError] = useState("");
-  const [autorizo, setAutorizo] = useState(false);
   const [creada, setCreada] = useState(null);
   const [qr, setQr] = useState("");
+  const [firma, despachar] = useReducer(signingReducer, initialSigningState);
   const titulo = useRef(null);
 
   useEffect(() => {
     if (titulo.current) titulo.current.focus();
   }, [paso]);
 
-  const institucion = instituciones.find((i) => i.id === datos.institucionId);
-  const nombreInstitucion = institucion ? institucion.nombre : "";
+  // Sesión vencida a mitad de la emisión: vuelve a la pantalla de entrada.
+  useEffect(() => {
+    if (firma.status === "error" && firma.error.kind === "unauthorized") expirar();
+  }, [firma, expirar]);
+
+  // Confirmada la emisión: se muestra el resultado con su enlace y su código QR.
+  useEffect(() => {
+    if (firma.status !== "confirmado" || !evidencia) return;
+    const enlace = armarEnlace(evidencia.huella);
+    setCreada({
+      huella: evidencia.huella,
+      curso: datos.curso.trim(),
+      fecha: datos.fecha,
+      txId: firma.result.txId,
+      enlace,
+    });
+    generarQR(enlace)
+      .then(setQr)
+      .catch(() => setQr(""));
+    setPaso(5);
+  }, [firma, evidencia, datos]);
 
   function cambiar(campo, valor) {
     setDatos((anterior) => ({ ...anterior, [campo]: valor }));
@@ -68,35 +88,23 @@ export default function Emitir() {
     setTrabajo("");
   }
 
-  async function emitir() {
-    if (!autorizo) {
-      setError(textos.errores["autorizacion-faltante"]);
-      return;
-    }
-    setError("");
-    setTrabajo("emitiendo");
-    try {
-      const nueva = await emitirCredencial(datos, evidencia);
-      let imagen = "";
-      try {
-        imagen = await generarQR(armarEnlace(nueva.huella));
-      } catch {
-        imagen = "";
-      }
-      setCreada(nueva);
-      setQr(imagen);
-      setPaso(5);
-    } catch (fallo) {
-      setError(fallo.message);
-    }
-    setTrabajo("");
-  }
+  // Cada intento vuelve a preparar la operación: nunca se reutiliza un XDR que pudo caducar.
+  const emitir = useCallback(() => {
+    runSigning({
+      kind: "issue",
+      input: { huella: evidencia.huella, course: datos.curso.trim(), issueDate: datos.fecha },
+      address: sesion.publicKey,
+      dispatch: despachar,
+      api: panelApi,
+      wallet,
+    });
+  }, [evidencia, datos, sesion]);
 
   function emitirOtra() {
-    setDatos(vacio);
+    despachar({ type: "RESET" });
+    setDatos(vacio());
     setErrores({});
     setEvidencia(null);
-    setAutorizo(false);
     setCreada(null);
     setQr("");
     setError("");
@@ -104,6 +112,8 @@ export default function Emitir() {
   }
 
   const ocupado = trabajo !== "";
+  const firmando = ESTADOS_EN_CURSO.includes(firma.status);
+  const enlaceDeTransaccion = creada ? enlaceTransaccion(creada.txId) : "";
 
   return (
     <section aria-labelledby="titulo-paso">
@@ -119,63 +129,48 @@ export default function Emitir() {
           </h1>
 
           <div className="grupo">
-            <label htmlFor="institucion">{textos.formulario.emisor.etiqueta}</label>
-            <p className="ayuda" id="ayuda-institucion">
-              {textos.formulario.emisor.ayuda}
+            <p className="grupo__etiqueta">{textos.formulario.emisor.etiqueta}</p>
+            <p className="ayuda">{textos.formulario.emisor.ayuda}</p>
+            <p>
+              <strong>{sesion.institutionName}</strong>
             </p>
-            <select
-              id="institucion"
-              className="campo"
-              value={datos.institucionId}
-              aria-describedby="ayuda-institucion"
-              aria-invalid={errores.institucionId ? "true" : undefined}
-              onChange={(evento) => cambiar("institucionId", evento.target.value)}
-            >
-              {instituciones.map((i) => (
-                <option key={i.id} value={i.id}>
-                  {i.nombre}, {i.pais}
-                </option>
-              ))}
-            </select>
-            {errores.institucionId && (
-              <p className="error">{textos.errores[errores.institucionId]}</p>
-            )}
           </div>
 
           <div className="grupo">
-            <label htmlFor="titular">{textos.formulario.titular.etiqueta}</label>
-            <p className="ayuda" id="ayuda-titular">
-              {textos.formulario.titular.ayuda}
+            <label htmlFor="curso">{textos.formulario.curso.etiqueta}</label>
+            <p className="ayuda" id="ayuda-curso">
+              {textos.formulario.curso.ayuda}
             </p>
             <input
-              id="titular"
+              id="curso"
               className="campo"
               type="text"
               autoComplete="off"
-              value={datos.titular}
-              aria-describedby="ayuda-titular"
-              aria-invalid={errores.titular ? "true" : undefined}
-              onChange={(evento) => cambiar("titular", evento.target.value)}
+              maxLength={120}
+              value={datos.curso}
+              aria-describedby="ayuda-curso"
+              aria-invalid={errores.curso ? "true" : undefined}
+              onChange={(evento) => cambiar("curso", evento.target.value)}
             />
-            {errores.titular && <p className="error">{textos.errores[errores.titular]}</p>}
+            {errores.curso && <p className="error">{textos.errores[errores.curso]}</p>}
           </div>
 
           <div className="grupo">
-            <label htmlFor="logro">{textos.formulario.logro.etiqueta}</label>
-            <p className="ayuda" id="ayuda-logro">
-              {textos.formulario.logro.ayuda}
+            <label htmlFor="fecha">{textos.formulario.fecha.etiqueta}</label>
+            <p className="ayuda" id="ayuda-fecha">
+              {textos.formulario.fecha.ayuda}
             </p>
             <input
-              id="logro"
+              id="fecha"
               className="campo"
-              type="text"
-              autoComplete="off"
-              value={datos.logro}
-              aria-describedby="ayuda-logro"
-              aria-invalid={errores.logro ? "true" : undefined}
-              onChange={(evento) => cambiar("logro", evento.target.value)}
+              type="date"
+              min="2000-01-01"
+              value={datos.fecha}
+              aria-describedby="ayuda-fecha"
+              aria-invalid={errores.fecha ? "true" : undefined}
+              onChange={(evento) => cambiar("fecha", evento.target.value)}
             />
-            {errores.logro && <p className="error">{textos.errores[errores.logro]}</p>}
+            {errores.fecha && <p className="error">{textos.errores[errores.fecha]}</p>}
           </div>
 
           <div className="acciones">
@@ -183,7 +178,7 @@ export default function Emitir() {
               {textos.emision.continuar}
             </button>
             <Link className="boton boton--secundario" to="/panel">
-              {textos.emision.volverLista}
+              {textos.emision.volverPanel}
             </Link>
           </div>
         </form>
@@ -265,15 +260,15 @@ export default function Emitir() {
           <dl className="documento documento__campos documento__campos--solo">
             <div className="documento__campo">
               <dt>{textos.resultados.campos.institucion}</dt>
-              <dd>{nombreInstitucion}</dd>
+              <dd>{sesion.institutionName}</dd>
             </div>
             <div className="documento__campo">
-              <dt>{textos.resultados.campos.titular}</dt>
-              <dd>{datos.titular.trim()}</dd>
+              <dt>{textos.resultados.campos.curso}</dt>
+              <dd>{datos.curso.trim()}</dd>
             </div>
             <div className="documento__campo">
-              <dt>{textos.resultados.campos.logro}</dt>
-              <dd>{datos.logro.trim()}</dd>
+              <dt>{textos.resultados.campos.fechaEmision}</dt>
+              <dd>{formatearFecha(datos.fecha)}</dd>
             </div>
             <div className="documento__campo">
               <dt>{textos.emision.revision.archivo}</dt>
@@ -300,44 +295,24 @@ export default function Emitir() {
           <h1 id="titulo-paso" tabIndex="-1" ref={titulo}>
             {textos.firma.titulo}
           </h1>
-          <p>{textos.firma.texto}</p>
+          <p>{textos.firma.explicacion}</p>
 
-          <label className="casilla">
-            <input
-              type="checkbox"
-              checked={autorizo}
-              disabled={ocupado}
-              onChange={(evento) => {
-                setAutorizo(evento.target.checked);
-                setError("");
-              }}
-            />
-            <span>{textos.firma.casilla.replace("{institucion}", nombreInstitucion)}</span>
-          </label>
-
-          <div aria-live="polite" aria-atomic="true">
-            {error && (
-              <p className="error" role="alert">
-                {error}
-              </p>
-            )}
-            {trabajo === "emitiendo" && (
-              <div className="carga">
-                <div className="carga__barra" aria-hidden="true" />
-                <p>{textos.firma.emitiendo}</p>
-              </div>
-            )}
-          </div>
+          <FirmaEstado estado={firma} alReintentar={emitir} />
 
           <div className="acciones">
-            <button type="button" className="boton" onClick={emitir} disabled={ocupado}>
-              {textos.emision.botonEmitir}
-            </button>
+            {firma.status === "idle" && (
+              <button type="button" className="boton" onClick={emitir}>
+                {textos.firma.botonEmitir}
+              </button>
+            )}
             <button
               type="button"
               className="boton boton--secundario"
-              onClick={() => ir(3)}
-              disabled={ocupado}
+              onClick={() => {
+                despachar({ type: "RESET" });
+                ir(3);
+              }}
+              disabled={firmando}
             >
               {textos.emision.volver}
             </button>
@@ -355,12 +330,12 @@ export default function Emitir() {
 
           <dl className="documento documento__campos documento__campos--solo">
             <div className="documento__campo">
-              <dt>{textos.resultados.campos.titular}</dt>
-              <dd>{creada.titular}</dd>
+              <dt>{textos.resultados.campos.curso}</dt>
+              <dd>{creada.curso}</dd>
             </div>
             <div className="documento__campo">
-              <dt>{textos.resultados.campos.logro}</dt>
-              <dd>{creada.logro}</dd>
+              <dt>{textos.resultados.campos.fechaEmision}</dt>
+              <dd>{formatearFecha(creada.fecha)}</dd>
             </div>
             <CampoCopiable
               etiqueta={textos.resultados.campos.huella}
@@ -370,10 +345,20 @@ export default function Emitir() {
             />
             <CampoCopiable
               etiqueta={textos.emision.resultado.enlace}
-              valor={armarEnlace(creada.huella)}
+              valor={creada.enlace}
               boton={textos.emision.resultado.copiarEnlace}
               copiado={textos.emision.resultado.enlaceCopiado}
             />
+            {enlaceDeTransaccion && (
+              <div className="documento__campo">
+                <dt>{textos.emision.resultado.transaccion}</dt>
+                <dd>
+                  <a href={enlaceDeTransaccion} target="_blank" rel="noreferrer">
+                    {textos.emision.resultado.verTransaccion}
+                  </a>
+                </dd>
+              </div>
+            )}
           </dl>
 
           {qr && (
@@ -382,7 +367,7 @@ export default function Emitir() {
                 src={qr}
                 width="200"
                 height="200"
-                alt={textos.emision.resultado.qrAlt.replace("{titular}", creada.titular)}
+                alt={textos.emision.resultado.qrAlt.replace("{curso}", creada.curso)}
               />
               <figcaption>{textos.emision.resultado.qr}</figcaption>
             </figure>
@@ -396,7 +381,7 @@ export default function Emitir() {
               {textos.emision.resultado.otra}
             </button>
             <Link className="boton boton--secundario" to="/panel">
-              {textos.emision.volverLista}
+              {textos.emision.volverPanel}
             </Link>
           </div>
         </div>

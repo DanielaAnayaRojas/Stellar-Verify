@@ -273,3 +273,72 @@ a.boton--secundario {
   outline: 3px solid var(--indigo);
   outline-offset: 2px;
 }
+
+/* Barra de sesión del panel */
+.barra-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--linea);
+}
+
+.barra-panel p {
+  margin: 0;
+  font-weight: 600;
+}
+
+.barra-panel .boton {
+  margin: 0;
+}
+
+/* Etiqueta de un dato fijo (no es un campo de formulario) */
+.grupo__etiqueta {
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+}
+
+/* Operación firmada dentro del cuadro de confirmación */
+.confirmacion p + p,
+.confirmacion .carga,
+.confirmacion [role="alert"] {
+  margin-top: 0.75rem;
+}
+
+/* Ventana de aviso de sesión */
+.modal-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(14, 26, 51, 0.55);
+}
+
+.modal {
+  width: 100%;
+  max-width: 28rem;
+  padding: 1.25rem;
+  background: var(--blanco);
+  border: 1px solid var(--ambar);
+  border-top: 6px solid var(--ambar);
+  border-radius: var(--radio);
+}
+
+.modal h2 {
+  margin: 0 0 0.5rem;
+  font-family: var(--fuente-titulo);
+}
+
+.modal p {
+  margin: 0;
+}
+
+.modal .acciones {
+  margin-top: 1rem;
+}
