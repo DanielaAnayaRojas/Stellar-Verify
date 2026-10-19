@@ -213,7 +213,9 @@ describe("verificación pública (los 5 estados)", () => {
   it("no se pudo comprobar: servicio caído, límite de lecturas o llave inválida", async () => {
     for (const kind of ["unavailable", "rate_limited", "unauthorized", "wrong_network", "invalid_response"]) {
       const { verifier, errors } = verifierFor(fakeProvider({ status: new ProviderError(kind) }));
-      assert.deepEqual(await verifier.verify(HUELLA_VALID), { estado: "no_verificable" });
+      // Solo el límite de consultas lleva motivo: la pantalla pide esperar un minuto en vez de decir que no respondió.
+      const esperado = kind === "rate_limited" ? { estado: "no_verificable", motivo: "limite" } : { estado: "no_verificable" };
+      assert.deepEqual(await verifier.verify(HUELLA_VALID), esperado);
       assert.equal(errors.length, 1);
       assert.equal(errors[0].kind, kind);
     }

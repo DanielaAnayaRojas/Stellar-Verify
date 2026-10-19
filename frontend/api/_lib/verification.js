@@ -125,7 +125,9 @@ export function createVerifier({ provider, config, onProviderError = logProvider
       return { result: classifyCredential({ huella, status, credential, vault, config }), recordStatus };
     } catch (error) {
       onProviderError(error);
-      return { result: { estado: ESTADOS.NO_VERIFICABLE }, recordStatus };
+      // Si ACTA limita las consultas, la pantalla lo dice (no es un caído): se pide esperar un minuto.
+      const motivo = error && error.kind === "rate_limited" ? { motivo: "limite" } : {};
+      return { result: { estado: ESTADOS.NO_VERIFICABLE, ...motivo }, recordStatus };
     }
   }
 

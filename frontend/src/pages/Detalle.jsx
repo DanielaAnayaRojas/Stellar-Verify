@@ -138,7 +138,9 @@ export default function Detalle() {
         </p>
       )}
 
-      {!confirmada && <p>{textosEstado.explicacion}</p>}
+      {!confirmada && (
+        <p>{estado === "noVerificable" && verificacion.motivo === "limite" ? textosEstado.explicacionLimite : textosEstado.explicacion}</p>
+      )}
       {revocada && (
         <p>
           {verificacion.revocadaEl

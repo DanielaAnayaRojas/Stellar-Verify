@@ -22,8 +22,8 @@ function textField(value) {
 }
 
 // Cuando no hay respuesta confiable nunca se dice "no válida": solo que no se pudo comprobar.
-function unverifiable() {
-  return { estado: "noVerificable" };
+function unverifiable(motivo = null) {
+  return { estado: "noVerificable", ...(motivo ? { motivo } : {}) };
 }
 
 export async function fetchVerification(
@@ -46,6 +46,7 @@ export async function fetchVerification(
   }
   const estado = body && typeof body === "object" ? UI_STATE[body.estado] : undefined;
   if (!response.ok || !estado) return unverifiable();
+  if (estado === "noVerificable") return unverifiable(body.motivo === "limite" ? "limite" : null);
 
   // Solo los estados confirmados traen datos de la credencial; en los demás se descarta todo lo que sobre,
   // porque un registro que no es de la institución no se muestra como propio.

@@ -46,6 +46,7 @@
     "noVerificable": {
       "sello": "Sin comprobar",
       "explicacion": "El servicio no respondió. Intenta de nuevo en unos minutos.",
+      "explicacionLimite": "Hay muchas consultas. Intenta de nuevo en unos minutos.",
       "titulo": "No se pudo comprobar",
       "reintentar": "Intentar de nuevo"
     },
@@ -151,7 +152,7 @@
       "duplicate": "Ya existe una credencial para este archivo.",
       "already_revoked": "Esta credencial ya estaba revocada.",
       "not_found": "No encontramos esa credencial en el registro.",
-      "rate_limited": "Hay muchas consultas. Intenta de nuevo en un minuto.",
+      "rate_limited": "Hay muchas consultas. Intenta de nuevo en unos minutos.",
       "unavailable": "El servicio no respondió. Intenta de nuevo en unos minutos.",
       "unauthorized": "Tu sesión terminó. Entra de nuevo.",
       "invalid_input": "Revisa los datos del formulario e inténtalo de nuevo.",
@@ -181,6 +182,7 @@
     "sin-crypto": "Este navegador no puede calcular la huella. Abre la página con https o desde localhost.",
     "curso-vacio": "Escribe el curso o programa que se reconoce.",
     "curso-invalido": "El curso no puede pasar de 120 caracteres ni llevar saltos de línea.",
+    "curso-url": "Esto parece una dirección web. Escribe el nombre del curso, por ejemplo «Introducción a la ciberseguridad».",
     "fecha-invalida": "Escribe una fecha válida que no sea posterior a mañana.",
     "ya-emitida": "Este documento ya tiene una credencial emitida. Elige otro archivo o consulta su estado en el panel.",
     "no-existe": "No encontramos esa credencial en el registro. Vuelve al panel y revisa la huella."

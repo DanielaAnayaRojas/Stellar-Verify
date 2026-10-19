@@ -8,6 +8,8 @@ import { fetchPanelVerification } from "./verifyApi.js";
 
 const MAX_CURSO = 120;
 const CARACTERES_DE_CONTROL = /[\u0000-\u001f\u007f-\u009f]/;
+// Una dirección web en el curso casi siempre es un error de captura (no se puede corregir después de emitir).
+const PARECE_URL = /^(https?:\/\/|www\.)/i;
 const FECHA_ISO = /^(\d{4})-(\d{2})-(\d{2})$/;
 const HASH_DE_TRANSACCION = /^[0-9a-f]{64}$/;
 
@@ -28,6 +30,7 @@ export function validarDatos({ curso, fecha }) {
   const limpio = String(curso || "").trim();
   if (!limpio) errores.curso = "curso-vacio";
   else if (limpio.length > MAX_CURSO || CARACTERES_DE_CONTROL.test(limpio)) errores.curso = "curso-invalido";
+  else if (PARECE_URL.test(limpio)) errores.curso = "curso-url";
   if (!esFechaReal(String(fecha || ""))) errores.fecha = "fecha-invalida";
   return errores;
 }
