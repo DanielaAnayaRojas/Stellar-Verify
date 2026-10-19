@@ -1,24 +1,32 @@
+/* Aviso de red de pruebas: siempre visible, discreto, con un punto de atención. */
 .franja-demo {
-  background: var(--ambar);
-  color: var(--tinta);
-  font-size: 0.875rem;
-  font-weight: 500;
-  padding: 0.25rem 1rem;
-  text-align: left;
+  border-bottom: 1px solid var(--borde);
+  background: var(--apagado);
+  color: var(--tinta-suave);
+  font-size: 0.8125rem;
+  padding: 0.5rem 1rem;
 }
 
 .franja-demo p {
   margin: 0 auto;
-  max-width: var(--columna);
+  max-width: var(--ancho-cabecera);
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
 }
 
-.cabecera {
-  background: var(--tinta);
-  color: var(--blanco);
+.franja-demo p::before {
+  content: "";
+  flex: none;
+  width: 0.4375rem;
+  height: 0.4375rem;
+  border-radius: 50%;
+  background: var(--atencion);
+  transform: translateY(-0.05rem);
 }
 
 .cabecera__interior {
-  max-width: var(--columna);
+  max-width: var(--ancho-cabecera);
   margin: 0 auto;
   padding: 0.75rem 1rem;
   display: flex;
@@ -28,15 +36,22 @@
 }
 
 .cabecera__marca {
-  font-family: var(--fuente-titulo);
-  font-weight: 700;
-  font-size: 1.25rem;
-  color: var(--blanco);
-  text-decoration: none;
-  min-height: var(--objetivo);
   display: inline-flex;
   align-items: center;
+  gap: 0.5rem;
+  min-height: var(--objetivo);
+  font-weight: 600;
+  font-size: 1.0625rem;
+  letter-spacing: -0.01em;
+  color: var(--tinta);
+  text-decoration: none;
   white-space: nowrap;
+}
+
+.cabecera__marca svg {
+  width: 1.75rem;
+  height: 1.75rem;
+  color: var(--sello);
 }
 
 .cabecera__nav {
@@ -46,25 +61,63 @@
 
 .cabecera__enlace {
   min-height: var(--objetivo);
-  padding: 0 0.75rem;
+  padding: 0 0.875rem;
   display: inline-flex;
   align-items: center;
-  color: #dfe4f5;
+  border-radius: 999px;
+  color: var(--tinta-suave);
   text-decoration: none;
-  border-radius: var(--radio);
-  font-size: 0.875rem;
-  line-height: 1.2;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background-color 150ms var(--suave), color 150ms var(--suave);
 }
 
-.cabecera__enlace:hover,
+.cabecera__enlace:hover {
+  color: var(--tinta);
+  background: var(--apagado);
+}
+
 .cabecera__enlace[aria-current="page"] {
-  color: var(--blanco);
-  text-decoration: underline;
-  text-underline-offset: 4px;
+  color: var(--tinta);
+  background: var(--secundario);
+}
+
+@media (max-width: 26rem) {
+  .cabecera__marca span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .cabecera__enlace {
+    padding: 0 0.75rem;
+  }
 }
 
 .contenido {
   max-width: var(--columna);
   margin: 0 auto;
-  padding: 1.5rem 1rem 3rem;
+  padding: 2rem 1rem 4rem;
+  animation: aparecer 200ms var(--suave) both;
+}
+
+@media (min-width: 40rem) {
+  .contenido {
+    padding-top: 3.5rem;
+  }
+}
+
+.pie {
+  max-width: var(--ancho-cabecera);
+  margin: 0 auto;
+  padding: 1.5rem 1rem 2.5rem;
+  color: var(--tinta-suave);
+  font-size: 0.8125rem;
+}
+
+.pie p {
+  margin: 0;
 }
