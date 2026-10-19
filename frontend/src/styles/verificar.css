@@ -231,6 +231,15 @@
   color: var(--no-encontrada);
 }
 
+/* Ámbar oscuro: se distingue del rojo de "Revocada" y de la pizarra neutra */
+.sello--emisorNoReconocido {
+  color: var(--emisor-no-reconocido);
+}
+
+.sello--noVerificable {
+  color: var(--no-encontrada);
+}
+
 @keyframes estampar {
   from {
     opacity: 0;

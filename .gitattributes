@@ -1,0 +1,2 @@
+# Los archivos de ejemplo se hashean byte a byte: sin conversión de saltos de línea (en Windows cambiaría la huella).
+frontend/public/ejemplos/*.txt -text

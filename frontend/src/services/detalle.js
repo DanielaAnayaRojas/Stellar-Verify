@@ -1,27 +1,45 @@
-// Lógica de la pantalla de detalle: cargar una credencial con su enlace y QR, y revocarla.
+// Lógica de la pantalla de detalle: el estado real de una credencial, con su enlace y su QR.
+// Revocar se hace con signingFlow.js (firma de la institución en Freighter).
 
-import { obtenerCredencial, revocarCredencial } from "./credencialesService.js";
 import { prepararHuella } from "./verificacion.js";
 import { armarEnlace, generarQR } from "./emision.js";
+import { fetchPanelVerification } from "./verifyApi.js";
 
 export async function cargarDetalle(texto) {
   const huella = prepararHuella(texto, "no-existe");
-  const credencial = await obtenerCredencial(huella);
-  if (!credencial) {
-    const error = new Error("no-existe");
-    error.codigo = "no-existe";
-    throw error;
-  }
-  const enlace = armarEnlace(credencial.huella);
+  const verificacion = await fetchPanelVerification(huella);
+  const enlace = armarEnlace(huella);
+
+  // El QR solo tiene sentido para una credencial de la institución.
   let qr = "";
-  try {
-    qr = await generarQR(enlace);
-  } catch {
-    qr = "";
+  if (verificacion.estado === "valida" || verificacion.estado === "revocada") {
+    try {
+      qr = await generarQR(enlace);
+    } catch {
+      qr = "";
+    }
   }
-  return { credencial, enlace, qr };
+  return { huella, verificacion, enlace, qr };
 }
 
-export async function revocar(huella) {
-  return revocarCredencial(huella);
+// Tras revocar, el estado se vuelve a leer, pero una lectura que falla o que aún dice otra cosa (dato viejo) no
+// debe pisar lo que ya se sabe: se reintenta unas veces y, si no sale "revocada", devuelve null y la pantalla
+// se queda con "revocada", que es lo confirmado.
+export async function recargarTrasRevocar(huella, { cargar = cargarDetalle, intentos = 3, esperaMs = 2000, sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms)) } = {}) {
+  for (let intento = 0; intento < intentos; intento += 1) {
+    if (intento > 0) await sleep(esperaMs);
+    try {
+      const cargado = await cargar(huella);
+      if (cargado.verificacion.estado === "revocada") return cargado;
+    } catch {
+      // Se reintenta.
+    }
+  }
+  return null;
+}
+
+// Estado que ya se conoce con certeza (la revocación se confirmó) aplicado sobre el detalle en pantalla.
+export function marcarRevocada(datos) {
+  if (!datos) return datos;
+  return { ...datos, verificacion: { ...datos.verificacion, estado: "revocada" } };
 }

@@ -14,6 +14,7 @@ export default function Verificar() {
   const { huella: huellaEnRuta } = useParams();
   const navegar = useNavigate();
   const turno = useRef(0);
+  const ultimoTrabajo = useRef(null);
 
   const [fase, setFase] = useState("espera");
   const [resultado, setResultado] = useState(null);
@@ -23,6 +24,7 @@ export default function Verificar() {
 
   const ejecutar = useCallback(async (trabajo) => {
     const mio = ++turno.current;
+    ultimoTrabajo.current = trabajo;
     setCodigoError("");
     setResultado(null);
     try {
@@ -38,6 +40,11 @@ export default function Verificar() {
       setFase("espera");
     }
   }, []);
+
+  // Repite la última consulta (por ejemplo, tras "No se pudo comprobar") sin volver a elegir el archivo.
+  const reintentar = useCallback(() => {
+    if (ultimoTrabajo.current) ejecutar(ultimoTrabajo.current);
+  }, [ejecutar]);
 
   const reiniciar = useCallback(() => {
     turno.current += 1;
@@ -116,7 +123,11 @@ export default function Verificar() {
           </div>
         )}
         {fase === "listo" && resultado && (
-          <ResultadoCredencial huella={resultado.huella} credencial={resultado.credencial} />
+          <ResultadoCredencial
+            huella={resultado.huella}
+            verificacion={resultado.verificacion}
+            alReintentar={reintentar}
+          />
         )}
       </div>
 

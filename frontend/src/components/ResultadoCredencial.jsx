@@ -3,18 +3,27 @@ import { formatearFecha } from "../services/formato.js";
 import Sello from "./Sello.jsx";
 import CampoCopiable from "./CampoCopiable.jsx";
 
-export default function ResultadoCredencial({ huella, credencial }) {
+// `verificacion.estado` es una de: valida, revocada, noEncontrada, emisorNoReconocido, noVerificable.
+// Solo valida y revocada traen datos de la credencial; en los demás casos solo se muestra la huella consultada.
+export default function ResultadoCredencial({ huella, verificacion, alReintentar }) {
   const campos = textos.resultados.campos;
+  const { estado } = verificacion;
+  const t = textos.resultados[estado];
+  const confirmada = estado === "valida" || estado === "revocada";
 
-  if (!credencial) {
-    const t = textos.resultados.noEncontrada;
+  if (!confirmada) {
     return (
-      <article className="documento documento--noEncontrada">
+      <article className={`documento documento--${estado}`}>
         <header className="documento__cabecera">
           <h2>{t.titulo}</h2>
-          <Sello estado="noEncontrada" />
+          <Sello estado={estado} />
         </header>
-        <p>{t.explicacion}</p>
+        <p>{estado === "noVerificable" && verificacion.motivo === "limite" ? t.explicacionLimite : t.explicacion}</p>
+        {estado === "noVerificable" && alReintentar && (
+          <button type="button" className="boton boton--secundario" onClick={alReintentar}>
+            {t.reintentar}
+          </button>
+        )}
         <dl className="documento__campos">
           <CampoCopiable
             etiqueta={campos.huellaArchivo}
@@ -27,15 +36,16 @@ export default function ResultadoCredencial({ huella, credencial }) {
     );
   }
 
-  const revocada = credencial.estado === "revocada";
-  const estado = revocada ? "revocada" : "valida";
-  const t = textos.resultados[estado];
-  const explicacion = t.explicacion.replace("{fecha}", formatearFecha(credencial.fechaRevocacion));
+  const revocada = estado === "revocada";
+  const explicacion =
+    revocada && !verificacion.revocadaEl
+      ? t.explicacionSinFecha
+      : t.explicacion.replace("{fecha}", formatearFecha(verificacion.revocadaEl));
 
   return (
     <article className={`documento documento--${estado}`}>
       <header className="documento__cabecera">
-        <h2>{credencial.logro}</h2>
+        <h2>{verificacion.curso}</h2>
         <Sello estado={estado} />
       </header>
       <p className="documento__explicacion">{explicacion}</p>
@@ -43,23 +53,15 @@ export default function ResultadoCredencial({ huella, credencial }) {
       <dl className="documento__campos">
         <div className="documento__campo">
           <dt>{campos.institucion}</dt>
-          <dd>
-            {credencial.institucion
-              ? `${credencial.institucion.nombre}, ${credencial.institucion.pais}`
-              : ""}
-          </dd>
-        </div>
-        <div className="documento__campo">
-          <dt>{campos.titular}</dt>
-          <dd>{credencial.titular}</dd>
+          <dd>{verificacion.institucion}</dd>
         </div>
         <div className="documento__campo">
           <dt>{campos.fechaEmision}</dt>
-          <dd>{formatearFecha(credencial.fechaEmision)}</dd>
+          <dd>{formatearFecha(verificacion.fecha)}</dd>
         </div>
         <CampoCopiable
           etiqueta={campos.huella}
-          valor={credencial.huella}
+          valor={huella}
           boton={textos.resultados.copiar}
           copiado={textos.resultados.copiada}
         />

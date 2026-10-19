@@ -1,16 +1,24 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import textos from "../content/textos.json";
-import IconoEstado from "../components/IconoEstado.jsx";
-import { listarCredenciales } from "../services/credencialesService.js";
-import { formatearFecha } from "../services/formato.js";
+import { prepararHuella } from "../services/verificacion.js";
+import ListaCredenciales from "../components/ListaCredenciales.jsx";
 
+// Panel de la institución (ya detrás de la entrada con firma). Desde aquí se emite y se abre una
+// credencial por su huella para ver su estado o revocarla.
 export default function Panel() {
-  const [lista, setLista] = useState(null);
+  const navegar = useNavigate();
+  const [huella, setHuella] = useState("");
+  const [codigoError, setCodigoError] = useState("");
 
-  useEffect(() => {
-    listarCredenciales().then(setLista);
-  }, []);
+  function abrir(evento) {
+    evento.preventDefault();
+    try {
+      navegar(`/panel/credencial/${prepararHuella(huella)}`);
+    } catch (fallo) {
+      setCodigoError(fallo.codigo);
+    }
+  }
 
   return (
     <section aria-labelledby="titulo-panel">
@@ -20,43 +28,39 @@ export default function Panel() {
         {textos.panel.botonNueva}
       </Link>
 
-      <h2 className="otras__titulo">{textos.panel.listaTitulo}</h2>
-      {lista === null && (
-        <div className="carga" role="status">
-          <div className="carga__barra" aria-hidden="true" />
-          <p>{textos.verificar.consultando}</p>
+      <ListaCredenciales />
+
+      <h2 className="otras__titulo">{textos.panel.consultarTitulo}</h2>
+      <form className="otra" onSubmit={abrir} noValidate>
+        <label htmlFor="campo-huella-panel">{textos.panel.consultarEtiqueta}</label>
+        <p className="ayuda" id="ayuda-huella-panel">
+          {textos.panel.consultarAyuda}
+        </p>
+        <div className="otra__fila">
+          <input
+            id="campo-huella-panel"
+            className="campo mono"
+            type="text"
+            autoComplete="off"
+            spellCheck="false"
+            aria-describedby="ayuda-huella-panel"
+            aria-invalid={codigoError ? "true" : undefined}
+            value={huella}
+            onChange={(evento) => {
+              setHuella(evento.target.value);
+              setCodigoError("");
+            }}
+          />
+          <button type="submit" className="boton boton--secundario">
+            {textos.panel.consultarBoton}
+          </button>
         </div>
-      )}
-      {lista !== null && lista.length === 0 && <p>{textos.vacio.credenciales}</p>}
-      {lista !== null && lista.length > 0 && (
-        <ul className="lista">
-          {lista.map((c) => {
-            const estado = c.estado === "revocada" ? "revocada" : "valida";
-            return (
-              <li key={c.huella} className="lista__item">
-                <div>
-                  <p className="lista__titular">
-                    <Link to={`/panel/credencial/${c.huella}`}>{c.titular}</Link>
-                  </p>
-                  <p className="lista__logro">{c.logro}</p>
-                  <p className="lista__fecha">
-                    {textos.panel.emitidaEl.replace("{fecha}", formatearFecha(c.fechaEmision))}
-                  </p>
-                </div>
-                <div className="lista__lado">
-                  <span className={`estado estado--${estado}`}>
-                    <IconoEstado estado={estado} tamano={18} />
-                    {textos.resultados[estado].sello}
-                  </span>
-                  <Link className="lista__enlace" to={`/verificar/${c.huella}`}>
-                    {textos.panel.verificacion}
-                  </Link>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+        {codigoError && (
+          <p className="error" role="alert">
+            {textos.errores[codigoError]}
+          </p>
+        )}
+      </form>
     </section>
   );
 }

@@ -2,7 +2,7 @@
 // Los errores llevan un `codigo` que la pantalla traduce con textos.json.
 
 import { calcularHuella, normalizarHuella, esHuellaValida } from "./huella.js";
-import { obtenerCredencial } from "./credencialesService.js";
+import { fetchVerification } from "./verifyApi.js";
 
 function falla(codigo) {
   const error = new Error(codigo);
@@ -33,10 +33,10 @@ export async function verificarArchivo(archivo, alCambiarFase = () => {}) {
     throw fallo.codigo ? fallo : falla("archivo-ilegible");
   }
   alCambiarFase("consultando");
-  return { huella, credencial: await obtenerCredencial(huella) };
+  return { huella, verificacion: await fetchVerification(huella) };
 }
 
 export async function verificarHuella(huella, alCambiarFase = () => {}) {
   alCambiarFase("consultando");
-  return { huella, credencial: await obtenerCredencial(huella) };
+  return { huella, verificacion: await fetchVerification(huella) };
 }
