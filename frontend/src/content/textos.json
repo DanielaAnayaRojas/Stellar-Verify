@@ -14,7 +14,7 @@
     "botonVerificar": "Elegir archivo",
     "calculando": "Leyendo el documento en tu dispositivo.",
     "consultando": "Consultando el registro de la institución.",
-    "consultandoLento": "La primera consulta puede tardar unos segundos más. No cierres esta página.",
+    "consultandoLento": "La consulta puede tardar unos segundos más. No cierres ni recargues esta página.",
     "tituloResultado": "Resultado de la verificación",
     "zonaTitulo": "Suelta aquí el diploma o certificado",
     "zonaAyuda": "El archivo original que te entregaron, sin editar ni reenviar por apps que lo comprimen.",
@@ -67,7 +67,7 @@
     "noVerificable": {
       "sello": "Sin comprobar",
       "titulo": "No pudimos comprobarlo ahora",
-      "explicacion": "No pudimos consultar el registro ahora. No significa que el documento sea falso: inténtalo de nuevo y, si sigue igual, avisa a la institución.",
+      "explicacion": "El registro está recibiendo muchas consultas o no respondió. No significa que el documento sea falso: espera un minuto y vuelve a intentarlo.",
       "reintentar": "Intentar de nuevo"
     },
     "noEncontrada": {

@@ -5,7 +5,7 @@ import ZonaArchivo from "../components/ZonaArchivo.jsx";
 import ResultadoCredencial from "../components/ResultadoCredencial.jsx";
 import { prepararHuella, huellaDeEnlace, verificarArchivo, verificarHuella } from "../services/verificacion.js";
 
-// Pasado este tiempo consultando, se avisa que la primera consulta puede tardar (la función arranca en frío).
+// Pasado este tiempo consultando, se avisa que la consulta puede tardar.
 const AVISO_LENTO_MS = 4000;
 
 export default function Verificar() {
@@ -30,13 +30,9 @@ export default function Verificar() {
       if (mio === turno.current) setFase(faseNueva);
     };
     try {
-      let nuevo = await trabajo(cambiarFase);
+      // Sin reintentos automáticos: ACTA limita las consultas por minuto de todo el proyecto, y repetir gasta cuota.
+      const nuevo = await trabajo(cambiarFase);
       if (mio !== turno.current) return;
-      // Un primer "sin comprobar" suele ser el arranque en frío del servidor: se repite una vez antes de mostrarlo.
-      if (nuevo && nuevo.verificacion && nuevo.verificacion.estado === "noVerificable") {
-        nuevo = await trabajo(cambiarFase);
-        if (mio !== turno.current) return;
-      }
       setResultado(nuevo);
       setFase("listo");
     } catch (fallo) {
