@@ -6,6 +6,7 @@ import IconoEstado from "../components/IconoEstado.jsx";
 import FirmaEstado from "../components/FirmaEstado.jsx";
 import { useSesionPanel } from "../components/PanelGate.jsx";
 import { cargarDetalle, marcarRevocada, recargarTrasRevocar } from "../services/detalle.js";
+import { olvidarMemoria } from "../services/lista.js";
 import { enlaceTransaccion } from "../services/emision.js";
 import { formatearFecha } from "../services/formato.js";
 import { panelApi } from "../services/panelApi.js";
@@ -54,6 +55,7 @@ export default function Detalle() {
     setAviso(`${textos.revocacion.avisoRevocada}. ${textos.revocacion.avisoDetalle}`);
     // La revocación ya está confirmada: se muestra "revocada" de inmediato y se refresca con lo que lea el servidor.
     setDatos(marcarRevocada);
+    olvidarMemoria();
     let vigente = true;
     recargarTrasRevocar(huella).then((cargado) => vigente && cargado && setDatos(cargado));
     return () => {
@@ -73,9 +75,17 @@ export default function Detalle() {
     });
   }, [huella, sesion]);
 
+  // Flecha de regreso arriba de la pantalla, para no tener que bajar hasta el final.
+  const volver = (
+    <Link className="volver" to="/panel">
+      <span aria-hidden="true">←</span> {textos.emision.volverPanel}
+    </Link>
+  );
+
   if (codigoError) {
     return (
       <section>
+        {volver}
         <p className="error" role="alert">
           {textos.errores[codigoError]}
         </p>
@@ -89,6 +99,7 @@ export default function Detalle() {
   if (!datos) {
     return (
       <section>
+        {volver}
         <div className="carga" role="status">
           <div className="carga__barra" aria-hidden="true" />
           <p>{textos.verificar.consultando}</p>
@@ -109,6 +120,7 @@ export default function Detalle() {
 
   return (
     <section aria-labelledby="titulo-detalle">
+      {volver}
       <h1 id="titulo-detalle">{confirmada ? verificacion.curso : textosEstado.titulo}</h1>
       <p className={`estado estado--${estado}`}>
         <IconoEstado estado={estado} tamano={20} />

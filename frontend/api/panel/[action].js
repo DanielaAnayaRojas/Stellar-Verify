@@ -3,7 +3,7 @@ import { getRuntime } from "../_lib/runtime.js";
 import { readJsonBody, requireSameOriginWrite, requireSession } from "../_lib/access.js";
 import { errorResponse } from "../_lib/panelErrors.js";
 import { logSubmit } from "../_lib/log.js";
-import { GuardError, HttpError, ProviderError } from "../_lib/errors.js";
+import { GuardError, HttpError, ProviderError, ValidationError } from "../_lib/errors.js";
 import { createTicket, readTicket } from "../_lib/ticket.js";
 import { buildVcData, validateCourse, validateHuella, validateIssueDate } from "../_lib/vcData.js";
 import { issuanceMessage } from "../_lib/issuerSignature.js";
@@ -17,6 +17,7 @@ import { assertXdrMatches, transactionExpiry } from "../_lib/xdrGuard.js";
 //   POST /api/panel/revoke-submit   { huella, signedXdr, ticket } -> { txId, confirmed }
 //   GET  /api/panel/status?huella=...&expect=valid|revoked        -> { confirmed }
 //   GET  /api/panel/credential?huella=...                         -> { estado, institucion?, curso?, fecha? } (sin caché)
+//   GET  /api/panel/credentials?offset=0&limit=10                 -> { items: [{ huella, estado, sospechosa, yaRevocada, revocable, curso?, fecha? }], offset, limit, total, hasMore }
 //
 // El servidor fija owner, issuer y sourcePublicKey desde el entorno: lo que mande el navegador se ignora.
 
@@ -92,6 +93,66 @@ async function submit(operation, { request, runtime }) {
   return jsonResponse(200, { txId, confirmed });
 }
 
+const LIST_PAGE_SIZE = 10;
+const LIST_CONCURRENCY = 3;
+const HEX_ID = /^[0-9a-f]{64}$/;
+
+function readPageNumber(value, fallback, { min, max, field }) {
+  if (value === null || value === "") return fallback;
+  const number = Number(value);
+  if (!Number.isInteger(number) || number < min || number > max) throw new ValidationError(field, "paginacion_invalida");
+  return number;
+}
+
+// Reparte el trabajo en pocas peticiones a la vez: cada fila cuesta 2 lecturas a ACTA y el límite es de 60 por minuto.
+async function mapWithLimit(items, limit, task) {
+  const results = new Array(items.length);
+  let next = 0;
+  async function worker() {
+    while (next < items.length) {
+      const index = next;
+      next += 1;
+      results[index] = await task(items[index]);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  return results;
+}
+
+// Lista del vault para el panel: las más recientes primero, de 10 en 10, cada una clasificada con la MISMA regla que la
+// verificación pública (N2). Un registro que no es de la institución se marca "sospechosa" y no muestra sus datos.
+// Nunca se revoca nada desde aquí: revocar lo hace la persona, con su firma, una por credencial.
+async function credentials({ request, runtime }) {
+  const params = new URL(request.url).searchParams;
+  const offset = readPageNumber(params.get("offset"), 0, { min: 0, max: 100_000, field: "offset" });
+  const limit = readPageNumber(params.get("limit"), LIST_PAGE_SIZE, { min: 1, max: LIST_PAGE_SIZE, field: "limit" });
+
+  const ids = (await runtime.provider.listVcIds()).reverse();
+  const page = ids.slice(offset, offset + limit);
+
+  const items = await mapWithLimit(page, LIST_CONCURRENCY, async (id) => {
+    // Esta aplicación solo emite huellas de 64 caracteres hexadecimales: cualquier otro identificador es ajeno.
+    if (!HEX_ID.test(id)) {
+      return { huella: id, estado: "emisor_no_reconocido", sospechosa: true, yaRevocada: false, revocable: false };
+    }
+    const { result, recordStatus } = await runtime.verifier.inspectFresh(id);
+    const item = {
+      huella: id,
+      estado: result.estado,
+      sospechosa: result.estado === "emisor_no_reconocido",
+      yaRevocada: recordStatus === "revoked",
+      revocable: true,
+    };
+    if (result.estado === "valida" || result.estado === "revocada") {
+      item.curso = result.curso;
+      item.fecha = result.fecha;
+    }
+    return item;
+  });
+
+  return jsonResponse(200, { items, offset, limit, total: ids.length, hasMore: offset + limit < ids.length });
+}
+
 // Estado de una credencial para el panel, sin caché (misma forma que la verificación pública).
 async function credential({ request, runtime }) {
   const huella = validateHuella(new URL(request.url).searchParams.get("huella"));
@@ -122,6 +183,7 @@ const ACTIONS = {
   "revoke-submit": { method: "POST", handler: (input) => submit("revoke", input) },
   status: { method: "GET", handler: status },
   credential: { method: "GET", handler: credential },
+  credentials: { method: "GET", handler: credentials },
 };
 
 async function handle(request, context) {

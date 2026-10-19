@@ -103,13 +103,16 @@ export function createVerifier({ provider, config, onProviderError = logProvider
     }
   }
 
-  async function compute(huella) {
+  // Devuelve { result, recordStatus }: el resultado público y el estado crudo del registro ("valid", "revoked"...).
+  async function inspect(huella) {
+    let recordStatus = null;
     try {
       const status = await provider.getStatus(huella);
-      if (status.status === "invalid") return { estado: ESTADOS.NO_ENCONTRADA };
+      recordStatus = status.status;
+      if (status.status === "invalid") return { result: { estado: ESTADOS.NO_ENCONTRADA }, recordStatus };
       // "unknown" no permite afirmar nada: nunca se dice "no válida" sin saber.
       if (status.status !== "valid" && status.status !== "revoked") {
-        return { estado: ESTADOS.NO_VERIFICABLE };
+        return { result: { estado: ESTADOS.NO_VERIFICABLE }, recordStatus };
       }
 
       const [credential, vault] = await Promise.all([
@@ -117,13 +120,17 @@ export function createVerifier({ provider, config, onProviderError = logProvider
         vaultCache.getOrLoad("vault", loadVault),
       ]);
       // verify-vc dice que existe pero get-vc no lo entrega: inconsistente, no se afirma nada.
-      if (!credential) return { estado: ESTADOS.NO_VERIFICABLE };
+      if (!credential) return { result: { estado: ESTADOS.NO_VERIFICABLE }, recordStatus };
 
-      return classifyCredential({ huella, status, credential, vault, config });
+      return { result: classifyCredential({ huella, status, credential, vault, config }), recordStatus };
     } catch (error) {
       onProviderError(error);
-      return { estado: ESTADOS.NO_VERIFICABLE };
+      return { result: { estado: ESTADOS.NO_VERIFICABLE }, recordStatus };
     }
+  }
+
+  async function compute(huella) {
+    return (await inspect(huella)).result;
   }
 
   return {
@@ -137,6 +144,10 @@ export function createVerifier({ provider, config, onProviderError = logProvider
     // no limpia la caché de otra. El panel siempre lee fresco y no deja guardado nada en la caché pública.
     verifyFresh(huella) {
       return compute(huella);
+    },
+    // Igual que verifyFresh, pero además dice si el registro está vigente o revocado (para la lista del panel).
+    inspectFresh(huella) {
+      return inspect(huella);
     },
     // Tras escribir (F2), la misma instancia deja de servir lo anterior.
     forget(huella) {

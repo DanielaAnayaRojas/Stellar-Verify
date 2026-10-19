@@ -8,6 +8,7 @@ import IconoEstado from "../components/IconoEstado.jsx";
 import FirmaEstado from "../components/FirmaEstado.jsx";
 import { useSesionPanel } from "../components/PanelGate.jsx";
 import { validarDatos, prepararEvidencia, armarEnlace, enlaceTransaccion, generarQR } from "../services/emision.js";
+import { olvidarMemoria } from "../services/lista.js";
 import { fechaLocalHoy, formatearFecha } from "../services/formato.js";
 import { panelApi } from "../services/panelApi.js";
 import { wallet } from "../services/freighter.js";
@@ -56,6 +57,7 @@ export default function Emitir() {
       .then(setQr)
       .catch(() => setQr(""));
     setPaso(5);
+    olvidarMemoria();
   }, [firma, evidencia, datos]);
 
   function cambiar(campo, valor) {

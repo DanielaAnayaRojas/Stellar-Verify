@@ -209,6 +209,25 @@
     "consultarTitulo": "Ver o revocar una credencial",
     "consultarAyuda": "Escribe la huella de la credencial para ver su estado o revocarla.",
     "consultarEtiqueta": "Huella de la credencial",
-    "consultarBoton": "Abrir credencial"
+    "consultarBoton": "Abrir credencial",
+    "lista": {
+      "titulo": "Credenciales de la institución",
+      "ayuda": "Las más recientes primero. Cada una se comprueba con la misma regla que la verificación pública.",
+      "cargando": "Leyendo las credenciales del registro. Puede tardar unos segundos: no cierres esta página.",
+      "vacia": "Todavía no hay credenciales de la institución en el registro.",
+      "error": "No pudimos leer la lista. El servicio no respondió. Intenta de nuevo en unos minutos.",
+      "reintentar": "Intentar de nuevo",
+      "cargarMas": "Cargar más",
+      "mostrando": "Mostrando {n} de {total}. Pulsa «Cargar más» para revisar el resto.",
+      "ver": "Ver",
+      "sinComprobar": "Sin comprobar",
+      "sospechosas": "Sospechosas ({n})",
+      "sospechosasAyuda": "Registros que aparecen en el vault pero no fueron emitidos por la institución. No se muestran sus datos. Puedes revocarlos uno por uno, con tu firma.",
+      "sospechosasNinguna": "No hay registros sospechosos entre los que se han cargado.",
+      "sospechosaSello": "Sospechosa",
+      "yaRevocada": "Ya revocada",
+      "revisar": "Revisar y revocar",
+      "noRevocable": "Identificador no estándar: no se puede revocar desde aquí."
+    }
   }
 }

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import textos from "../content/textos.json";
 import { prepararHuella } from "../services/verificacion.js";
+import ListaCredenciales from "../components/ListaCredenciales.jsx";
 
 // Panel de la institución (ya detrás de la entrada con firma). Desde aquí se emite y se abre una
 // credencial por su huella para ver su estado o revocarla.
@@ -26,6 +27,8 @@ export default function Panel() {
       <Link className="boton" to="/panel/emitir">
         {textos.panel.botonNueva}
       </Link>
+
+      <ListaCredenciales />
 
       <h2 className="otras__titulo">{textos.panel.consultarTitulo}</h2>
       <form className="otra" onSubmit={abrir} noValidate>

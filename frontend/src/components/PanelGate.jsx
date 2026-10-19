@@ -6,6 +6,7 @@ import { wallet } from "../services/freighter.js";
 import { loginWithWallet } from "../services/signingFlow.js";
 import { mapError } from "../services/txError.js";
 import { msHastaAviso } from "../services/sesionAviso.js";
+import { olvidarMemoria } from "../services/lista.js";
 import { mensajeDeError } from "./FirmaEstado.jsx";
 import AvisoSesion from "./AvisoSesion.jsx";
 
@@ -72,11 +73,13 @@ export default function PanelGate() {
     } catch {
       // Sin respuesta del servidor igual se cierra aquí; la cookie caduca sola a los 30 minutos.
     }
+    olvidarMemoria();
     setSesion(null);
     setFase("entrar");
   }, []);
 
   const expirar = useCallback(() => {
+    olvidarMemoria();
     setSesion(null);
     setError(null);
     setAviso(textos.entrar.sesionTerminada);

@@ -21,6 +21,8 @@ const ejemplos = [
   'diploma-demo-1.txt',
   'certificado-demo-2.txt',
   'constancia-demo-3.txt',
+  // Reemplazo de certificado-demo-2 (su curso se emitió con un texto equivocado y una credencial no se puede editar).
+  'certificado-demo-4.txt',
 ];
 
 async function calcular() {

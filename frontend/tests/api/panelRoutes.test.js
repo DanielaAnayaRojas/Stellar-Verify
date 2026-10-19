@@ -60,11 +60,22 @@ function createActa() {
       state.vaultError
         ? state.vaultError()
         : jsonReply(200, { owner: publicKey, vault_address: VAULT_ADDRESS, did_uri: INSTITUTION_DID, version: 1, vc_count: 0 }),
-    "POST /contracts/vault/verify-vc": () => jsonReply(200, { status: state.status }),
-    "POST /contracts/vault/get-vc": () =>
-      jsonReply(200, {
+    // `state.records` (opcional): un registro por identificador, para probar la lista del vault.
+    "POST /contracts/vault/verify-vc": ({ init }) => {
+      const record = state.records?.[JSON.parse(init.body).vcId];
+      return jsonReply(200, { status: record ? record.status : state.status });
+    },
+    "POST /contracts/vault/get-vc": ({ init }) => {
+      const id = JSON.parse(init.body).vcId;
+      const record = state.records?.[id];
+      if (record) {
+        return jsonReply(200, { result: { data: record.vcData, id, issuance_contract: VAULT_ADDRESS, issuer_did: record.issuerDid ?? INSTITUTION_DID } });
+      }
+      return jsonReply(200, {
         result: { data: state.lastIssue?.vcData ?? "{}", id: state.lastIssue?.vcId, issuance_contract: VAULT_ADDRESS, issuer_did: INSTITUTION_DID },
-      }),
+      });
+    },
+    "POST /contracts/vault/list-vc-ids": () => (state.listError ? state.listError() : jsonReply(200, { result: state.ids ?? [], offset: 0, limit: 200 })),
     "POST /contracts/vc/issue": ({ init }) => {
       const body = JSON.parse(init.body);
       if (body.signedXdr) {
@@ -783,5 +794,96 @@ describe("capa de firma del emisor (SIGNATURE_LAYER=on)", () => {
     const health = (await import("../../api/health.js")).default;
     const report = await (await health.fetch(new Request(`${ORIGIN}/api/health`))).json();
     assert.equal(report.signatureLayer, "on");
+  });
+});
+
+describe("lista del vault (credentials)", () => {
+  const hex = (digit) => digit.repeat(64);
+  const data = (course) =>
+    JSON.stringify({
+      "@context": ["https://www.w3.org/ns/credentials/v2"],
+      type: ["VerifiableCredential", "StellarVerifyCredential"],
+      issuer: INSTITUTION_DID,
+      credentialSubject: { id: "urn:uuid:3a13cd79-f623-4fea-8a77-35cf8fe2240c", institution: "Institucion de prueba", course, issueDate: "2026-10-16" },
+    });
+  const list = async (cookie, query = "") => (await call(panel, `/api/panel/credentials${query}`, { cookie })).json();
+
+  it("exige sesión", async () => {
+    assert.equal((await call(panel, "/api/panel/credentials")).status, 401);
+  });
+
+  it("lista de la más reciente a la más antigua y clasifica con la regla N2: las ajenas salen sospechosas y sin datos", async () => {
+    const { cookie } = await login();
+    acta.ids = [hex("a"), hex("b"), hex("c"), "mi-registro-ajeno-1"];
+    acta.records = {
+      [hex("a")]: { status: "valid", vcData: data("Curso A"), issuerDid: "did:stellar:testnet:otrodidajeno123" },
+      [hex("b")]: { status: "revoked", vcData: data("Curso B") },
+      [hex("c")]: { status: "valid", vcData: data("Curso C") },
+    };
+    const page = await list(cookie);
+
+    assert.deepEqual(page.items.map((item) => item.huella), ["mi-registro-ajeno-1", hex("c"), hex("b"), hex("a")], "más reciente primero");
+    const [strange, valid, revoked, foreign] = page.items;
+
+    assert.deepEqual(strange, { huella: "mi-registro-ajeno-1", estado: "emisor_no_reconocido", sospechosa: true, yaRevocada: false, revocable: false });
+    assert.deepEqual(valid, { huella: hex("c"), estado: "valida", sospechosa: false, yaRevocada: false, revocable: true, curso: "Curso C", fecha: "2026-10-16" });
+    assert.equal(revoked.estado, "revocada");
+    assert.equal(revoked.yaRevocada, true);
+    assert.equal(revoked.curso, "Curso B");
+    assert.equal(foreign.sospechosa, true);
+    assert.equal("curso" in foreign, false, "no se muestra lo que escribió un tercero");
+    assert.equal(JSON.stringify(foreign).includes("Curso A"), false);
+    assert.deepEqual({ offset: page.offset, limit: page.limit, total: page.total, hasMore: page.hasMore }, { offset: 0, limit: 10, total: 4, hasMore: false });
+  });
+
+  it("con la capa de firma, un registro sin firma sale sospechoso; uno firmado, no", async () => {
+    useEnv({ ...env, SIGNATURE_LAYER: "on" });
+    seedRuntime();
+    const { cookie } = await login();
+    const signed = Buffer.from(institution.signMessage(`SV1|${hex("b")}|${INSTITUTION_DID}|2026-10-16`)).toString("base64");
+    acta.ids = [hex("a"), hex("b")];
+    acta.records = {
+      [hex("a")]: { status: "valid", vcData: data("Sin firma") },
+      [hex("b")]: { status: "valid", vcData: JSON.stringify({ ...JSON.parse(data("Con firma")), proof: { type: "StellarSignMessageV1", signature: signed } }) },
+    };
+    const page = await list(cookie);
+    const byId = Object.fromEntries(page.items.map((item) => [item.huella, item]));
+    assert.equal(byId[hex("a")].sospechosa, true);
+    assert.equal(byId[hex("b")].sospechosa, false);
+    assert.equal(byId[hex("b")].curso, "Con firma");
+  });
+
+  it("pagina de 10 en 10 y avisa si hay más", async () => {
+    const { cookie } = await login();
+    acta.ids = Array.from({ length: 12 }, (_, index) => String(index).padStart(2, "0").repeat(32));
+    acta.records = Object.fromEntries(acta.ids.map((id) => [id, { status: "valid", vcData: data("Curso") }]));
+    const first = await list(cookie);
+    assert.equal(first.items.length, 10);
+    assert.equal(first.hasMore, true);
+    assert.equal(first.total, 12);
+    const second = await list(cookie, "?offset=10&limit=10");
+    assert.equal(second.items.length, 2);
+    assert.equal(second.hasMore, false);
+  });
+
+  it("paginación inválida: 400; si ACTA no responde al listar: 503 con código propio", async () => {
+    const { cookie } = await login();
+    for (const query of ["?offset=-1", "?offset=abc", "?limit=0", "?limit=11", "?limit=2.5"]) {
+      assert.equal((await call(panel, `/api/panel/credentials${query}`, { cookie })).status, 400, query);
+    }
+    acta.listError = () => jsonReply(500, { error: "tx_submit_error" });
+    const down = await call(panel, "/api/panel/credentials", { cookie });
+    assert.equal(down.status, 503);
+    assert.deepEqual(await down.json(), { error: "no_disponible", retryable: true });
+  });
+
+  it("no revoca nada por su cuenta: listar no escribe en ACTA", async () => {
+    const { cookie } = await login();
+    acta.ids = [hex("a")];
+    acta.records = { [hex("a")]: { status: "valid", vcData: data("Curso"), issuerDid: "did:stellar:testnet:otrodidajeno123" } };
+    await list(cookie);
+    assert.equal(acta.submitted.length, 0);
+    assert.equal(acta.lastRevoke, null);
+    assert.equal(rpc.sent.length, 0);
   });
 });

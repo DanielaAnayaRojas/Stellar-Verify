@@ -69,6 +69,7 @@ export function createPanelApi({ fetchImpl = (...args) => globalThis.fetch(...ar
     prepareRevoke: ({ huella }) => request("/api/panel/revoke-prepare", { method: "POST", body: { huella } }),
     submitRevoke: ({ huella, signedXdr, ticket }) =>
       request("/api/panel/revoke-submit", { method: "POST", body: { huella, signedXdr, ticket } }),
+    listCredentials: ({ offset = 0, limit = 10 } = {}) => request(`/api/panel/credentials?${query({ offset, limit })}`),
     checkStatus: ({ huella, expect }) => request(`/api/panel/status?${query({ huella, expect })}`),
   };
 }

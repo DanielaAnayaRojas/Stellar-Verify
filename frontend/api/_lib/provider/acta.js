@@ -17,6 +17,7 @@ import { ed25519AddressFromMultibase } from "../didKey.js";
  * @property {() => Promise<{networkType: string, registryId: string|null}>} getNetworkInfo
  * @property {() => Promise<{registryId: string|null}>} getResolverInfo
  * @property {() => Promise<{owner: string, vaultAddress: string, didUri: string|null, version: number|null, vcCount: number|null}>} getVaultInfo
+ * @property {() => Promise<string[]>} listVcIds  Identificadores de las credenciales del vault (hasta 200).
  * @property {() => Promise<string>} getVaultAddress  Dirección del contrato del vault (en caché 10 min).
  * @property {(huella: string) => Promise<{status: "valid"|"revoked"|"invalid"|"unknown", since?: string}>} getStatus
  * @property {(huella: string) => Promise<{id: string, issuerDid: string|null, issuanceContract: string|null, data: object|null}|null>} getCredential
@@ -38,6 +39,8 @@ const DID_PATTERN = /^did:stellar:testnet:[a-z0-9]{10,64}$/;
 const ACTA_CODE_PATTERN = /^[a-z0-9_]{1,64}$/;
 const REQUEST_ID_PATTERN = /^[A-Za-z0-9._-]{1,64}$/;
 const CONTRACT_ID_PATTERN = /^C[A-Z2-7]{55}$/;
+const MAX_LIST_IDS = 200;
+const VC_ID_PATTERN = /^[A-Za-z0-9._:-]{1,64}$/;
 const NETWORK_TTL_MS = 5 * 60 * 1000;
 const VAULT_ADDRESS_TTL_MS = 10 * 60 * 1000;
 // Medido en vivo (18 oct): a veces una petición de ACTA se queda colgada (8 s sin respuesta) mientras las
@@ -299,6 +302,23 @@ export function createActaProvider(
     };
   }
 
+  // Identificadores de las credenciales del vault (hasta 200 en una sola lectura). Un identificador raro se descarta:
+  // solo se aceptan textos simples de hasta 64 caracteres.
+  async function listVcIds() {
+    await ensureTestnet();
+    const json = await call({
+      base: config.actaApiBase,
+      path: "/contracts/vault/list-vc-ids",
+      method: "POST",
+      body: { owner, offset: 0, limit: MAX_LIST_IDS },
+      withKey: true,
+      label: "list-vc-ids",
+    });
+    const ids = isObject(json) ? json.result : null;
+    if (!Array.isArray(ids)) throw new ProviderError("invalid_response");
+    return ids.filter((id) => typeof id === "string" && VC_ID_PATTERN.test(id));
+  }
+
   async function resolveDid(did) {
     if (!DID_PATTERN.test(did)) throw new ProviderError("bad_request");
     let json;
@@ -468,6 +488,7 @@ export function createActaProvider(
     getVaultAddress,
     getStatus,
     getCredential,
+    listVcIds,
     resolveDid,
     prepareIssue,
     prepareRevoke,

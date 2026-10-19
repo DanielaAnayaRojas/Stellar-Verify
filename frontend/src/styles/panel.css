@@ -342,3 +342,134 @@ a.boton--secundario {
 .modal .acciones {
   margin-top: 1rem;
 }
+
+/* Lista de credenciales del vault */
+.lista-cred {
+  margin-top: 2rem;
+}
+
+.lista-cred__lista {
+  list-style: none;
+  margin: 0.75rem 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.lista-cred__fila {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  background: var(--blanco);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+}
+
+.lista-cred__icono {
+  flex: none;
+}
+
+.lista-cred__icono--valida {
+  color: var(--valida);
+}
+
+.lista-cred__icono--revocada {
+  color: var(--revocada);
+}
+
+.lista-cred__icono--emisorNoReconocido {
+  color: var(--emisor-no-reconocido);
+}
+
+.lista-cred__icono--noVerificable,
+.lista-cred__icono--noEncontrada {
+  color: var(--no-encontrada);
+}
+
+.lista-cred__texto {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.lista-cred__meta {
+  color: var(--tinta-suave);
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
+.lista-cred__sospechosas {
+  margin: 1rem 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--emisor-no-reconocido);
+  border-radius: var(--radio);
+  background: var(--blanco);
+}
+
+.lista-cred__sospechosas summary {
+  cursor: pointer;
+  font-weight: 600;
+  min-height: var(--objetivo);
+  display: flex;
+  align-items: center;
+}
+
+.lista-cred__sospechosas summary:focus-visible {
+  outline: 3px solid var(--indigo);
+  outline-offset: 2px;
+}
+
+@media (max-width: 520px) {
+  .lista-cred__fila {
+    flex-wrap: wrap;
+  }
+}
+
+/* Regreso al panel */
+.volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: var(--objetivo);
+  margin-bottom: 0.5rem;
+  color: var(--indigo);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.volver:hover {
+  text-decoration: underline;
+}
+
+/* Flecha de la sección plegada de sospechosas */
+.lista-cred__sospechosas summary {
+  list-style: none;
+}
+
+.lista-cred__sospechosas summary::-webkit-details-marker {
+  display: none;
+}
+
+.lista-cred__sospechosas summary::after {
+  content: "";
+  margin-left: auto;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.15s;
+}
+
+.lista-cred__sospechosas[open] summary::after {
+  transform: rotate(-135deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lista-cred__sospechosas summary::after {
+    transition: none;
+  }
+}
