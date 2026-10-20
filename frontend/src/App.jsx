@@ -6,6 +6,7 @@ import Panel from "./pages/Panel.jsx";
 import Emitir from "./pages/Emitir.jsx";
 import Detalle from "./pages/Detalle.jsx";
 import PanelGate from "./components/PanelGate.jsx";
+import { Roseta } from "./components/Sello.jsx";
 import { esRutaTech } from "./ui-tech/rutas.js";
 import { conceptoActivo } from "./data/concepto.js";
 import CargaSegura from "./ui-tech/CargaSegura.jsx";
@@ -26,6 +27,7 @@ export default function App() {
     );
   }
 
+  const enVerificar = pathname === "/" || pathname.startsWith("/verificar");
   return (
     <>
       {/* El aviso de red de pruebas va dentro del encabezado para que los lectores de pantalla lo ubiquen en una zona. */}
@@ -35,13 +37,14 @@ export default function App() {
         </div>
         <div className="cabecera">
           <div className="cabecera__interior">
-            <Link className="cabecera__marca" to="/">
-              {textos.marca}
+            <Link className="cabecera__marca" to="/" aria-label={textos.marca}>
+              <Roseta tipo="marca" />
+              <span>{textos.marca}</span>
             </Link>
             <nav className="cabecera__nav" aria-label="Principal">
-              <NavLink className="cabecera__enlace" to="/" end>
+              <Link className="cabecera__enlace" to="/" aria-current={enVerificar ? "page" : undefined}>
                 {textos.nav.verificar}
-              </NavLink>
+              </Link>
               <NavLink className="cabecera__enlace" to="/panel">
                 {textos.nav.panel}
               </NavLink>
@@ -62,6 +65,9 @@ export default function App() {
           <Route path="*" element={<Verificar />} />
         </Routes>
       </main>
+      <footer className="pie">
+        <p>{textos.pie}</p>
+      </footer>
     </>
   );
 }

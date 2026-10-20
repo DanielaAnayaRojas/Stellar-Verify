@@ -1,66 +1,70 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import textos from "../content/textos.json";
-import { prepararHuella } from "../services/verificacion.js";
+import { huellaDeEnlace } from "../services/verificacion.js";
 import ListaCredenciales from "../components/ListaCredenciales.jsx";
 
-// Panel de la institución (ya detrás de la entrada con firma). Desde aquí se emite y se abre una
-// credencial por su huella para ver su estado o revocarla.
+// Panel de la institución (ya detrás de la entrada con firma): lista, emitir y, plegado, buscar por código.
 export default function Panel() {
   const navegar = useNavigate();
-  const [huella, setHuella] = useState("");
+  const [codigo, setCodigo] = useState("");
   const [codigoError, setCodigoError] = useState("");
 
+  // Acepta el código suelto o el enlace de verificación completo.
   function abrir(evento) {
     evento.preventDefault();
     try {
-      navegar(`/panel/credencial/${prepararHuella(huella)}`);
+      navegar(`/panel/credencial/${huellaDeEnlace(codigo)}`);
     } catch (fallo) {
-      setCodigoError(fallo.codigo);
+      setCodigoError(fallo.codigo || "enlace-invalido");
     }
   }
 
   return (
     <section aria-labelledby="titulo-panel">
-      <h1 id="titulo-panel">{textos.panel.titulo}</h1>
+      <div className="encabezado">
+        <h1 id="titulo-panel">{textos.panel.titulo}</h1>
+        <Link className="boton" to="/panel/emitir">
+          <span aria-hidden="true">+</span> {textos.panel.botonNueva}
+        </Link>
+      </div>
       <p>{textos.panel.intro}</p>
-      <Link className="boton" to="/panel/emitir">
-        {textos.panel.botonNueva}
-      </Link>
 
       <ListaCredenciales />
 
-      <h2 className="otras__titulo">{textos.panel.consultarTitulo}</h2>
-      <form className="otra" onSubmit={abrir} noValidate>
-        <label htmlFor="campo-huella-panel">{textos.panel.consultarEtiqueta}</label>
-        <p className="ayuda" id="ayuda-huella-panel">
-          {textos.panel.consultarAyuda}
-        </p>
-        <div className="otra__fila">
-          <input
-            id="campo-huella-panel"
-            className="campo mono"
-            type="text"
-            autoComplete="off"
-            spellCheck="false"
-            aria-describedby="ayuda-huella-panel"
-            aria-invalid={codigoError ? "true" : undefined}
-            value={huella}
-            onChange={(evento) => {
-              setHuella(evento.target.value);
-              setCodigoError("");
-            }}
-          />
-          <button type="submit" className="boton boton--secundario">
-            {textos.panel.consultarBoton}
-          </button>
-        </div>
-        {codigoError && (
-          <p className="error" role="alert">
-            {textos.errores[codigoError]}
+      <details className="buscar">
+        <summary>{textos.panel.consultarTitulo}</summary>
+        <form onSubmit={abrir} noValidate>
+          <label htmlFor="campo-codigo-panel">{textos.panel.consultarEtiqueta}</label>
+          <p className="ayuda" id="ayuda-codigo-panel">
+            {textos.panel.consultarAyuda}
           </p>
-        )}
-      </form>
+          <div className="codigo__fila">
+            <input
+              id="campo-codigo-panel"
+              className="campo"
+              type="text"
+              autoComplete="off"
+              spellCheck="false"
+              aria-describedby={codigoError ? "ayuda-codigo-panel error-codigo-panel" : "ayuda-codigo-panel"}
+              aria-invalid={codigoError ? "true" : undefined}
+              value={codigo}
+              onChange={(evento) => {
+                setCodigo(evento.target.value);
+                setCodigoError("");
+              }}
+            />
+            <button type="submit" className="boton boton--secundario">
+              {textos.panel.consultarBoton}
+            </button>
+          </div>
+          {codigoError && (
+            <p className="error" id="error-codigo-panel" role="alert">
+              {textos.errores[codigoError]}
+            </p>
+          )}
+        </form>
+      </details>
     </section>
   );
 }

@@ -82,13 +82,13 @@
 .sv .r-leida .btn{height:32px}
 .sv .r-estado{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px;font-size:14px;color:var(--ink2)}
 .sv .chip-ic{width:18px;height:18px;color:var(--green2)}
-.sv .entrar{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:12px;min-height:280px}
-.sv .entrar .h2{font-size:20px;line-height:1.2;max-width:18em}
-.sv .entrar-ic{position:static}
-.sv .entrar-p{font-size:14px;line-height:1.55;color:var(--ink2);max-width:34em}
-.sv .entrar-aviso{font-size:13px;color:var(--ink)}
-.sv .entrar-error{font-size:13px;color:var(--red)}
-.sv .entrar .btn{margin-top:auto}
+.sv .r-entrar{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:12px;min-height:280px}
+.sv .r-entrar .h2{font-size:20px;line-height:1.2;max-width:18em}
+.sv .r-entrar-ic{position:static}
+.sv .r-entrar-p{font-size:14px;line-height:1.55;color:var(--ink2);max-width:34em}
+.sv .r-entrar-aviso{font-size:13px;color:var(--ink)}
+.sv .r-entrar-error{font-size:13px;color:var(--red)}
+.sv .r-entrar .btn{margin-top:auto}
 
 @media (max-width:900px){
   /* El diseño oculta el nombre en móvil con display:none y el botón queda sin nombre accesible:

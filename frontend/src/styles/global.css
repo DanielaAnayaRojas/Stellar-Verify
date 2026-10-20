@@ -10,28 +10,37 @@ html {
 
 body {
   margin: 0;
-  background: var(--papel);
+  background: var(--fondo);
   color: var(--tinta);
-  font-family: var(--fuente-texto);
+  font-family: var(--fuente);
   font-size: 1rem;
   line-height: 1.55;
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
 }
 
 h1,
 h2,
 h3 {
-  font-family: var(--fuente-titulo);
-  font-weight: 700;
-  line-height: 1.15;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
   margin: 0 0 0.75rem;
+  text-wrap: balance;
 }
 
 h1 {
-  font-size: clamp(1.75rem, 6vw, 2.5rem);
+  font-size: 1.75rem;
 }
 
 h2 {
-  font-size: 1.375rem;
+  font-size: 1.25rem;
+}
+
+@media (min-width: 40rem) {
+  h1 {
+    font-size: 2.25rem;
+  }
 }
 
 p {
@@ -40,60 +49,177 @@ p {
 }
 
 a {
-  color: var(--indigo);
+  color: var(--tinta);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
 }
 
 :focus-visible {
-  outline: 3px solid var(--indigo);
-  outline-offset: 2px;
+  outline: 2px solid var(--tinta);
+  outline-offset: 3px;
 }
 
+/* Identificadores largos: Inter con cifras tabulares (sin monoespaciada), siempre parten antes de desbordar. */
 .mono {
-  font-family: var(--fuente-mono);
+  font-variant-numeric: tabular-nums;
   font-size: 0.875rem;
+  color: var(--tinta-suave);
   overflow-wrap: anywhere;
 }
 
+.ayuda {
+  font-size: 0.875rem;
+  color: var(--tinta-suave);
+}
+
+.error {
+  color: var(--peligro);
+  font-weight: 500;
+}
+
+.aviso {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+
+.aviso::before {
+  content: "";
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--ok);
+  transform: translateY(-0.1rem);
+}
+
+/* Botones: píldoras de 44 px. Primario en tinta, secundario en gris, peligro en rojo. */
 .boton {
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin: 0.25rem 0 1rem;
+  gap: 0.5rem;
   min-height: var(--objetivo);
-  padding: 0.5rem 1.25rem;
-  border: 2px solid var(--indigo);
-  border-radius: var(--radio);
-  background: var(--indigo);
-  color: var(--blanco);
+  padding: 0.5rem 1.375rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--tinta);
+  color: var(--sobre-tinta);
   font: inherit;
-  font-weight: 600;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.2;
   cursor: pointer;
+  transition: background-color 150ms var(--suave), transform 150ms var(--suave);
 }
 
 .boton:hover {
-  background: var(--indigo-oscuro);
-  border-color: var(--indigo-oscuro);
+  background: oklch(0.32 0.01 70);
 }
 
-.boton--peligro {
-  background: var(--revocada);
-  border-color: var(--revocada);
+.boton:active {
+  transform: scale(0.98);
 }
 
-.boton--peligro:hover {
-  background: #8f3224;
-  border-color: #8f3224;
+.boton:disabled,
+.boton[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .boton--secundario {
-  background: transparent;
-  color: var(--indigo);
+  background: var(--secundario);
+  color: var(--tinta);
 }
 
 .boton--secundario:hover {
-  background: var(--blanco);
-  color: var(--indigo-oscuro);
+  background: oklch(0.87 0.004 85);
+}
+
+.boton--peligro {
+  background: var(--peligro);
+  color: var(--sobre-tinta);
+}
+
+.boton--peligro:hover {
+  background: oklch(0.42 0.17 28);
+}
+
+.campo {
+  width: 100%;
+  min-height: var(--objetivo);
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--control);
+  border-radius: var(--radio);
+  background: var(--superficie);
+  color: var(--tinta);
+  font: inherit;
+}
+
+.campo:focus-visible {
+  outline-offset: 1px;
+}
+
+.campo[aria-invalid="true"] {
+  border-color: var(--peligro);
+}
+
+label,
+.grupo__etiqueta {
+  display: block;
+  font-weight: 500;
+  margin: 0 0 0.25rem;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1.5rem 0 0;
+}
+
+/* Cargando: un círculo que gira y una frase. Con movimiento reducido gira más lento, no se detiene. */
+.carga {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1rem 0;
+  color: var(--tinta-suave);
+}
+
+.carga p {
+  margin: 0;
+}
+
+.carga__barra {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  border: 2px solid var(--secundario);
+  border-top-color: var(--tinta);
+  animation: girar 0.8s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .solo-lectores {
@@ -103,4 +229,16 @@ a {
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  .carga__barra {
+    animation-duration: 2.4s !important;
+  }
 }

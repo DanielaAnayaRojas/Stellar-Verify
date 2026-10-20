@@ -9,6 +9,7 @@ import { msHastaAviso } from "../services/sesionAviso.js";
 import { olvidarMemoria } from "../services/lista.js";
 import { mensajeDeError } from "./FirmaEstado.jsx";
 import AvisoSesion from "./AvisoSesion.jsx";
+import { Roseta } from "./Sello.jsx";
 
 const SesionPanel = createContext(null);
 
@@ -111,29 +112,44 @@ export default function PanelGate() {
   if (fase === "entrar" || fase === "entrando") {
     const firmando = fase === "entrando";
     return (
-      <section aria-labelledby="titulo-entrar">
-        <h1 id="titulo-entrar">{textos.entrar.titulo}</h1>
-        <p>{textos.entrar.texto}</p>
+      <section aria-labelledby="titulo-entrar" className="entrar">
+        <header>
+          <h1 id="titulo-entrar">{textos.entrar.titulo}</h1>
+          <p className="portada__sub">{textos.entrar.texto}</p>
+        </header>
 
-        <div aria-live="polite" aria-atomic="true">
-          {aviso && <p className="aviso">{aviso}</p>}
-          {error && (
-            <p className="error" role="alert">
-              {mensajeDeError(error)}
-            </p>
-          )}
-          {firmando && (
-            <div className="carga" role="status">
-              <div className="carga__barra" aria-hidden="true" />
-              <p>{textos.entrar.firmando}</p>
-            </div>
-          )}
-        </div>
+        <ul className="entrar__puntos">
+          {textos.entrar.puntos.map((punto) => (
+            <li key={punto}>
+              <Roseta tipo="valida" />
+              <span>{punto}</span>
+            </li>
+          ))}
+        </ul>
 
-        <div className="acciones">
-          <button type="button" className="boton" onClick={entrar} disabled={firmando}>
-            {textos.entrar.boton}
-          </button>
+        <div className="tarjeta">
+          <p>{textos.entrar.comoEntrar}</p>
+
+          <div aria-live="polite" aria-atomic="true">
+            {aviso && <p className="aviso">{aviso}</p>}
+            {error && (
+              <p className="error" role="alert">
+                {mensajeDeError(error)}
+              </p>
+            )}
+            {firmando && (
+              <div className="carga" role="status">
+                <div className="carga__barra" aria-hidden="true" />
+                <p>{textos.entrar.firmando}</p>
+              </div>
+            )}
+          </div>
+
+          <div className="acciones">
+            <button type="button" className="boton" onClick={entrar} disabled={firmando}>
+              {textos.entrar.boton}
+            </button>
+          </div>
         </div>
       </section>
     );

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import textos from "../content/textos.json";
 import CampoCopiable from "../components/CampoCopiable.jsx";
-import IconoEstado from "../components/IconoEstado.jsx";
+import { Roseta } from "../components/Sello.jsx";
 import FirmaEstado from "../components/FirmaEstado.jsx";
 import { useSesionPanel } from "../components/PanelGate.jsx";
 import { cargarDetalle, marcarRevocada, recargarTrasRevocar } from "../services/detalle.js";
@@ -123,7 +123,7 @@ export default function Detalle() {
       {volver}
       <h1 id="titulo-detalle">{confirmada ? verificacion.curso : textosEstado.titulo}</h1>
       <p className={`estado estado--${estado}`}>
-        <IconoEstado estado={estado} tamano={20} />
+        <Roseta tipo={estado} />
         {textosEstado.sello}
       </p>
 
@@ -149,46 +149,55 @@ export default function Detalle() {
         </p>
       )}
 
-      <dl className="documento documento__campos documento__campos--solo">
-        {confirmada && (
-          <>
-            <div className="documento__campo">
-              <dt>{textos.resultados.campos.institucion}</dt>
-              <dd>{verificacion.institucion}</dd>
-            </div>
-            <div className="documento__campo">
-              <dt>{textos.resultados.campos.fechaEmision}</dt>
-              <dd>{formatearFecha(verificacion.fecha)}</dd>
-            </div>
-          </>
-        )}
-        <CampoCopiable
-          etiqueta={textos.resultados.campos.huella}
-          valor={datos.huella}
-          boton={textos.resultados.copiar}
-          copiado={textos.resultados.copiada}
-        />
-        {confirmada && (
-          <CampoCopiable
-            etiqueta={textos.emision.resultado.enlace}
-            valor={enlace}
-            boton={textos.emision.resultado.copiarEnlace}
-            copiado={textos.emision.resultado.enlaceCopiado}
-          />
-        )}
-      </dl>
-
-      {qr && (
-        <figure className="qr">
-          <img
-            src={qr}
-            width="200"
-            height="200"
-            alt={textos.emision.resultado.qrAlt.replace("{curso}", verificacion.curso)}
-          />
-          <figcaption>{textos.emision.resultado.qr}</figcaption>
-        </figure>
+      {confirmada && (
+        <dl className="documento documento__campos documento__campos--solo">
+          <div className="documento__campo">
+            <dt>{textos.resultados.campos.institucion}</dt>
+            <dd>{verificacion.institucion}</dd>
+          </div>
+          <div className="documento__campo">
+            <dt>{textos.resultados.campos.fechaEmision}</dt>
+            <dd>{formatearFecha(verificacion.fecha)}</dd>
+          </div>
+        </dl>
       )}
+
+      {confirmada && (
+        <div className="compartir">
+          {qr && (
+            <figure className="qr">
+              <img
+                src={qr}
+                width="168"
+                height="168"
+                alt={textos.emision.resultado.qrAlt.replace("{curso}", verificacion.curso)}
+              />
+              <figcaption>{textos.emision.resultado.qr}</figcaption>
+            </figure>
+          )}
+          <dl className="compartir__enlace">
+            <CampoCopiable
+              etiqueta={textos.emision.resultado.enlace}
+              valor={enlace}
+              boton={textos.emision.resultado.copiarEnlace}
+              copiado={textos.emision.resultado.enlaceCopiado}
+              mono={false}
+            />
+          </dl>
+        </div>
+      )}
+
+      <details className="pliegue codigo-detalle">
+        <summary>{textos.resultados.campos.huella}</summary>
+        <dl>
+          <CampoCopiable
+            etiqueta={textos.resultados.campos.huella}
+            valor={datos.huella}
+            boton={textos.resultados.copiar}
+            copiado={textos.resultados.copiada}
+          />
+        </dl>
+      </details>
 
       {confirmando && revocable && (
         <div
@@ -240,9 +249,6 @@ export default function Detalle() {
               {textos.emision.resultado.verVerificacion}
             </Link>
           )}
-          <Link className="boton boton--secundario" to="/panel">
-            {textos.emision.volverPanel}
-          </Link>
         </div>
       )}
     </section>

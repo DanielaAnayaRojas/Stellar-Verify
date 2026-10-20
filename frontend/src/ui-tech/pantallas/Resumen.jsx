@@ -272,18 +272,18 @@ function Entrar() {
   const { estado, error, aviso, entrar } = useSesionTech();
   const firmando = estado === "entrando";
   return (
-    <section className="card pad entrar rise" style={{ animationDelay: "120ms" }} aria-labelledby="entrar-t">
-      <span className="stat-ic ic-green entrar-ic" aria-hidden="true">
+    <section className="card pad r-entrar rise" style={{ animationDelay: "120ms" }} aria-labelledby="entrar-t">
+      <span className="stat-ic ic-green r-entrar-ic" aria-hidden="true">
         <Icono nombre="llave" />
       </span>
       <h2 className="h2" id="entrar-t">
         {t.entrar.titulo}
       </h2>
-      <p className="entrar-p">{t.entrar.texto}</p>
+      <p className="r-entrar-p">{t.entrar.texto}</p>
       <div aria-live="polite" aria-atomic="true">
-        {aviso && <p className="entrar-aviso">{aviso}</p>}
+        {aviso && <p className="r-entrar-aviso">{aviso}</p>}
         {error && (
-          <p className="entrar-error" role="alert">
+          <p className="r-entrar-error" role="alert">
             {mensajeDeError(error)}
           </p>
         )}
