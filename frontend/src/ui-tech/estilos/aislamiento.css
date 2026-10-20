@@ -1,0 +1,19 @@
+/* UI tech · aislamiento frente al CSS global del sitio.
+   src/styles/global.css trae reglas por elemento (*, h1-h3, p, a) y la clase .mono, que se
+   colarían dentro de .sv. Aquí esas propiedades vuelven al valor del navegador ("revert"),
+   que es contra lo que se diseñó la UI tech. Se carga ANTES de base.css: el reset de base.css
+   tiene la misma especificidad y debe ganar después. */
+.sv,
+.sv *,
+.sv ::before,
+.sv ::after {
+  box-sizing: revert;
+}
+
+.sv :is(h1, h2, h3, p, a) {
+  all: revert;
+}
+
+.sv .mono {
+  overflow-wrap: revert;
+}
