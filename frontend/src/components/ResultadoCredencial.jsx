@@ -45,7 +45,7 @@ export default function ResultadoCredencial({ huella, verificacion, alReintentar
             {t.titulo}
           </h2>
         </header>
-        <p className="documento__explicacion">{t.explicacion}</p>
+        <p className="documento__explicacion">{estado === "noVerificable" && verificacion.motivo === "limite" ? t.explicacionLimite : t.explicacion}</p>
         {estado === "noVerificable" && alReintentar && (
           <div className="acciones">
             <button type="button" className="boton" onClick={alReintentar}>

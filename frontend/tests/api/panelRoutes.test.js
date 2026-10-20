@@ -554,13 +554,14 @@ describe("emitir", () => {
     const body = { huella: HUELLA_VALID, course: COURSE, issueDate: "2026-10-16" };
     const cases = [
       [() => jsonReply(409, { error: "vc_already_exists", message: "detalle interno de ACTA" }), 409, "duplicada", false],
-      [() => jsonReply(429, { error: "write_rate_limit_exceeded" }), 429, "limite", true],
       [() => jsonReply(500, { error: "tx_submit_error", message: "Internal server error" }), 503, "no_disponible", true],
       [() => jsonReply(401, { error: "unauthorized" }), 502, "clave_rechazada", false],
       [() => jsonReply(403, { error: "insufficient_scope" }), 502, "clave_rechazada", false],
       [() => jsonReply(403, { error: "issuer_not_authorized" }), 403, "emisor_bloqueado", false],
       [() => jsonReply(200, { sin: "xdr" }), 502, "respuesta_inesperada", true],
       [() => jsonReply(200, { xdr: "AAAA", network: "Public Global Stellar Network ; September 2015" }), 502, "respuesta_inesperada", true],
+      // El 429 va al final: activa la pausa de 20 s y desde ahí ACTA no recibe más preguntas.
+      [() => jsonReply(429, { error: "write_rate_limit_exceeded" }), 429, "limite", true],
     ];
     for (const [reply, status, error, retryable] of cases) {
       acta.prepareError = reply;
@@ -570,6 +571,12 @@ describe("emitir", () => {
       assert.deepEqual(JSON.parse(text), { error, retryable });
       assert.equal(text.includes("detalle interno"), false);
     }
+
+    // Dentro de la pausa, aunque ACTA ya respondería bien, se contesta "limite" sin llamarla.
+    acta.prepareError = null;
+    const again = await call(panel, "/api/panel/issue-prepare", { method: "POST", cookie, body });
+    assert.equal(again.status, 429);
+    assert.deepEqual(await again.json(), { error: "limite", retryable: true });
   });
 
   it("el registro técnico dice en qué paso falló, pero no lleva el XDR, el ticket, el curso, la cookie ni la llave", async () => {

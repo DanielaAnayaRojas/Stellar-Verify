@@ -141,6 +141,29 @@ describe("proveedor ACTA: errores y seguridad", () => {
     }
   });
 
+  it("tras un 429 no se vuelve a preguntar a ACTA durante la pausa, y después sí", async () => {
+    let reloj = 1_000_000;
+    let respuestas = 0;
+    const { provider, fetchImpl } = providerWith(
+      {
+        [ROUTE.verify]: () => (respuestas++ === 0 ? jsonReply(429, { error: "write_rate_limit_exceeded" }) : jsonReply(200, { status: "valid" })),
+      },
+      { now: () => reloj },
+    );
+    await assert.rejects(() => provider.getStatus(HUELLA_VALID), (error) => error.kind === "rate_limited" && error.code === "write_rate_limit_exceeded");
+    const llamadasTrasElPrimero = fetchImpl.calls.filter((c) => c.key === ROUTE.verify).length;
+
+    // Dentro de la pausa: falla enseguida, sin llamar a ACTA.
+    reloj += 10_000;
+    await assert.rejects(() => provider.getStatus(HUELLA_VALID), (error) => error.kind === "rate_limited" && error.code === "cooldown");
+    await assert.rejects(() => provider.getCredential(HUELLA_VALID), (error) => error.kind === "rate_limited" && error.code === "cooldown");
+    assert.equal(fetchImpl.calls.filter((c) => c.key === ROUTE.verify).length, llamadasTrasElPrimero, "no se llamó a ACTA");
+
+    // Pasada la pausa vuelve a consultar.
+    reloj += 11_000;
+    assert.deepEqual(await provider.getStatus(HUELLA_VALID), { status: "valid", since: undefined });
+  });
+
   it("el mensaje crudo de ACTA nunca llega al error", async () => {
     const { provider } = providerWith({
       [ROUTE.verify]: () =>

@@ -60,14 +60,15 @@
       "explicacionSinFecha": "{institucion} anuló esta credencial. El registro no indica el motivo: consúltalo con la institución."
     },
     "emisorNoReconocido": {
-      "sello": "Sin confirmar",
+      "sello": "No confirmada",
       "titulo": "No está confirmada por la institución",
       "explicacion": "Hay un registro para este documento, pero no pudimos confirmar que lo haya emitido la institución. No lo tomes como válido."
     },
     "noVerificable": {
       "sello": "Sin comprobar",
       "titulo": "No pudimos comprobarlo ahora",
-      "explicacion": "El registro está recibiendo muchas consultas o no respondió. No significa que el documento sea falso: espera un minuto y vuelve a intentarlo.",
+      "explicacion": "El registro no respondió a tiempo. No significa que el documento sea falso: espera unos minutos y vuelve a intentarlo.",
+      "explicacionLimite": "El registro está recibiendo muchas consultas. No significa que el documento sea falso: espera unos minutos y vuelve a intentarlo.",
       "reintentar": "Intentar de nuevo"
     },
     "noEncontrada": {
@@ -180,7 +181,7 @@
       "duplicate": "Ya existe una credencial para este archivo.",
       "already_revoked": "Esta credencial ya estaba revocada.",
       "not_found": "No encontramos esa credencial en el registro.",
-      "rate_limited": "Hay muchas consultas. Intenta de nuevo en un minuto.",
+      "rate_limited": "Hay muchas consultas. Intenta de nuevo en unos minutos.",
       "unavailable": "El registro no respondió. Intenta de nuevo en unos minutos.",
       "unauthorized": "Tu sesión terminó. Entra de nuevo.",
       "invalid_input": "Revisa los datos del formulario e inténtalo de nuevo.",
@@ -201,7 +202,7 @@
     "confirmacion": "¿Revocar «{curso}»? Quien la verifique la verá como revocada. No se puede deshacer.",
     "confirmacionAjena": "¿Revocar este registro, que no emitió tu institución? Quien lo verifique lo verá como revocado. No se puede deshacer.",
     "cancelar": "Cancelar",
-    "avisoDetalle": "En menos de un minuto la verificación pública mostrará el cambio."
+    "avisoDetalle": "En unos minutos la verificación pública mostrará el cambio."
   },
   "errores": {
     "huella-invalida": "Ese código no es válido. Cópialo completo, tal como te lo enviaron.",
@@ -211,6 +212,7 @@
     "ejemplo-fallido": "No pudimos cargar el ejemplo. Revisa tu conexión e inténtalo de nuevo.",
     "curso-vacio": "Escribe el curso o programa.",
     "curso-invalido": "El curso no puede pasar de 120 caracteres ni llevar saltos de línea.",
+    "curso-url": "Esto parece una dirección web. Escribe el nombre del curso, por ejemplo «Introducción a la ciberseguridad».",
     "fecha-invalida": "Escribe una fecha válida que no sea posterior a mañana.",
     "ya-emitida": "Este documento ya tiene una credencial. Elige otro archivo o búscala en tus credenciales.",
     "no-existe": "No encontramos esa credencial. Vuelve a tus credenciales y elígela de nuevo."
@@ -257,11 +259,11 @@
       "mostrando": "Mostrando {n} de {total}.",
       "ver": "Ver",
       "sinComprobar": "Sin comprobar",
-      "sospechosas": "Registros sin confirmar ({n})",
+      "sospechosas": "Registros no confirmados ({n})",
       "sospechosasAyuda": "Aparecen en el registro de tu institución, pero no pudimos confirmar que los emitieras tú (pueden ser registros antiguos o de otro formato). No se muestran sus datos. Puedes revocarlos uno por uno.",
-      "sospechosasNinguna": "No hay registros sin confirmar.",
-      "sospechosaSello": "Sin confirmar",
-      "yaRevocada": "Ya revocado",
+      "sospechosasNinguna": "No hay registros no confirmados.",
+      "sospechosaSello": "No confirmada",
+      "yaRevocada": "Ya revocada",
       "revisar": "Revisar y revocar",
       "noRevocable": "Formato desconocido: no se puede revocar desde aquí."
     }

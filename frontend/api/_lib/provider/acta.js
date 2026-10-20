@@ -53,6 +53,9 @@ const WRITE_TIMEOUT_MS = 9000;
 const RPC_TIMEOUT_MS = 6000;
 const POLL_ATTEMPTS = 5;
 const POLL_INTERVAL_MS = 1200;
+// ACTA limita las consultas por llave. Tras un 429 no se le vuelve a preguntar un rato: los reintentos rápidos
+// mantienen el límite agotado. El envío de una transacción ya firmada nunca espera (ver `skipCooldown`).
+const RATE_LIMIT_COOLDOWN_MS = 20_000;
 
 // Nombre del código de resultado de una transacción (por ejemplo "txTooLate"), sin ningún dato más.
 function resultName(result) {
@@ -156,10 +159,14 @@ export function createActaProvider(
     sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
     pollAttempts = POLL_ATTEMPTS,
     pollIntervalMs = POLL_INTERVAL_MS,
+    rateLimitCooldownMs = RATE_LIMIT_COOLDOWN_MS,
+    now = () => Date.now(),
   } = {},
 ) {
   const networkCache = createTtlCache({ ttlMs: NETWORK_TTL_MS });
   const vaultAddressCache = createTtlCache({ ttlMs: VAULT_ADDRESS_TTL_MS });
+  // Hasta cuándo no se consulta a ACTA porque respondió 429 (memoria de esta instancia).
+  let rateLimitedUntil = 0;
   // `owner` lo fija el servidor desde el entorno: nunca viene del navegador.
   const owner = config.institutionPublicKey;
 
@@ -172,7 +179,10 @@ export function createActaProvider(
   }
 
   // Solo se reintenta cuando no hubo respuesta (tiempo agotado o red caída): una respuesta de ACTA, buena o mala, no se repite.
-  async function call({ base, path, method = "GET", body, withKey = false, extraHeaders = {}, waitMs = timeoutMs, attempts = readAttempts, label }) {
+  async function call({ base, path, method = "GET", body, withKey = false, extraHeaders = {}, waitMs = timeoutMs, attempts = readAttempts, label, skipCooldown = false }) {
+    if (withKey && !skipCooldown && now() < rateLimitedUntil) {
+      throw new ProviderError("rate_limited", { operation: label, code: "cooldown" });
+    }
     const headers = { accept: "application/json", ...extraHeaders };
     if (withKey) headers["x-acta-key"] = config.actaApiKey;
     if (body !== undefined) headers["content-type"] = "application/json";
@@ -200,6 +210,7 @@ export function createActaProvider(
       if (json === null) throw new ProviderError("invalid_response", { status: response.status, operation: label });
       return json;
     }
+    if (response.status === 429 && withKey) rateLimitedUntil = now() + rateLimitCooldownMs;
     throw errorFromResponse(response.status, json, label);
   }
 
@@ -462,6 +473,7 @@ export function createActaProvider(
         waitMs: writeTimeoutMs,
         attempts: 1,
         label: "submit-api",
+        skipCooldown: true,
       });
       const txId = typeof json.tx_id === "string" && json.tx_id.length <= 128 ? json.tx_id : null;
       return { txId, via: "api" };

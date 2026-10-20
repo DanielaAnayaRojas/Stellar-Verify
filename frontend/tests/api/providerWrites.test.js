@@ -193,6 +193,21 @@ describe("proveedor ACTA: enviar la transacción firmada", () => {
     }
   });
 
+  it("el envío firmado nunca espera la pausa de un 429 previo", async () => {
+    let reloj = 1_000_000;
+    const { provider, fetchImpl } = providerWith(
+      {
+        "POST /contracts/vault/verify-vc": () => jsonReply(429, { error: "write_rate_limit_exceeded" }),
+        "POST /contracts/vc/issue": () => jsonReply(201, { tx_id: TX }),
+      },
+      { now: () => reloj },
+    );
+    await assert.rejects(() => provider.getStatus(HUELLA_VALID), (error) => error.kind === "rate_limited");
+    reloj += 1_000; // dentro de la pausa
+    assert.deepEqual(await send(provider), { txId: TX, via: "api" });
+    assert.equal(fetchImpl.calls.filter((c) => c.key === "POST /contracts/vc/issue").length, 1);
+  });
+
   it("si la API falla (500 genérico, red caída o respuesta rara) y la operación NO entró, se envía por la red", async () => {
     const failures = [
       () => jsonReply(500, { error: "tx_submit_error", message: "Internal server error" }),

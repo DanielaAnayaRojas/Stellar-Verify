@@ -12,23 +12,26 @@ export default function App() {
   const enVerificar = pathname === "/" || pathname.startsWith("/verificar");
   return (
     <>
-      <div className="franja-demo" role="note">
-        <p>{textos.testnet}</p>
-      </div>
-      <header className="cabecera">
-        <div className="cabecera__interior">
-          <Link className="cabecera__marca" to="/" aria-label={textos.marca}>
-            <Roseta tipo="marca" />
-            <span>{textos.marca}</span>
-          </Link>
-          <nav className="cabecera__nav" aria-label="Principal">
-            <Link className="cabecera__enlace" to="/" aria-current={enVerificar ? "page" : undefined}>
-              {textos.nav.verificar}
+      {/* El aviso de red de pruebas va dentro del encabezado para que los lectores de pantalla lo ubiquen en una zona. */}
+      <header>
+        <div className="franja-demo" role="note">
+          <p>{textos.testnet}</p>
+        </div>
+        <div className="cabecera">
+          <div className="cabecera__interior">
+            <Link className="cabecera__marca" to="/" aria-label={textos.marca}>
+              <Roseta tipo="marca" />
+              <span>{textos.marca}</span>
             </Link>
-            <NavLink className="cabecera__enlace" to="/panel">
-              {textos.nav.panel}
-            </NavLink>
-          </nav>
+            <nav className="cabecera__nav" aria-label="Principal">
+              <Link className="cabecera__enlace" to="/" aria-current={enVerificar ? "page" : undefined}>
+                {textos.nav.verificar}
+              </Link>
+              <NavLink className="cabecera__enlace" to="/panel">
+                {textos.nav.panel}
+              </NavLink>
+            </nav>
+          </div>
         </div>
       </header>
       <main className="contenido">

@@ -52,6 +52,13 @@ describe("cliente de /api/verify", () => {
     }
   });
 
+  it("no verificable por el límite de consultas: conserva el motivo; cualquier otro motivo se descarta", async () => {
+    const limite = await fetchVerification(HUELLA_VALID, withReply(jsonReply(200, { estado: "no_verificable", motivo: "limite" })));
+    assert.deepEqual(limite, { estado: "noVerificable", motivo: "limite" });
+    const otro = await fetchVerification(HUELLA_VALID, withReply(jsonReply(200, { estado: "no_verificable", motivo: "<script>" })));
+    assert.deepEqual(otro, { estado: "noVerificable" });
+  });
+
   it("emisor no reconocido: descarta los datos aunque el servidor los mande", async () => {
     const result = await fetchVerification(
       HUELLA_VALID,
