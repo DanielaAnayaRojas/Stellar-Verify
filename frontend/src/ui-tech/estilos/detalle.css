@@ -1,0 +1,140 @@
+/* UI tech · detalle (CSS propio de T-Detalle.dc.html, portado con prefijo .sv). */
+
+body:has(.sv){margin:0}
+.sv .back{display:inline-flex;align-items:center;gap:6px;min-height:40px;font-size:13px;font-weight:600;color:var(--ink2);text-decoration:none}
+.sv .back svg{width:16px;height:16px;transition:transform 200ms var(--e-out)}
+.sv .back:hover{color:var(--ink)}
+.sv .back:hover svg{transform:translateX(-3px)}
+.sv .dgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,460px);gap:18px;align-items:start;margin-top:18px}
+@media (max-width:1180px){
+  .sv .dgrid{grid-template-columns:minmax(0,1fr)}
+}
+.sv .d-head{display:flex;align-items:center;gap:16px}
+.sv .d-head img{width:72px;height:72px;flex:none;animation:sealin 900ms var(--spring) 200ms both}
+@keyframes sealin{from{opacity:0;transform:scale(.7) rotate(-25deg);filter:blur(4px)}}
+.sv .d-title{font-family:var(--serif);font-optical-sizing:auto;font-size:28px;line-height:1.08;letter-spacing:-0.02em;font-weight:520}
+.sv .facts{display:grid;gap:2px;margin-top:18px}
+.sv .fact{display:grid;grid-template-columns:40px minmax(0,1fr);gap:2px 12px;align-items:center;padding:10px 0}
+.sv .fact + .fact{border-top:1px solid var(--line)}
+.sv .fact-ic{grid-row:1 / span 2;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--surface2);box-shadow:inset 0 0 0 1px var(--line);color:var(--ink2)}
+.sv .fact-ic svg{width:18px;height:18px}
+.sv .fact-ic img{width:30px;height:30px}
+.sv .fact dt{font-size:12px;color:var(--ink3)}
+.sv .fact dd{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sv .copy{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px;border:0;border-radius:9px;background:var(--surface2);box-shadow:inset 0 0 0 1px var(--line);font-size:12px;font-weight:600;color:var(--ink2);cursor:pointer;position:relative;transition:transform 140ms var(--e-out)}
+.sv .copy::after{content:"";position:absolute;inset:-7px}
+.sv .copy:active{transform:scale(.95)}
+.sv .copy svg{width:14px;height:14px}
+.sv .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:16px;margin-top:16px}
+.sv .mono{font-feature-settings:"tnum" 1;letter-spacing:.01em;overflow-wrap:anywhere}
+.sv .kv{display:grid;gap:12px;margin-top:12px}
+.sv .kv div{display:flex;justify-content:space-between;gap:12px;font-size:13px}
+.sv .kv dt{color:var(--ink3)}
+.sv .kv dd{font-weight:600;text-align:right}
+.sv .okline{display:inline-flex;align-items:center;gap:6px;color:var(--green2)}
+.sv .okline svg{width:15px;height:15px}
+.sv .ext{display:inline-flex;align-items:center;gap:6px;min-height:40px;margin-top:6px;font-size:13px;font-weight:600;color:var(--green2);text-decoration:none}
+.sv .ext svg{width:14px;height:14px}
+.sv .cert-wrap{perspective:1400px;position:sticky;top:16px}
+.sv .cert{position:relative;aspect-ratio:896 / 1120;border-radius:10px;overflow:hidden;transform-style:preserve-3d;box-shadow:0 1px 1px rgb(60 48 24 / .08),0 30px 60px -28px rgb(40 32 16 / .45),0 0 0 1px rgb(60 48 24 / .08);transition:transform 700ms var(--spring),box-shadow 400ms ease;will-change:transform}
+.sv .cert-enter{animation:certin 1100ms var(--e-out) 120ms both}
+@keyframes certin{from{opacity:0;transform:rotateX(14deg) translateY(28px) scale(.97);filter:blur(6px)}}
+.sv .cert.is-tracking{transition:transform 120ms linear,box-shadow 400ms ease}
+.sv .cert-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.sv .cert-in{position:absolute;inset:11% 13% 10%;display:flex;flex-direction:column;align-items:center;text-align:center;color:#26352B}
+.sv .cert-em{width:15%;aspect-ratio:1;object-fit:contain;animation:rise 700ms var(--e-out) 420ms both}
+.sv .c-inst{margin-top:3.2%;font-family:var(--serif);font-size:clamp(12px,1.3vw,17px);font-weight:600;letter-spacing:.16em;animation:rise 700ms var(--e-out) 480ms both}
+.sv .c-rule{width:22%;height:1px;margin:3% 0;background:linear-gradient(90deg,transparent,#B8963F,transparent)}
+.sv .c-small{font-family:var(--serif);font-style:italic;font-size:clamp(11px,1.05vw,14px);color:#4E5A50;animation:rise 700ms var(--e-out) 540ms both}
+.sv .c-degree{margin-top:2%;font-family:var(--serif);font-optical-sizing:auto;font-size:clamp(20px,2.4vw,32px);line-height:1.05;font-weight:560;letter-spacing:-0.01em;color:#1F3B2C;animation:rise 700ms var(--e-out) 600ms both}
+.sv .c-name{margin-top:5%;font-family:var(--serif);font-style:italic;font-size:clamp(20px,2.3vw,30px);font-weight:450;color:#1F2A22;animation:rise 700ms var(--e-out) 680ms both}
+.sv .c-date{margin-top:3%;font-size:clamp(10px,.85vw,12px);letter-spacing:.04em;color:#59645A;animation:rise 700ms var(--e-out) 740ms both}
+.sv .c-foot{margin-top:auto;width:100%;display:flex;align-items:flex-end;justify-content:space-between}
+.sv .c-seal{position:relative;width:27%;aspect-ratio:1;animation:stamp 900ms var(--spring) 980ms both}
+@keyframes stamp{0%{opacity:0;transform:scale(1.5) rotate(-24deg);filter:blur(5px)}60%{opacity:1;filter:none}}
+.sv .c-seal img{width:100%;height:100%;display:block;filter:drop-shadow(0 6px 8px rgb(60 40 10 / .28))}
+.sv .c-seal::before{content:"";position:absolute;inset:-12%;border-radius:50%;border:2px solid rgb(201 165 90 / .7);opacity:0;animation:ripple 1100ms var(--e-out) 1180ms both}
+@keyframes ripple{0%{opacity:.9;transform:scale(.7)}100%{opacity:0;transform:scale(1.25)}}
+.sv .shine{position:absolute;inset:0;-webkit-mask:url(../../assets/ui-tech/sello-titulo.webp) center / contain no-repeat;mask:url(../../assets/ui-tech/sello-titulo.webp) center / contain no-repeat;background:linear-gradient(115deg,transparent 38%,rgb(255 250 225 / .75) 50%,transparent 62%);background-size:260% 100%;background-position:120% 0;animation:foil 4.8s var(--e-io) 2.2s infinite;mix-blend-mode:screen}
+@keyframes foil{0%,55%{background-position:120% 0}100%{background-position:-60% 0}}
+.sv .c-qr{width:19%;padding:2.2%;border-radius:8px;background:rgb(255 253 246 / .9);box-shadow:0 0 0 1px rgb(60 48 24 / .12);animation:rise 700ms var(--e-out) 820ms both}
+.sv .c-qr svg{display:block;width:100%;height:auto;color:#1F2A22}
+.sv .c-badge{position:absolute;left:50%;bottom:3.4%;transform:translateX(-50%);display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:rgb(31 59 44 / .92);color:#F5EFDF;font-size:11px;font-weight:600;white-space:nowrap;animation:rise 700ms var(--e-out) 1100ms both}
+.sv .c-badge img{width:14px;height:14px}
+.sv .c-micro{margin-top:2.2%;font-size:clamp(8px,.7vw,9.5px);letter-spacing:.16em;color:rgb(60 70 60 / .62);animation:rise 700ms var(--e-out) 780ms both}
+.sv .sheen{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 300ms ease;background:radial-gradient(circle at var(--mx,50%) var(--my,30%),rgb(255 255 255 / .42),rgb(255 255 255 / 0) 42%);mix-blend-mode:soft-light}
+.sv .cert:hover .sheen{opacity:1}
+.sv .scan{position:absolute;left:0;right:0;top:0;height:22%;pointer-events:none;background:linear-gradient(180deg,rgb(44 102 68 / 0),rgb(44 102 68 / .18) 85%,rgb(120 200 150 / .9) 99%,rgb(44 102 68 / 0));animation:scan 1300ms var(--e-io) both}
+@keyframes scan{from{transform:translateY(-100%)}to{transform:translateY(460%)}}
+.sv .ok-chip{position:absolute;top:3.5%;right:4%;display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:var(--green);color:#F5EFDF;font-size:12px;font-weight:650;box-shadow:0 8px 20px -8px rgb(20 40 28 / .6);animation:pop 520ms var(--spring) both}
+.sv .ok-chip svg{width:14px;height:14px}
+@keyframes pop{from{opacity:0;transform:scale(.8) translateY(-6px)}}
+.sv .under{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;font-size:12px;color:var(--ink3)}
+.sv .vlog{margin-top:12px;padding:14px 16px;border-radius:14px;background:var(--night);color:#DCE7DC;font-family:var(--mono);font-size:12px;line-height:1.5;box-shadow:0 0 0 1px rgb(182 242 62 / .14),0 18px 40px -22px rgb(6 19 13 / .7);animation:rise 420ms var(--e-out) both}
+.sv .vl-h{display:flex;justify-content:space-between;gap:10px;padding-bottom:8px;margin-bottom:6px;border-bottom:1px solid rgb(255 255 255 / .08);color:rgb(220 231 220 / .6)}
+.sv .vl-h b{color:var(--lime);font-weight:500}
+.sv .vlog ol{display:grid;gap:6px}
+.sv .vlog li{display:grid;grid-template-columns:16px minmax(0,1fr) auto;gap:8px;align-items:center;animation:rise 360ms var(--e-out) both}
+.sv .vlog li:nth-child(1){animation-delay:120ms}
+.sv .vlog li:nth-child(2){animation-delay:420ms}
+.sv .vlog li:nth-child(3){animation-delay:720ms}
+.sv .vlog li:nth-child(4){animation-delay:1020ms}
+.sv .vlog li > svg{width:14px;height:14px;color:var(--lime);opacity:0;animation:ckin 220ms ease forwards}
+@keyframes ckin{to{opacity:1}}
+.sv .vlog li:nth-child(1) > svg{animation-delay:380ms}
+.sv .vlog li:nth-child(2) > svg{animation-delay:680ms}
+.sv .vlog li:nth-child(3) > svg{animation-delay:980ms}
+.sv .vlog li:nth-child(4) > svg{animation-delay:1280ms}
+.sv .vlog li > span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sv .vlog li > code{font-family:var(--mono);color:#fff;white-space:nowrap}
+@media (prefers-reduced-motion:reduce){
+  .sv .vlog,.sv .vlog li{animation:fadein 200ms ease both}
+  .sv .vlog li > svg{animation:none;opacity:1}
+}
+@media (prefers-reduced-motion:reduce){
+  .sv .cert-enter,.sv .c-seal,.sv .cert-em,.sv .c-inst,.sv .c-small,.sv .c-degree,.sv .c-name,.sv .c-date,.sv .c-qr,.sv .c-badge,.sv .d-head img{animation:fadein 200ms ease both}
+  .sv .shine{animation:none}
+  .sv .scan{animation:none;opacity:0}
+}
+
+/* Piezas de la pantalla de detalle que no vienen del diseño (se mantienen sus tokens y curvas). */
+.sv .back{border:0;background:transparent;cursor:pointer}
+.sv .back-ic{transform:scaleX(-1)}
+.sv .back:hover .back-ic{transform:scaleX(-1) translateX(3px)}
+.sv .d-actions{display:flex;gap:8px;flex-wrap:wrap}
+.sv .btn-rev{color:var(--red);box-shadow:0 0 0 1px var(--red-bg)}
+.sv .btn-rev:hover{box-shadow:0 0 0 1px var(--red)}
+.sv .btn-rev svg{width:17px;height:17px}
+.sv .d-head{flex-wrap:wrap}
+.sv .d-pill{height:28px}
+.sv .d-sub{margin-top:14px;font-size:14px;line-height:1.6;color:var(--ink2);max-width:46em}
+.sv .did-box{display:flex;align-items:center;gap:8px;margin-top:12px;padding:10px 6px 10px 12px;border-radius:12px;background:var(--surface2);box-shadow:inset 0 0 0 1px var(--line)}
+.sv .did-val{flex:1;min-width:0;font-size:13px;font-weight:600;overflow-wrap:anywhere}
+.sv .did-exp{margin-top:12px;font-size:12px;line-height:1.55;color:var(--ink3)}
+.sv .ext-ic{width:14px;height:14px}
+.sv .mal-line{color:var(--red);font-weight:600}
+.sv .c-qr img{display:block;width:100%;height:auto;border-radius:4px}
+.sv .ok-chip-rev{background:var(--red)}
+.sv .vlog li.vl-mal > svg{color:#FF8A7A}
+.sv .vlog li.vl-pendiente .vl-dot{width:9px;height:9px;border-radius:50%;background:rgb(220 231 220 / .5);justify-self:center}
+.sv .vlog li.vl-mal > code{color:#FF8A7A}
+.sv .vlog li.vl-pendiente > code{color:rgb(220 231 220 / .7)}
+/* Panel de confirmación de la revocación: tarjeta clara con acento rojo. */
+.sv .revpanel{margin-top:12px;padding:16px 18px;border-radius:16px;background:var(--surface);box-shadow:0 0 0 1px var(--red-bg),var(--sh-card);animation:rise 420ms var(--e-out) both}
+.sv .revpanel:focus{outline:none}
+.sv .rev-t{font-family:var(--serif);font-size:17px;font-weight:600;letter-spacing:-0.01em}
+.sv .rev-x{margin-top:6px;font-size:13px;line-height:1.55;color:var(--ink2)}
+.sv .rev-estado{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:13px;color:var(--ink2)}
+.sv .rev-error{margin-top:12px;font-size:13px;color:var(--red)}
+.sv .rev-acc{display:flex;gap:8px;margin-top:14px}
+.sv .btn-rev-solid{background:var(--red);color:#fff;box-shadow:inset 0 1px 0 rgb(255 255 255 / .18),0 8px 20px -10px rgb(180 35 24 / .7)}
+.sv .btn-rev-solid:hover{background:#9A2016}
+.sv .compartir{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px}
+.sv .comp-enlace{flex:1 1 280px;max-width:none}
+.sv .comp-enlace input{flex:1;min-width:0;height:100%;border:0;background:transparent;font-size:13px;outline:none;color:var(--ink2)}
+@media (prefers-reduced-motion:reduce){.sv .revpanel{animation:fadein 200ms ease both}}
+
+/* Nota bajo la representación: deja claro que no es el documento original. */
+.sv .cert-col{display:flex;flex-direction:column;gap:10px}
+.sv .cert-cap{display:flex;flex-direction:column;gap:2px;padding:0 4px;font-size:12px;color:var(--ink3);text-align:center}
+.sv .cert-cap-hint{color:var(--ink3);opacity:.8}

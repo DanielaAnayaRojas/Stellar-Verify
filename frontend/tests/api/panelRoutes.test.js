@@ -170,6 +170,7 @@ describe("entrar al panel (reto firmado)", () => {
     const body = await response.json();
     assert.equal(body.authenticated, true);
     assert.equal(body.publicKey, publicKey);
+    assert.equal(body.institutionDid, INSTITUTION_DID);
     assert.equal(body.institutionName, "Institucion de prueba");
 
     const setCookie = response.headers.get("set-cookie");

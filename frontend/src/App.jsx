@@ -2,9 +2,7 @@ import { lazy, Suspense } from "react";
 import { NavLink, Link, Route, Routes, useLocation } from "react-router-dom";
 import textos from "./content/textos.json";
 import Verificar from "./pages/Verificar.jsx";
-import Panel from "./pages/Panel.jsx";
 import Emitir from "./pages/Emitir.jsx";
-import Detalle from "./pages/Detalle.jsx";
 import PanelGate from "./components/PanelGate.jsx";
 import { Roseta } from "./components/Sello.jsx";
 import { esRutaTech } from "./ui-tech/rutas.js";
@@ -57,10 +55,8 @@ export default function App() {
           <Route path="/" element={<Verificar />} />
           <Route path="/verificar/:huella" element={<Verificar />} />
           <Route element={<PanelGate />}>
-            {/* Lista completa de la bóveda (con sospechosas) hasta que la fase 3 la migre a la UI tech. */}
-            <Route path="/panel/credenciales" element={<Panel />} />
+            {/* Emitir sigue con la página anterior hasta que la fase 4 la migre a la UI tech. */}
             <Route path="/panel/emitir" element={<Emitir />} />
-            <Route path="/panel/credencial/:huella" element={<Detalle />} />
           </Route>
           <Route path="*" element={<Verificar />} />
         </Routes>

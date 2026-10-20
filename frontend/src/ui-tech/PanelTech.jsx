@@ -6,6 +6,8 @@ import { ToastProvider } from "./componentes/Toast.jsx";
 import { SesionTechProvider } from "./sesion.jsx";
 import AppShell from "./componentes/AppShell.jsx";
 import Resumen from "./pantallas/Resumen.jsx";
+import Credenciales from "./pantallas/Credenciales.jsx";
+import Detalle from "./pantallas/Detalle.jsx";
 import { RUTAS_TECH } from "./rutas.js";
 
 export default function PanelTech() {
@@ -21,6 +23,8 @@ export default function PanelTech() {
           <Routes>
             <Route element={<AppShell />}>
               <Route path={RUTAS_TECH.resumen} element={<Resumen />} />
+              <Route path={RUTAS_TECH.credenciales} element={<Credenciales />} />
+              <Route path={`${RUTAS_TECH.detalle}/:huella`} element={<Detalle />} />
             </Route>
           </Routes>
         </SesionTechProvider>
