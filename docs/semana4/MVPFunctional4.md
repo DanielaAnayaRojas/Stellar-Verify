@@ -2,14 +2,13 @@
 
 **Proyecto:** Stellar-Verify · **Repositorio:** [Stellar-Verify](https://github.com/DanielaAnayaRojas/Stellar-Verify) · **Producto en línea:** [stellar-verify.vercel.app](https://stellar-verify.vercel.app/)
 
-Stellar-Verify parte de un caso real. Luis se graduó en Venezuela, emigró a Colombia y no llegó a ejercer porque el trámite de convalidación de su título resultó largo y costoso. El producto permite que una institución registre una credencial al emitirla y que cualquier persona la consulte después, sin crear una cuenta.
+## Qué es y qué logramos esta semana
 
-En la semana 3 entregamos el front con datos ficticios y una simulación en el navegador. En esta semana conectamos el producto a **Testnet**, la red de pruebas de Stellar, que no usa dinero real. Las credenciales que se emiten y se revocan quedan registradas en esa red. No tienen valor legal.
+Stellar-Verify parte de un caso real. Luis, integrante de este proyecto, se graduó en Venezuela, emigró a Colombia y no llegó a ejercer porque el trámite de convalidación de su título resultó largo y costoso. Por eso construimos una solución en la que una institución registra una credencial educativa al emitirla y cualquier persona (un empleador, una entidad evaluadora) puede consultarla después, sin crear una cuenta, para saber si existe, sigue vigente o fue revocada.
 
-Términos que usa este documento:
-- **Huella:** código de 64 caracteres que el navegador calcula a partir de un archivo. Si el archivo cambia, la huella cambia.
-- **ACTA:** plataforma de credenciales sobre Stellar que usamos en lugar de un contrato propio, según la decisión de la semana 3.
-- **Wallet (Freighter):** aplicación donde la institución guarda su clave de Stellar y firma las operaciones.
+En la semana 3 entregamos las pantallas con datos ficticios y una simulación en el navegador, y decidimos apoyarnos en **ACTA**, una plataforma de credenciales sobre Stellar, en lugar de escribir un contrato propio. Esta semana conectamos el producto a **Testnet**, la red de pruebas de Stellar, que no usa dinero real. Emitir, verificar y revocar ahora quedan registrados en esa red. Las credenciales no tienen valor legal.
+
+Así funciona hoy. La institución entra al panel con **Freighter**, la wallet donde guarda su clave de Stellar y firma las operaciones. Al emitir, el navegador calcula la **huella** del documento: un código de 64 caracteres que cambia si el archivo cambia. El archivo no sale del dispositivo y solo se registran la huella, el curso y la fecha. Quien verifica sube el documento o pega la huella, y recibe uno de cinco estados: Válida, Revocada, No encontrada, Emisor no reconocido o Sin comprobar.
 
 ---
 
@@ -19,9 +18,9 @@ Términos que usa este documento:
 | --- | --- |
 | Producto en línea | [stellar-verify.vercel.app](https://stellar-verify.vercel.app/) |
 | Video público | [PENDIENTE: pegar aquí el enlace del video] |
-| Contratos propios | No hay. Usamos el contrato de ACTA, desplegado en Testnet. Las transacciones de la tabla registran su uso. |
+| Contratos propios | No hay. Usamos el contrato de ACTA en Testnet; las transacciones de la tabla registran su uso. |
 
-El 18 y el 19 de octubre de 2026 emitimos cuatro credenciales de demostración, con la firma de la institución activada. Cada una corresponde a un archivo de [`frontend/public/ejemplos/`](../../frontend/public/ejemplos/). En el producto, la institución aparece como «Institucion de prueba». Los enlaces de ejemplo de la semana 3 pertenecen a la versión simulada. La credencial 2 se emitió con un error de captura: en el campo «Curso» se escribió la dirección del sitio. Como una credencial emitida no se edita, la revocamos y emitimos la 4 con el mismo documento y el curso correcto. La 2 queda en el registro como ejemplo de una revocación real.
+Emitimos cuatro credenciales de demostración el 18 y el 19 de octubre de 2026, con la firma de la institución activada. Cada una corresponde a un archivo de [`frontend/public/ejemplos/`](../../frontend/public/ejemplos/). La institución, «Institucion de prueba», es de demostración, no una externa. La credencial 2 se emitió con un error de captura: en el campo «Curso» se escribió la dirección del sitio. Como una credencial emitida no se edita, la revocamos y emitimos la 4 con el mismo documento y el curso correcto. La 2 queda en el registro como ejemplo de una revocación real. Los enlaces de ejemplo de la semana 3 pertenecen a la versión simulada.
 
 | # | Curso | Estado | Huella | Verificación | Transacciones (Stellar Expert) |
 | :---: | --- | :---: | --- | --- | --- |
@@ -32,38 +31,41 @@ El 18 y el 19 de octubre de 2026 emitimos cuatro credenciales de demostración, 
 
 Todas las operaciones de la bóveda de la institución se ven juntas en el [contrato de la bóveda](https://stellar.expert/explorer/testnet/contract/CABXSPQQ32TS74EM52DGAQLXCWZWYPRECUJ5C2BN3G6GWTH4PU3TPI7W). El detalle de fechas y huellas completas está en [Evidencia_credenciales.md](Evidencia_credenciales.md).
 
-Pasos para comprobarlo: abrir un enlace de «Verificación» y leer el estado; subir en la página de inicio el archivo de ejemplo de esa credencial y comparar la huella con la de la tabla; abrir la transacción en Stellar Expert, un explorador público de la red.
+Todas las operaciones de la bóveda de la institución se ven juntas en el [contrato de la bóveda](https://stellar.expert/explorer/testnet/contract/CABXSPQQ32TS74EM52DGAQLXCWZWYPRECUJ5C2BN3G6GWTH4PU3TPI7W). Las fechas y las huellas completas están en [Evidencia_credenciales.md](Evidencia_credenciales.md).
+
+Para comprobarlo: abrir un enlace de «Verificación» y leer el estado; subir en la página de inicio el archivo de ejemplo y comparar su huella con la de la tabla; abrir la transacción en Stellar Expert, un explorador público de la red.
 
 ---
 
 ## Aprendizajes y ajustes priorizados
 
-Lo que más nos enseñó esta semana fue cómo cambia el diseño cuando el registro es público y no se puede editar. Con la credencial 2 lo comprobamos: escribimos la dirección del sitio en el campo «Curso» y ya no había forma de corregirla. Tuvimos que revocarla y emitir la 4. Por eso el formulario ahora avisa si el curso parece una dirección web.
+Lo que más nos enseñó esta semana fue cómo cambia el diseño cuando el registro es público y no se puede editar. En la credencial 2 escribimos la dirección del sitio en el campo «Curso» y no hubo forma de corregirla: la revocamos y emitimos la 4. Por eso el formulario ahora avisa si el curso parece una dirección web.
 
-También aprendimos qué aporta Stellar y qué no. Aporta que la institución firme con su propia wallet Freighter, que nuestro servidor solo reenvíe la transacción ya firmada sin guardar ninguna clave, y que cualquiera pueda comprobar cada operación en Stellar Expert. No resuelve quién es la institución: la red registra quién firmó, no si esa entidad existe. Al revisar el contrato de ACTA el 6 de octubre vimos además dos diferencias con el Blueprint: no guarda la dirección del emisor de cada credencial, y revoca el dueño de la bóveda (el espacio donde ACTA guarda las credenciales de una institución), no el emisor.
+También vimos qué aporta Stellar y qué no. Aporta que la institución firme con su wallet Freighter, que nuestro servidor reenvíe la transacción sin guardar ninguna clave y que cualquiera verifique cada operación en Stellar Expert. No aporta identidad: el contrato de ACTA no guarda quién emitió cada credencial, y revoca el dueño de la bóveda (el espacio donde ACTA guarda las credenciales de una institución), no el emisor. Para cubrirlo, la institución firma al emitir un mensaje sin costo que prueba que la credencial es suya, y la verificación pública rechaza otros emisores con «Emisor no reconocido». Que la institución exista de verdad sigue sin comprobarse.
 
-Por último, depender de un servicio intermedio pesa más que la red misma. El 18 de octubre una petición a ACTA tardó cerca de 8 segundos, y ACTA limita las consultas por llave. Esperamos 5 segundos con un reintento; si la API no responde, enviamos la transacción firmada directo a la red, y ante el límite el servidor deja de consultar a ACTA 20 segundos.
+Además, el servicio intermedio pesó más que la red. Una petición a ACTA tardó cerca de 8 segundos y ACTA limita las consultas por llave. Esperamos 5 segundos con un reintento, enviamos la transacción firmada directo a la red si la API no responde, y tras un límite dejamos de consultar a ACTA 20 segundos.
 
-**Ajustes de esta semana, por impacto:** emisión, verificación y revocación reales en Testnet con ingreso por Freighter; firma del emisor exigida al verificar; manejo de las esperas de ACTA; lista de credenciales de la bóveda en el panel.
+**Hecho, por impacto:** operaciones reales en Testnet con Freighter; firma del emisor; manejo de las esperas; aviso del curso (poco esfuerzo, evita errores sin remedio); lista de credenciales en el panel.
 
-**Pendiente:** una bóveda por institución, comprobar que la institución emisora es quien dice ser (historia 5 del Blueprint) y ajustar los textos de resultados con los comentarios de los usuarios.
+**Pendiente:** la bóveda por institución, que condiciona la prueba con un piloto; comprobar quién es la institución emisora (historia 5 del Blueprint); y ajustar los textos con comentarios de usuarios, que aún no recogemos.
 
 ---
 
 ## Riesgos y pendientes
 
-**Riesgos identificados**
-- **Servicio externo.** La emisión y la revocación pasan por la API de ACTA. Si no responde, se usa el envío directo a la red.
-- **Red de pruebas.** Todo está en Testnet y las credenciales no tienen valor legal. No hemos determinado cuánto cuesta revocar en la red real ni quién lo pagaría; esa pregunta quedó abierta en la semana 3.
-- **Contrato.** Nuestra revisión interna del 6 de octubre lo calificó como apto para Testnet. No tiene auditoría externa. Su función de verificación informa si una credencial está vigente o revocada; no comprueba que la institución exista.
-- **Control de la bóveda.** Quien administra la bóveda puede revocar todas las credenciales que contiene. Una bóveda tiene un solo dueño, y la emisión está abierta a cualquier dirección que no esté en la lista de bloqueo.
+**Riesgos que dependen de terceros**
+- **ACTA.** La emisión y la revocación pasan por su API. Si no responde, enviamos la transacción firmada directo a la red. La verificación pública usa una sola llave de ACTA, sujeta a su límite de consultas.
+- **Contrato de ACTA.** Nuestra revisión interna del 6 de octubre lo calificó como apto para Testnet. No tiene auditoría externa. Su función de verificación informa si una credencial está vigente o revocada; no comprueba que la institución exista.
+
+**Riesgos de diseño**
+- **Control de la bóveda.** Quien la administra puede revocar todas sus credenciales, y la bóveda tiene un solo dueño. La emisión está abierta a cualquier dirección que no esté en la lista de bloqueo; nuestra verificación lo compensa al rechazar emisores distintos de la institución.
 - **Contenido guardado.** El contrato no permite borrar el contenido de una credencial revocada; solo la retira del índice.
+
+**Riesgos del alcance**
+- **Red de pruebas.** Todo está en Testnet y no tiene valor legal. No hemos determinado cuánto cuesta revocar en la red real ni quién lo pagaría; la pregunta quedó abierta en la semana 3.
 - **Institución piloto.** El Problem Brief plantea como primer emisor a BAF/Ruta N, con constancias de BB101. Todavía no está confirmado.
 
-**Pendientes antes del cierre**
-- Publicar el video y completar su enlace.
-- Actualizar el README, que todavía describe datos simulados.
-- Iniciar la validación con usuarios.
+**Pendientes antes del cierre:** publicar el video y completar su enlace; iniciar la validación con usuarios.
 
 ---
 
@@ -76,12 +78,12 @@ El plan tiene tres actividades. Primero, entrevistas con cinco a ocho migrantes 
 | Hipótesis | Se cumple si… |
 | --- | --- |
 | Un verificador confirma una credencial sin ayuda ni cuenta. | Al menos 4 de 5 lo logran en menos de 2 minutos. |
-| Entiende los tres resultados, incluido que «No encontrada» no significa «falsa». | Al menos 4 de 5 los interpretan bien. |
+| Entiende el resultado que ve, incluido que «No encontrada» no significa «falsa». | Al menos 4 de 5 los interpretan bien. |
 | Quien recibe la credencial no necesita wallet. | Ningún titular ni verificador la necesita. |
 | El registro sirve como evidencia complementaria. | Al menos 3 de 5 verificadores lo consultarían antes de escribir a la institución. |
-| Una institución puede emitir por sí sola. | Emite y revoca en menos de 10 minutos, incluida la instalación de la wallet. |
+| Una institución puede emitir por sí sola. | Emite y revoca en menos de 10 minutos, incluida la instalación de la wallet. Requiere resolver antes la bóveda por institución. |
 
-El Problem Brief fija un criterio de invalidación: si las entrevistas muestran que el problema es la lentitud de la evaluación académica y no la falta de un registro verificable, la hipótesis central no se sostiene.
+Con cinco verificadores, estos umbrales son señales de aprendizaje, no una prueba estadística. El Problem Brief fija un criterio de invalidación: si las entrevistas muestran que el problema es la lentitud de la evaluación académica y no la falta de un registro verificable, la hipótesis central no se sostiene.
 
 ---
 
@@ -89,8 +91,8 @@ El Problem Brief fija un criterio de invalidación: si las entrevistas muestran 
 
 El track Blockchain Builders 101 evalúa tres criterios, cada uno con 33,33 % del puntaje y una escala de 0 a 8.
 
-**Validación del problema.** La evidencia es la experiencia de Luis y el dato de Migración Colombia: 2.841.389 migrantes venezolanos registrados en Colombia con corte a febrero de 2026. Está documentada en el [Problem Brief](../semana1/ProblemBrief.md). Aún no se han hecho entrevistas ni pruebas con personas ajenas al equipo; el plan está en la sección anterior.
+**Validación del problema.** La evidencia es la experiencia de Luis y el dato de Migración Colombia: 2.841.389 migrantes venezolanos registrados en Colombia con corte a febrero de 2026, documentado en el [Problem Brief](../semana1/ProblemBrief.md). Aún no hay entrevistas ni pruebas con personas ajenas al equipo.
 
-**Foco de negocio.** El Blueprint identifica tres actores: el titular, que comparte su credencial; la institución, que la emite; y el verificador, que la consulta sin cuenta. El modelo del producto está en el [Lean Canvas](https://canva.link/d4avt08hmkknsqk). El costo de revocar en la red real no está determinado.
+**Foco de negocio.** El Blueprint identifica tres actores: el titular, que comparte su credencial; la institución, que la emite; y el verificador, que la consulta sin cuenta. El modelo está en el [Lean Canvas](https://canva.link/d4avt08hmkknsqk).
 
-**Ejecución técnica.** El Blueprint define tres usos de Stellar: firma del emisor, estado en un registro público y pruebas en Testnet. Las cuatro credenciales de la tabla de evidencia tienen sus transacciones en la red. No hay contrato propio, según la opción B de la semana 3. El código que conecta con ACTA está en la rama principal, con pruebas automatizadas en `frontend/tests`. El contrato de ACTA no tiene auditoría externa.
+**Ejecución técnica.** El Blueprint define tres usos de Stellar: firma del emisor, estado en un registro público y pruebas en Testnet. Las cuatro credenciales de la tabla tienen sus transacciones en la red. No hay contrato propio, según la opción B de la semana 3, y el código que conecta con ACTA está en la rama principal, con pruebas automatizadas en `frontend/tests`.
