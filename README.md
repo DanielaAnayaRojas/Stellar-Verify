@@ -4,13 +4,37 @@
 
 **Demo pública:** https://stellar-verify.vercel.app/
 
-> **Importante:** este entregable utiliza datos ficticios y una capa de servicios simulada en el navegador. Todavía **no** registra credenciales en Stellar, ACTA ni un backend real. Las emisiones y revocaciones de la demo se guardan en `localStorage` del navegador utilizado; por eso las credenciales nuevas no se comparten automáticamente entre dispositivos.
+> **Importante:** funciona sobre la **red de pruebas (testnet) de Stellar**. Las credenciales **no tienen valor legal** y todos los documentos de ejemplo son ficticios.
+
+## Qué hace
+
+- **Verificación pública (sin cuenta).** Se sube el documento o se pega su huella. El archivo **no sale del dispositivo**: la huella (SHA-256) se calcula en el navegador. El resultado es uno de cinco estados:
+
+| Estado | Qué significa |
+| --- | --- |
+| **Válida** | La institución emitió la credencial y sigue vigente. |
+| **Revocada** | La institución la anuló. |
+| **No encontrada** | No hay registro de ese documento. |
+| **Emisor no reconocido** | Existe un registro con esa huella, pero no lo emitió la institución. Nunca se muestran sus datos. |
+| **Sin comprobar** | El servicio externo no respondió a tiempo. Se puede intentar de nuevo. |
+
+- **Panel de la institución.** Se entra con la billetera [Freighter](https://www.freighter.app/) (en Testnet). Permite emitir credenciales, ver la lista de las registradas y revocarlas. La sesión dura 30 minutos.
+  - **Emitir** pide dos firmas en Freighter: un mensaje que prueba que la emite la institución (no cuesta nada) y la transacción en la red de pruebas.
+  - **Revocar** pide una firma. Solo puede revocar quien es dueño de la bóveda de la institución.
+- **Qué se registra.** Solo la huella del documento, el nombre del curso y la fecha de emisión. No se guardan datos personales ni el archivo.
+
+## Cómo está construido
+
+- **Frontend:** React y Vite (`frontend/`).
+- **API:** funciones serverless en Vercel (`frontend/api/`). Las claves viven solo en el servidor; ninguna variable lleva el prefijo `VITE_`, así que nunca llegan al navegador.
+- **Registro de credenciales:** API de ACTA en su entorno de pruebas (sandbox) y red de pruebas de Stellar. La verificación pública también comprueba que el emisor sea la institución configurada.
 
 ## Requisitos
 
 - Node.js 20 o superior (recomendado).
 - npm, incluido con Node.js.
 - Un navegador web moderno.
+- Para usar el panel: la extensión Freighter configurada en **Testnet**.
 
 ## Instalación y ejecución local
 
@@ -40,18 +64,24 @@ node scripts/verificar-integridad.mjs
 
 ## Recorrido de demostración
 
-| Pantalla | Dirección |
-| --- | --- |
-| Verificación pública | [Inicio](https://stellar-verify.vercel.app/) |
-| Ejemplo válido | [Credencial válida](https://stellar-verify.vercel.app/verificar/a068ed6242b38ebaeaaa9e539ec60a85ea9675691dbb844da55ab7064fd96dca) |
-| Ejemplo revocado | [Credencial revocada](https://stellar-verify.vercel.app/verificar/05830aa4f35aa2a609eb771c558d7096b7e2ca7e1e7c551042a8f52f3b2b709e) |
-| Ejemplo no encontrado | [Credencial no encontrada](https://stellar-verify.vercel.app/verificar/0000000000000000000000000000000000000000000000000000000000000000) |
-| Panel de institución | [Panel](https://stellar-verify.vercel.app/panel) |
-| Emitir (simulado) | [Emisión](https://stellar-verify.vercel.app/panel/emitir) |
 
-Los tres archivos para probar la verificación por carga se encuentran en [`frontend/public/ejemplos/`](frontend/public/ejemplos/).
+Los archivos están en [`frontend/public/ejemplos/`](frontend/public/ejemplos/). Se pueden cargar en la pantalla de verificación o abrir con estos enlaces:
 
-El diseño del producto y la arquitectura prevista están en [`docs/semana2/ProductBlueprint.md`](docs/semana2/ProductBlueprint.md). La documentación de la semana 3 será incorporada por Daniela.
+| Ejemplo | Estado | Enlace |
+| --- | --- | --- |
+| `diploma-demo-1.txt` | Válida | [Ver](https://stellar-verify.vercel.app/verificar/ba0f8b380ea55ce5a8b53c1a66b38ec5d0fe468dc7a91a890c26d2fafaf40a5f) |
+| `certificado-demo-4.txt` | Válida | [Ver](https://stellar-verify.vercel.app/verificar/b07e89fc32382013cc093a448105d00b8e9afce14759b10fd192cd1275e6d55d) |
+| `constancia-demo-3.txt` | Revocada | [Ver](https://stellar-verify.vercel.app/verificar/0e2edd6751fb77d33784b198fc953fbe592fdeff3dbb1c0bcf152c5d9f39f17a) |
+| Huella inexistente | No encontrada | [Ver](https://stellar-verify.vercel.app/verificar/0000000000000000000000000000000000000000000000000000000000000000) |
+
+`certificado-demo-2.txt` quedó revocada y fue reemplazada por `certificado-demo-4.txt` (se había emitido con un error en el curso). Las transacciones de cada credencial en el explorador están en [`docs/semana4/Evidencia_credenciales.md`](docs/semana4/Evidencia_credenciales.md).
+
+## Limitaciones conocidas
+
+- Funciona solo en testnet y con una institución de prueba configurada.
+- El entorno de pruebas de ACTA a veces tarda en responder. Si pasa, la verificación muestra **Sin comprobar** y se puede reintentar; al emitir o revocar, el servidor comprueba si la operación ya se aplicó antes de reportar un fallo.
+- Las credenciales de prueba no tienen valor legal.
+
 
 ## Equipo
 
