@@ -1,0 +1,283 @@
+{
+  "_nota": "CONCEPTO: datos 100 % ficticios (instituciones, cifras y empresas inventadas). Solo se muestran con VITE_CONCEPTO=1 y siempre rotulados. Nunca se mezclan con los datos reales del registro.",
+  "tiposCredencial": {
+    "titulo": {
+      "label": "Título universitario",
+      "insignia": "ins-titulo.webp"
+    },
+    "carbono": {
+      "label": "Captura de carbono",
+      "insignia": "ins-carbono.webp"
+    },
+    "curso": {
+      "label": "Curso o certificación",
+      "insignia": "ins-curso.webp"
+    },
+    "sost": {
+      "label": "Investigación o sostenibilidad",
+      "insignia": "ins-sost.webp"
+    }
+  },
+  "instituciones": [
+    {
+      "id": "valcanto",
+      "nombre": "Universidad de Valcanto",
+      "ciudad": "Valcanto",
+      "tipo": "Universidad",
+      "cat": "uni",
+      "estado": "Activa",
+      "credenciales": 1248,
+      "verif30d": 1284,
+      "desde": "2026-01-15",
+      "cuenta": "GBRP…OX2H",
+      "emblema": "em-valcanto.webp",
+      "tipos": [
+        "titulo",
+        "sost"
+      ]
+    },
+    {
+      "id": "condor",
+      "nombre": "Universidad Sierra del Cóndor",
+      "ciudad": "Altomonte",
+      "tipo": "Universidad",
+      "cat": "uni",
+      "estado": "Activa",
+      "credenciales": 892,
+      "verif30d": 806,
+      "desde": "2026-02-03",
+      "cuenta": "GCQ7…M4TA",
+      "emblema": "em-condor.webp",
+      "tipos": [
+        "titulo",
+        "curso"
+      ]
+    },
+    {
+      "id": "robledal",
+      "nombre": "Colegio Mayor de Robledal",
+      "ciudad": "Robledal",
+      "tipo": "Universidad",
+      "cat": "uni",
+      "estado": "Activa",
+      "credenciales": 654,
+      "verif30d": 511,
+      "desde": "2026-03-12",
+      "cuenta": "GAX2…RL9Q",
+      "emblema": "em-robledal.webp",
+      "tipos": [
+        "titulo"
+      ]
+    },
+    {
+      "id": "nevadia",
+      "nombre": "Instituto Tecnológico Nevadia",
+      "ciudad": "Nevadia",
+      "tipo": "Instituto",
+      "cat": "inst",
+      "estado": "Activa",
+      "credenciales": 431,
+      "verif30d": 389,
+      "desde": "2026-04-08",
+      "cuenta": "GDW5…K2PE",
+      "emblema": "em-nevadia.webp",
+      "tipos": [
+        "curso",
+        "titulo"
+      ]
+    },
+    {
+      "id": "selvaluz",
+      "nombre": "Fundación Selvaluz",
+      "ciudad": "Selvaluz",
+      "tipo": "Organización ambiental",
+      "cat": "org",
+      "estado": "Activa",
+      "credenciales": 278,
+      "verif30d": 244,
+      "desde": "2026-04-14",
+      "cuenta": "GBM8…ZT3U",
+      "emblema": "em-selvaluz.webp",
+      "tipos": [
+        "carbono",
+        "sost"
+      ]
+    },
+    {
+      "id": "verdemar",
+      "nombre": "Verdemar Carbono S.A.S.",
+      "ciudad": "Bahía Clara",
+      "tipo": "Empresa",
+      "cat": "org",
+      "estado": "Activa",
+      "credenciales": 190,
+      "verif30d": 173,
+      "desde": "2026-05-18",
+      "cuenta": "GC4N…HV8W",
+      "emblema": "em-verdemar.webp",
+      "tipos": [
+        "carbono"
+      ]
+    },
+    {
+      "id": "forjaluz",
+      "nombre": "Escuela Técnica Forjaluz",
+      "ciudad": "Forjaluz",
+      "tipo": "Instituto",
+      "cat": "inst",
+      "estado": "En proceso",
+      "credenciales": 0,
+      "verif30d": 0,
+      "desde": "2026-06-02",
+      "cuenta": null,
+      "emblema": "em-forjaluz.webp",
+      "tipos": [
+        "curso"
+      ]
+    },
+    {
+      "id": "secretaria",
+      "nombre": "Secretaría de Educación de Valcanto",
+      "ciudad": "Valcanto",
+      "tipo": "Entidad pública",
+      "cat": "pub",
+      "estado": "En proceso",
+      "credenciales": 0,
+      "verif30d": 0,
+      "desde": "2026-05-04",
+      "cuenta": null,
+      "emblema": "em-secretaria.webp",
+      "tipos": [
+        "curso",
+        "sost"
+      ]
+    }
+  ],
+  "verificaciones": {
+    "7": {
+      "total": 312,
+      "validez": 98,
+      "paises": 6,
+      "empresas": 19,
+      "tipos": [
+        48,
+        24,
+        18,
+        10
+      ],
+      "paisesPct": [
+        41,
+        21,
+        14,
+        9,
+        6,
+        9
+      ],
+      "dispositivos": [
+        49,
+        41,
+        10
+      ]
+    },
+    "30": {
+      "total": 1284,
+      "validez": 98,
+      "paises": 8,
+      "empresas": 46,
+      "tipos": [
+        50,
+        22,
+        17,
+        11
+      ],
+      "paisesPct": [
+        38,
+        22,
+        15,
+        10,
+        6,
+        9
+      ],
+      "dispositivos": [
+        52,
+        38,
+        10
+      ]
+    },
+    "90": {
+      "total": 3871,
+      "validez": 97,
+      "paises": 11,
+      "empresas": 94,
+      "tipos": [
+        53,
+        20,
+        16,
+        11
+      ],
+      "paisesPct": [
+        36,
+        23,
+        16,
+        11,
+        5,
+        9
+      ],
+      "dispositivos": [
+        55,
+        35,
+        10
+      ]
+    },
+    "ordenTipos": [
+      "titulo",
+      "carbono",
+      "curso",
+      "sost"
+    ],
+    "ordenPaises": [
+      "Colombia",
+      "Estados Unidos",
+      "España",
+      "México",
+      "Chile",
+      "Otros"
+    ],
+    "pinesMapa": {
+      "Colombia": [
+        "26.9%",
+        "53.5%"
+      ],
+      "Estados Unidos": [
+        "19.5%",
+        "32%"
+      ],
+      "España": [
+        "46.5%",
+        "34%"
+      ],
+      "México": [
+        "18.8%",
+        "41.5%"
+      ],
+      "Chile": [
+        "27.6%",
+        "77%"
+      ]
+    },
+    "ordenDispositivos": [
+      "Escritorio",
+      "Móvil",
+      "API o integración"
+    ],
+    "empresasQueVerifican": [
+      "Talentia Selección",
+      "Ecosfera Fondos",
+      "Kuntur Tech",
+      "Nortevía Consultores",
+      "Brisamar Ingeniería",
+      "Aldea Digital",
+      "Ruta Verde Energía"
+    ]
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "marca": "Stellar-Verify",
+  "saltar": "Saltar al contenido",
+  "nav": {
+    "aria": "Panel de la institución",
+    "resumen": "Resumen",
+    "emitir": "Nueva credencial",
+    "credenciales": "Credenciales",
+    "verificaciones": "Verificaciones",
+    "instituciones": "Instituciones",
+    "concepto": "Concepto"
+  },
+  "lema": "Credenciales verificables para un mundo más abierto.",
+  "nota": {
+    "red": "Red de pruebas",
+    "texto": "de Stellar. Las credenciales no tienen valor legal.",
+    "concepto": "Las pantallas marcadas «Concepto» usan datos ficticios.",
+    "movil": "Red de pruebas de Stellar · sin valor legal"
+  },
+  "buscar": {
+    "etiqueta": "Buscar por código del documento",
+    "placeholder": "Buscar por código del documento…",
+    "atajo": "Ctrl K",
+    "invalido": "El código del documento tiene 64 caracteres, con números y letras de la a a la f. Revisa que esté completo."
+  },
+  "sesion": {
+    "comprobando": "Comprobando tu sesión.",
+    "entrar": "Entrar con Freighter",
+    "entrando": "Firma en Freighter…",
+    "menu": "Sesión de la institución",
+    "cuenta": "Cuenta emisora",
+    "red": "Red de pruebas de Stellar",
+    "salir": "Salir",
+    "avisoFin": "Tu sesión termina en menos de 5 minutos.",
+    "renovar": "Entrar de nuevo",
+    "terminada": "Tu sesión terminó. Entra de nuevo para seguir.",
+    "sinServicio": "No pudimos comprobar tu sesión. Revisa tu conexión e inténtalo de nuevo.",
+    "reintentar": "Intentar de nuevo",
+    "renovando": "Firma en Freighter para seguir…"
+  },
+  "estados": {
+    "valida": "Válida",
+    "revocada": "Revocada",
+    "noConfirmada": "No confirmada",
+    "noEncontrada": "No encontrada",
+    "sinComprobar": "Sin comprobar"
+  },
+  "verificar": {
+    "boton": "Verificar",
+    "verificando": "Verificando",
+    "aria": "Verificar ahora la credencial {curso}",
+    "limite": "El registro está recibiendo muchas consultas. Espera unos minutos y vuelve a intentarlo.",
+    "fallo": "No pudimos comprobarla ahora. No significa que sea falsa: intenta de nuevo en unos minutos.",
+    "otraVez": "Verificar de nuevo",
+    "anuncio": "{curso}: {estado}",
+    "conexion": "No hay conexión. Revisa tu red e inténtalo de nuevo."
+  },
+  "toast": {
+    "cerrar": "Cerrar aviso"
+  },
+  "resumen": {
+    "titulo": "Resumen",
+    "lema": "Emite y revoca credenciales registradas en la red de pruebas de Stellar. Cualquiera puede verificarlas sin crear una cuenta.",
+    "red": "Red de pruebas",
+    "stats": {
+      "boveda": {
+        "label": "En la bóveda",
+        "sub": "Registros en la bóveda"
+      },
+      "validas": {
+        "label": "Válidas",
+        "sub": "De las {n} más recientes"
+      },
+      "revocadas": {
+        "label": "Revocadas",
+        "sub": "De las {n} más recientes"
+      },
+      "revisar": {
+        "label": "No confirmadas",
+        "sub": "Por revisar · de las {n} más recientes"
+      },
+      "vacia": "Sin credenciales todavía",
+      "sinComprobar": " · {n} sin comprobar"
+    },
+    "recientes": "Credenciales recientes",
+    "verTodas": "Ver todas",
+    "vacia": "Todavía no hay credenciales en la bóveda. Emite la primera.",
+    "sinDatos": "Registro sin datos de la institución",
+    "codigo": "Código {codigo}",
+    "cargando": "Leyendo la bóveda en la red de pruebas. Puede tardar unos segundos.",
+    "errorLimite": "El registro está recibiendo muchas consultas. Espera unos minutos y vuelve a intentarlo.",
+    "errorServicio": "No pudimos leer la bóveda: el registro no respondió. Intenta de nuevo en unos minutos.",
+    "reintentar": "Intentar de nuevo",
+    "hero": {
+      "titulo": "Cualquiera puede verificarla, sin crear una cuenta.",
+      "texto": "Comparte el enlace o el código QR de la credencial. Quien lo abra ve si es válida, si fue revocada o si no la confirmamos.",
+      "ir": "Ir a la verificación pública"
+    },
+    "entrar": {
+      "titulo": "Entra para ver la bóveda de tu institución",
+      "texto": "Firma un mensaje con la wallet de la institución en Freighter. No se envía ninguna transacción y no cuesta nada. Necesitas un computador con la extensión Freighter."
+    },
+    "sinLeer": "No pudimos leer sus datos ahora",
+    "actualizar": "Actualizar",
+    "leida": "Leída: {hora}",
+    "ahora": "Comprobada ahora",
+    "segunLista": "Según la lista",
+    "noAhora": "no se pudo comprobar ahora",
+    "errorConexion": "No hay conexión. Revisa tu red e inténtalo de nuevo.",
+    "actualizarEspera": "Disponible un minuto después de cada lectura, para no agotar las consultas al registro.",
+    "reintentarEspera": "Podrás intentarlo de nuevo en un minuto."
+  },
+  "carga": {
+    "titulo": "No pudimos abrir el panel",
+    "texto": "Puede que el sitio se haya actualizado mientras lo tenías abierto. Recarga la página para continuar.",
+    "boton": "Recargar",
+    "otroTitulo": "Algo falló al mostrar el panel",
+    "otroTexto": "Recarga la página. Si vuelve a pasar, avísanos."
+  }
+}

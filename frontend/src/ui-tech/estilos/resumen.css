@@ -1,0 +1,40 @@
+/* UI tech · Resumen (CSS propio de T-Resumen.dc.html, portado con prefijo .sv). */
+
+body:has(.sv){margin:0}
+.sv .grid2{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px;align-items:stretch}
+@media (max-width:1100px){
+  .sv .grid2{grid-template-columns:minmax(0,1fr)}
+}
+.sv .recent li{display:flex;align-items:center;gap:14px;padding:12px 8px;margin:0 -8px;border-radius:16px;transition:background-color 160ms ease}
+.sv .recent li{position:relative}
+.sv .recent li + li::before{content:"";position:absolute;left:74px;right:8px;top:0;height:1px;background:var(--line)}
+.sv .recent li:hover::before,.sv .recent li:hover + li::before{opacity:0}
+.sv .recent li:hover{background:var(--surface2)}
+.sv .recent li > img{width:52px;height:52px;flex:none;transition:transform 420ms var(--spring)}
+.sv .recent li:hover > img{transform:rotate(-10deg) scale(1.06)}
+.sv .r-main{flex:1;min-width:0}
+.sv .r-name{font-size:15px;font-weight:620;letter-spacing:-0.01em}
+.sv .r-sub{font-size:13px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sv .r-meta{font-size:12px;color:var(--ink3);margin-top:2px}
+.sv .vbtn{min-width:104px}
+.sv .spin{width:15px;height:15px;border-radius:50%;border:2px solid rgb(44 102 68 / .2);border-top-color:var(--green2);animation:spin 600ms linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sv .hero{position:relative;min-height:420px;overflow:hidden;border-radius:22px;isolation:isolate;box-shadow:var(--sh-card);color:#FFFDF6}
+.sv .hero > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.03);transition:transform 1200ms var(--e-out)}
+.sv .hero:hover > img{transform:scale(1.09)}
+.sv .hero::after{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,rgb(16 30 22 / .05) 0%,rgb(16 30 22 / .2) 45%,rgb(16 30 22 / .82) 100%)}
+.sv .hero-in{position:relative;z-index:1;display:flex;flex-direction:column;height:100%;min-height:420px;padding:24px;box-sizing:border-box}
+.sv .hero-in img{width:44px;height:44px}
+.sv .hero-t{margin-top:auto;font-family:var(--serif);font-optical-sizing:auto;font-size:34px;line-height:1.04;letter-spacing:-0.02em;font-weight:480;text-wrap:balance}
+.sv .hero-s{margin-top:12px;font-size:14px;line-height:1.5;color:rgb(255 253 246 / .84);max-width:26em}
+.sv .hero-go{display:grid;place-items:center;width:46px;height:46px;margin-top:18px;border-radius:14px;background:var(--lime);color:var(--night);box-shadow:0 10px 26px -10px rgb(182 242 62 / .8);transition:transform 300ms var(--spring)}
+.sv .hero-go svg{width:20px;height:20px}
+.sv .hero-go:hover{transform:translateX(4px)}
+.sv .hero::after{background:linear-gradient(180deg,rgb(6 19 13 / .1) 0%,rgb(6 19 13 / .35) 45%,rgb(6 19 13 / .9) 100%) !important}
+.sv .hero-t{font-weight:600 !important;letter-spacing:-0.035em !important}
+.sv .scope{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px}
+.sv .scope img{width:22px;height:22px}
+.sv .chip{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 12px;border-radius:999px;background:var(--surface);box-shadow:0 0 0 1px var(--line);font-size:13px;font-weight:550}
+.sv .link{display:inline-flex;align-items:center;gap:6px;min-height:44px;font-size:13px;font-weight:600;color:var(--green2);text-decoration:none}
+.sv .link svg{width:15px;height:15px;transition:transform 200ms var(--e-out)}
+.sv .link:hover svg{transform:translateX(3px)}

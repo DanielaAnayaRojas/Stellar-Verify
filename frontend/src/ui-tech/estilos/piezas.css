@@ -1,0 +1,114 @@
+/* UI tech · piezas que no estaban en el diseño (menú de sesión, avisos, entrada, estados de carga).
+   Mismo sistema: tokens de base.css, radios 12/18, sombras --sh-card / --sh-pop, curvas --spring / --e-out. */
+
+/* Saltar al contenido: invisible hasta recibir el foco con el teclado. */
+.sv .salto{position:fixed;z-index:60;left:12px;top:12px;padding:10px 14px;border-radius:12px;background:var(--lime);color:var(--night);font-weight:650;text-decoration:none;transform:translateY(-160%);transition:transform 200ms var(--e-out)}
+.sv .salto:focus{transform:none}
+.sv .content:focus{outline:none}
+.sv [tabindex="-1"]:focus:not(:focus-visible){outline:none}
+
+/* Anillo de foco: el lima oscuro del diseño (#65A30D) da 2,81:1 sobre el fondo (WCAG 1.4.11 pide 3:1).
+   #3F7F12 da 4,49:1. En la barra lateral nocturna se mantiene el lima, que ahí sí contrasta. */
+.sv :focus-visible{outline-color:#3F7F12}
+.sv .side :focus-visible,.sv .toast :focus-visible{outline-color:var(--lime)}
+
+/* Aviso legal en móvil: la nota de la barra lateral se oculta por debajo de 900 px. */
+.sv .nota-movil{display:none}
+@media (max-width:900px){
+  .sv .nota-movil{display:block;margin:0 0 12px;font-size:12px;font-weight:600;color:var(--ink2)}
+}
+
+/* Estados que faltaban en el sistema de sellos e íconos. */
+.sv .p-neutral{background:#EEF1EC;color:#4A564E}
+.sv .ic-red{background:var(--red-bg);color:var(--red)}
+.sv .ic-amber{background:var(--amber-bg);color:var(--amber)}
+.sv .spin{display:inline-block;flex:none;width:15px;height:15px;border-radius:50%;border:2px solid rgb(44 102 68 / .2);border-top-color:var(--green2);animation:spin 600ms linear infinite}
+.sv .spin-dark{border-color:rgb(6 19 13 / .2);border-top-color:var(--night)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sv .btn:disabled{cursor:default;opacity:.62}
+.sv .btn:disabled:active{transform:none}
+.sv .btn[aria-disabled="true"]{cursor:default;opacity:.62}
+.sv .btn[aria-disabled="true"]:active{transform:none}
+.sv .r-espera{flex-basis:100%;font-size:12px;color:var(--ink3)}
+
+/* Buscador por código del documento. */
+.sv .search-wrap{position:relative;flex:1 1 320px;max-width:520px;min-width:0}
+.sv .search-wrap .search{max-width:none}
+.sv .search input[aria-invalid="true"]{color:var(--red)}
+/* Anillo de foco del buscador (el foco se marca en el contenedor, como en el diseño), con el mismo #3F7F12. */
+.sv .search:focus-within{box-shadow:0 0 0 2px #3F7F12,0 0 0 6px rgb(182 242 62 / .3)}
+.sv .search-err{position:absolute;z-index:40;left:0;right:0;top:calc(100% + 8px);padding:10px 12px;border-radius:12px;background:var(--surface);box-shadow:var(--sh-pop);font-size:13px;line-height:1.4;color:var(--red)}
+
+/* Menú de la sesión (reemplaza al perfil ficticio del diseño). */
+.sv .menu-sesion{position:relative}
+.sv .user-ic{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--night);color:var(--lime);box-shadow:0 0 0 2px var(--surface),0 0 0 3px var(--line)}
+.sv .user-ic svg{width:18px;height:18px;color:var(--lime)}
+.sv .user small.mono{font-family:var(--mono);font-size:11.5px}
+.sv .menu-pop{position:absolute;z-index:40;right:0;top:calc(100% + 8px);width:min(320px,calc(100vw - 32px));padding:16px;box-sizing:border-box;border-radius:18px;background:var(--surface);box-shadow:var(--sh-pop)}
+.sv .menu-t{font-size:12px;font-weight:600;color:var(--ink3)}
+.sv .menu-kv{display:flex;flex-direction:column;gap:10px;margin:12px 0 14px}
+.sv .menu-kv dt{font-size:12px;color:var(--ink3)}
+.sv .menu-kv dd{margin:2px 0 0;font-size:13px;overflow-wrap:anywhere}
+.sv .menu-salir{width:100%;box-sizing:border-box}
+.sv .btn-entrar{white-space:nowrap}
+
+/* Avisos (toasts): tarjeta nocturna con acento lima, abajo a la derecha. */
+.sv .toasts{position:fixed;z-index:50;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px;width:min(380px,calc(100vw - 32px));pointer-events:none}
+.sv .toasts > div{display:flex;flex-direction:column;gap:8px}
+.sv .toast{pointer-events:auto;display:flex;align-items:center;gap:10px;min-height:52px;padding:8px 8px 8px 14px;box-sizing:border-box;border-radius:14px;background:var(--night);color:#F4FAF3;box-shadow:0 0 0 1px rgb(182 242 62 / .14),var(--sh-pop)}
+.sv .toast-dot{flex:none;width:8px;height:8px;border-radius:50%;background:var(--lime)}
+.sv .toast-error .toast-dot{background:#FF8A7A}
+.sv .toast-t{flex:1;font-size:13px;line-height:1.4}
+.sv .toast-a{flex:none;height:36px;padding:0 12px;border:0;border-radius:10px;background:var(--lime);color:var(--night);font-size:13px;font-weight:650;cursor:pointer}
+.sv .toast-x{flex:none;display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:10px;background:transparent;color:rgb(244 250 243 / .7);cursor:pointer;position:relative}
+.sv .toast-x::after{content:"";position:absolute;inset:-4px}
+.sv .toast-x:hover{background:rgb(255 255 255 / .08);color:#fff}
+.sv .toast-x svg{width:16px;height:16px}
+.sv .toast :focus-visible{outline-color:var(--lime)}
+/* Con un aviso en pantalla, el final del contenido queda libre (el aviso no tapa el último enlace). */
+.sv:has(.toast) .content{padding-bottom:calc(40px + var(--sv-toasts-h, 72px) + 16px)}
+
+/* Resumen: estados de la lista, enlaces y tarjeta de entrada. */
+.sv .r-head{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px}
+.sv .r-link{text-decoration:none}
+.sv .r-link:hover{text-decoration:underline;text-underline-offset:3px}
+.sv .r-sub.mono{font-family:var(--mono);font-size:12px}
+.sv .r-alerta{display:grid;place-items:center;flex:none;width:52px;height:52px;border-radius:16px;background:var(--amber-bg);color:var(--amber)}
+.sv .r-alerta svg{width:24px;height:24px}
+.sv .r-pill{height:34px;padding:0 14px;font-size:13px}
+.sv .recent li > img.r-ins-rev{filter:grayscale(.85);opacity:.7}
+.sv .r-ahora{font-weight:600;color:var(--ink2)}
+.sv .r-leida{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:2px;font-size:12px;color:var(--ink3)}
+.sv .r-leida .btn{height:32px}
+.sv .r-estado{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px;font-size:14px;color:var(--ink2)}
+.sv .chip-ic{width:18px;height:18px;color:var(--green2)}
+.sv .r-entrar{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:12px;min-height:280px}
+.sv .r-entrar .h2{font-size:20px;line-height:1.2;max-width:18em}
+.sv .r-entrar-ic{position:static}
+.sv .r-entrar-p{font-size:14px;line-height:1.55;color:var(--ink2);max-width:34em}
+.sv .r-entrar-aviso{font-size:13px;color:var(--ink)}
+.sv .r-entrar-error{font-size:13px;color:var(--red)}
+.sv .r-entrar .btn{margin-top:auto}
+
+@media (max-width:900px){
+  /* El diseño oculta el nombre en móvil con display:none y el botón queda sin nombre accesible:
+     se oculta solo a la vista. */
+  .sv .user b,.sv .user small{display:block;position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  .sv .topbar{gap:10px}
+  .sv .search-wrap{flex:1 1 160px;max-width:none}
+  .sv .tb-right{flex:none}
+}
+/* En pantallas angostas el botón o el sello bajan debajo del texto, alineados con él. */
+@media (max-width:560px){
+  .sv .recent li{flex-wrap:wrap;row-gap:8px}
+  .sv .recent li .r-main{flex:1 1 calc(100% - 66px)}
+  .sv .recent li .vbtn,.sv .recent li .r-pill{margin-left:66px}
+}
+@media (max-width:420px){
+  .sv .page-head .btn{width:100%;box-sizing:border-box}
+  .sv .kbd{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .sv .salto{transition:none}
+  .sv .spin{animation-duration:1.6s}
+}
