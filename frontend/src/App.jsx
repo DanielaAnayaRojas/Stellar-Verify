@@ -1,12 +1,31 @@
-import { NavLink, Link, Route, Routes } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import { NavLink, Link, Route, Routes, useLocation } from "react-router-dom";
 import textos from "./content/textos.json";
 import Verificar from "./pages/Verificar.jsx";
 import Panel from "./pages/Panel.jsx";
 import Emitir from "./pages/Emitir.jsx";
 import Detalle from "./pages/Detalle.jsx";
 import PanelGate from "./components/PanelGate.jsx";
+import { esRutaTech } from "./ui-tech/rutas.js";
+import { conceptoActivo } from "./data/concepto.js";
+import CargaSegura from "./ui-tech/CargaSegura.jsx";
+
+// Panel de instituciones con la UI tech: pantalla completa y carga diferida (sus estilos y fuentes no
+// se descargan en las páginas públicas). Las rutas de /panel aún no migradas siguen abajo, como antes.
+const PanelTech = lazy(() => import("./ui-tech/PanelTech.jsx"));
 
 export default function App() {
+  const { pathname } = useLocation();
+  if (esRutaTech(pathname, { concepto: conceptoActivo() })) {
+    return (
+      <CargaSegura>
+        <Suspense fallback={null}>
+          <PanelTech />
+        </Suspense>
+      </CargaSegura>
+    );
+  }
+
   return (
     <>
       {/* El aviso de red de pruebas va dentro del encabezado para que los lectores de pantalla lo ubiquen en una zona. */}
@@ -35,7 +54,8 @@ export default function App() {
           <Route path="/" element={<Verificar />} />
           <Route path="/verificar/:huella" element={<Verificar />} />
           <Route element={<PanelGate />}>
-            <Route path="/panel" element={<Panel />} />
+            {/* Lista completa de la bóveda (con sospechosas) hasta que la fase 3 la migre a la UI tech. */}
+            <Route path="/panel/credenciales" element={<Panel />} />
             <Route path="/panel/emitir" element={<Emitir />} />
             <Route path="/panel/credencial/:huella" element={<Detalle />} />
           </Route>

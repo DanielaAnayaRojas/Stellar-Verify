@@ -8,3 +8,4 @@ import "@fontsource-variable/fraunces/opsz-italic.css";
 
 import "./estilos/aislamiento.css";
 import "./estilos/base.css";
+import "./estilos/piezas.css";

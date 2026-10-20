@@ -14,7 +14,6 @@ import "./styles/global.css";
 import "./styles/layout.css";
 import "./styles/verificar.css";
 import "./styles/panel.css";
-import "./ui-tech/estilos.js";
 
 import App from "./App.jsx";
 
