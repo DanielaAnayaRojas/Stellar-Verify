@@ -36,7 +36,7 @@ En la semana 3 entregamos las pantallas con datos ficticios y una simulación en
 | Elemento | Enlace |
 | --- | --- |
 | Producto en línea | [stellar-verify.vercel.app](https://stellar-verify.vercel.app/) |
-| Video público | [PENDIENTE: pegar aquí el enlace del video] |
+| Video público | https://x.com/gustavoskiblade/status/2112527080923517157 |
 | Contratos propios | No hay. Usamos el contrato de ACTA en Testnet; las transacciones de la tabla registran su uso. |
 
 Emitimos cuatro credenciales de demostración el 18 y el 19 de octubre de 2026, con la firma de la institución activada. Cada una corresponde a un archivo de [`frontend/public/ejemplos/`](../../frontend/public/ejemplos/).
