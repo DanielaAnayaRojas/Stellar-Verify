@@ -1,23 +1,30 @@
+/* Tokens de Stellar-Verify. Mismos valores que el dashboard interno (web/DESIGN.md del repo de Gustavo):
+   grises casi neutros (tono 85, croma mínimo), superficies planas y el dorado reservado para "sellado". */
 :root {
-  --tinta: #0e1a33;
-  --tinta-suave: #3d4863;
-  --indigo: #3b4cca;
-  --indigo-oscuro: #2f3da8;
-  --ambar: #e8a317;
-  --papel: #eef1f7;
-  --blanco: #ffffff;
-  --linea: #cfd5e3;
+  --fondo: oklch(0.962 0.003 85);
+  --superficie: oklch(0.996 0.001 85);
+  --apagado: oklch(0.932 0.003 85);
+  --secundario: oklch(0.905 0.004 85);
+  --borde: oklch(0.89 0.004 85);
+  --tinta: oklch(0.205 0.01 70);
+  --tinta-suave: oklch(0.47 0.01 75);
+  /* Borde de controles: al menos 3:1 contra el fondo y la superficie (WCAG 1.4.11). */
+  --control: oklch(0.62 0.008 80);
+  --sobre-tinta: oklch(0.985 0.002 85);
 
-  --valida: #1f7a5c;
-  --revocada: #b3402f;
-  --no-encontrada: #5b667a;
-  --emisor-no-reconocido: #8a5b00;
+  --sello: oklch(0.79 0.14 85);
+  --sello-oscuro: oklch(0.55 0.11 80);
+  --ok: oklch(0.58 0.12 150);
+  --atencion: oklch(0.62 0.14 60);
+  --atencion-texto: oklch(0.5 0.12 60);
+  --peligro: oklch(0.48 0.18 28);
 
-  --fuente-titulo: "Bricolage Grotesque", system-ui, sans-serif;
-  --fuente-texto: "Public Sans", system-ui, sans-serif;
-  --fuente-mono: "JetBrains Mono", ui-monospace, monospace;
+  --fuente: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  --columna: 640px;
+  --columna: 42rem;
+  --ancho-cabecera: 64rem;
   --objetivo: 44px;
-  --radio: 8px;
+  --radio: 0.875rem;
+  --radio-tarjeta: 1.75rem;
+  --suave: cubic-bezier(0.16, 1, 0.3, 1);
 }

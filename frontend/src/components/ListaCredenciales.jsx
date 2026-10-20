@@ -5,7 +5,7 @@ import { panelApi } from "../services/panelApi.js";
 import { formatearFecha } from "../services/formato.js";
 import { claveDeEstado, guardarEnMemoria, juntar, leerDeMemoria, separar } from "../services/lista.js";
 import { useSesionPanel } from "./PanelGate.jsx";
-import IconoEstado from "./IconoEstado.jsx";
+import { Roseta } from "./Sello.jsx";
 import BotonCopiar from "./BotonCopiar.jsx";
 
 const PAGINA = 10;
@@ -74,7 +74,7 @@ export default function ListaCredenciales() {
 
   return (
     <section className="lista-cred" aria-labelledby="titulo-lista-cred">
-      <h2 id="titulo-lista-cred" className="otras__titulo">
+      <h2 id="titulo-lista-cred">
         {textos.panel.lista.titulo}
       </h2>
       <p className="ayuda">{textos.panel.lista.ayuda}</p>
@@ -107,10 +107,10 @@ export default function ListaCredenciales() {
                 const clave = claveDeEstado(fila.estado);
                 return (
                   <li key={fila.huella} className="lista-cred__fila">
-                    <IconoEstado estado={clave} tamano={22} className={`lista-cred__icono lista-cred__icono--${clave}`} />
+                    <Roseta tipo={clave} className={`lista-cred__icono lista-cred__icono--${clave}`} />
                     <div className="lista-cred__texto">
                       <strong>{fila.curso || textoDeEstado(clave)}</strong>
-                      <span className="lista-cred__meta">
+                      <span className={`lista-cred__meta lista-cred__meta--${clave}`}>
                         {textoDeEstado(clave)}
                         {fila.fecha ? ` · ${formatearFecha(fila.fecha)}` : ""}
                       </span>
@@ -133,7 +133,7 @@ export default function ListaCredenciales() {
               <ul className="lista-cred__lista">
                 {sospechosas.map((fila) => (
                   <li key={fila.huella} className="lista-cred__fila">
-                    <IconoEstado estado="emisorNoReconocido" tamano={22} className="lista-cred__icono lista-cred__icono--emisorNoReconocido" />
+                    <Roseta tipo="emisorNoReconocido" className="lista-cred__icono lista-cred__icono--emisorNoReconocido" />
                     <div className="lista-cred__texto">
                       <strong>{textos.panel.lista.sospechosaSello}</strong>
                       <span className="lista-cred__meta mono">{fila.huella}</span>

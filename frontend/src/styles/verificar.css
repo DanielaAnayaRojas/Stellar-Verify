@@ -1,263 +1,361 @@
-/* Zona para soltar o elegir el archivo */
+/* ---------- Portada ---------- */
+.portada {
+  margin-bottom: 2rem;
+}
+
+.portada h1:focus,
+.verificar > h1:focus {
+  outline: none;
+}
+
+.portada__sub {
+  font-size: 1.0625rem;
+  color: var(--tinta-suave);
+  margin: 0;
+}
+
+/* Zona para soltar el archivo: el elemento dominante de la portada. */
 .zona {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
-  min-height: 220px;
-  justify-content: center;
-  padding: 1.5rem 1rem;
-  margin: 1.25rem 0 0;
-  background: var(--blanco);
-  border: 2px dashed var(--indigo);
-  border-radius: var(--radio);
+  align-items: center;
+  text-align: center;
+  gap: 0.375rem;
+  padding: 2.5rem 1.5rem;
+  border: 1.5px dashed var(--control);
+  border-radius: var(--radio-tarjeta);
+  background: var(--superficie);
   cursor: pointer;
+  transition: background-color 150ms var(--suave), border-color 150ms var(--suave);
 }
 
+@media (min-width: 40rem) {
+  .zona {
+    padding: 3.5rem 2rem;
+  }
+}
+
+.zona:hover,
 .zona--encima {
-  background: #e4e8f8;
-  border-style: solid;
+  border-color: var(--tinta);
+  background: oklch(0.985 0.002 85);
 }
 
 .zona:focus-within {
-  outline: 3px solid var(--indigo);
-  outline-offset: 2px;
+  outline: 2px solid var(--tinta);
+  outline-offset: 3px;
+}
+
+.zona__icono {
+  width: 2.25rem;
+  height: 2.25rem;
+  color: var(--tinta-suave);
+  margin-bottom: 0.5rem;
 }
 
 .zona__titulo {
-  font-family: var(--fuente-titulo);
-  font-weight: 700;
-  font-size: 1.375rem;
-  line-height: 1.2;
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .zona__ayuda {
   color: var(--tinta-suave);
-  max-width: 46ch;
+  font-size: 0.9375rem;
+  max-width: 34ch;
 }
 
 .zona .boton {
-  margin-bottom: 0;
+  margin-top: 1rem;
 }
 
-/* Otras formas de verificar */
-.otras__titulo {
-  margin-top: 2rem;
+/* Un solo campo para el enlace o el código. */
+.codigo {
+  margin-top: 2.5rem;
 }
 
-.otra {
-  margin: 0 0 1.5rem;
+.codigo .ayuda {
+  margin-bottom: 0.75rem;
 }
 
-.otra label {
-  font-weight: 600;
-  display: block;
-  margin-bottom: 0.25rem;
+.codigo__fila {
+  display: flex;
+  gap: 0.5rem;
 }
 
-.ayuda {
+.codigo__fila .campo {
+  flex: 1;
+  min-width: 0;
+}
+
+.codigo__fila .campo::placeholder {
   color: var(--tinta-suave);
-  font-size: 0.9375rem;
-  margin-bottom: 0.5rem;
+  opacity: 0.7;
 }
 
-.otra__fila {
+.codigo .error {
+  margin: 0.5rem 0 0;
+}
+
+@media (max-width: 30rem) {
+  .codigo__fila {
+    flex-direction: column;
+  }
+}
+
+/* Ejemplos para probar sin tener un documento propio. */
+.ejemplos {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--borde);
+}
+
+.ejemplos__titulo {
+  font-size: 0.875rem;
+  color: var(--tinta-suave);
+  margin-bottom: 0.75rem;
+}
+
+.ejemplos__lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
-.campo {
-  flex: 1 1 240px;
+.ficha {
   min-height: var(--objetivo);
-  padding: 0.5rem 0.75rem;
-  border: 2px solid var(--tinta-suave);
-  border-radius: var(--radio);
-  background: var(--blanco);
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  background: var(--superficie);
   color: var(--tinta);
   font: inherit;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: border-color 150ms var(--suave), background-color 150ms var(--suave);
 }
 
-.campo.mono {
-  font-family: var(--fuente-mono);
-  font-size: 0.875rem;
+.ficha:hover {
+  border-color: var(--control);
+  background: var(--apagado);
 }
 
-.otra .boton {
-  margin: 0;
-}
-
-.error {
-  color: var(--revocada);
-  font-weight: 600;
-  margin: 1rem 0;
-}
-
-/* Estado de carga (ámbar) */
-.carga {
-  margin: 1.25rem 0;
-}
-
-.carga__barra {
-  height: 4px;
-  background: #f6e2b0;
-  border-radius: 2px;
-  overflow: hidden;
-  position: relative;
-  margin-bottom: 0.75rem;
-}
-
-.carga__barra::after {
-  content: "";
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 35%;
-  background: var(--ambar);
-  animation: cargando 1.1s ease-in-out infinite;
-}
-
-@keyframes cargando {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(300%);
-  }
-}
-
-/* El resultado es un documento */
+/* ---------- Resultado ---------- */
 .documento {
-  background: var(--blanco);
-  border: 1px solid var(--linea);
-  border-top: 6px solid var(--tinta);
-  border-radius: 4px;
-  padding: 1.25rem 1rem 1rem;
-  margin: 1.25rem 0;
+  background: var(--superficie);
+  border-radius: var(--radio-tarjeta);
+  padding: 1.5rem;
+  margin: 0;
+  animation: aparecer 200ms var(--suave) both;
+}
+
+@media (min-width: 40rem) {
+  .documento {
+    padding: 2.25rem 2.5rem;
+  }
+}
+
+.documento--cargando {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+.documento--cargando .ayuda {
+  margin: 0 0 0 2rem;
 }
 
 .documento__cabecera {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 1rem;
   margin-bottom: 0.75rem;
 }
 
-.documento__cabecera h2 {
+.documento__veredicto {
   font-size: 1.5rem;
   margin: 0;
 }
 
+.documento__veredicto:focus {
+  outline: none;
+}
+
+@media (min-width: 40rem) {
+  .documento__veredicto {
+    font-size: 1.75rem;
+  }
+}
+
 .documento__explicacion {
+  color: var(--tinta-suave);
+  overflow-wrap: anywhere;
+  margin-bottom: 1.5rem;
+}
+
+/* La credencial en sí: el curso como enunciado principal y dos datos cortos. */
+.documento__credencial {
+  border-radius: 1.25rem;
+  background: var(--fondo);
+  padding: 1.25rem 1.25rem 0.25rem;
+  margin-bottom: 1.25rem;
+}
+
+@media (min-width: 40rem) {
+  .documento__credencial {
+    padding: 1.5rem 1.75rem 0.5rem;
+  }
+}
+
+.documento__etiqueta,
+.documento__campo dt {
+  font-size: 0.8125rem;
+  color: var(--tinta-suave);
+  margin: 0 0 0.125rem;
+}
+
+.documento__curso {
+  font-size: 1.25rem;
   font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  margin: 0 0 1.25rem;
+  overflow-wrap: anywhere;
+}
+
+.documento__alcance {
+  font-size: 0.875rem;
+  color: var(--tinta-suave);
+  margin: -0.25rem 0 1rem;
 }
 
 .documento__campos {
-  margin: 1rem 0 0;
-  border-top: 1px solid var(--linea);
+  margin: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 32rem) {
+  .documento__campos {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .documento__campo {
-  padding: 0.625rem 0;
-  border-bottom: 1px solid var(--linea);
-}
-
-.documento__campo dt {
-  color: var(--tinta-suave);
-  font-size: 0.875rem;
+  margin-bottom: 1rem;
 }
 
 .documento__campo dd {
   margin: 0;
+  font-weight: 500;
+  overflow-wrap: anywhere;
 }
 
-.huella {
-  display: block;
-  margin: 0.25rem 0 0.5rem;
-  user-select: all;
-}
-
-.documento__campo--huella .boton {
-  margin: 0;
-}
-
-.documento__campo:last-child {
-  border-bottom: 0;
-}
-
-.copia:empty {
-  display: none;
-}
-
-.copia {
-  display: block;
-  margin-top: 0.375rem;
-  font-size: 0.9375rem;
-  color: var(--tinta-suave);
-}
-
-/* El sello: único momento con movimiento */
+/* Sello: la roseta y una palabra que dice lo mismo. */
 .sello {
   flex: none;
-  width: 116px;
-  height: 116px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 0.125rem;
-  padding: 0.75rem;
-  border: 3px solid currentColor;
-  border-radius: 50%;
-  box-shadow: inset 0 0 0 4px var(--blanco), inset 0 0 0 6px currentColor;
-  font-family: var(--fuente-titulo);
-  font-weight: 700;
-  font-size: 0.875rem;
-  line-height: 1.1;
-  text-align: center;
-  transform: rotate(-8deg);
-  animation: estampar 400ms cubic-bezier(0.2, 0.9, 0.3, 1.15) both;
+  gap: 0.25rem;
+  width: 4.5rem;
 }
 
-.sello--valida {
-  color: var(--valida);
+.sello__icono {
+  width: 3.25rem;
+  height: 3.25rem;
+}
+
+.sello__texto {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.sello--valida .sello__icono {
+  color: var(--sello);
+}
+.sello--valida .sello__texto {
+  color: var(--sello-oscuro);
 }
 
 .sello--revocada {
-  color: var(--revocada);
+  color: var(--peligro);
 }
 
-.sello--noEncontrada {
-  color: var(--no-encontrada);
+.sello--emisorNoReconocido .sello__icono {
+  color: var(--atencion);
+}
+.sello--emisorNoReconocido .sello__texto {
+  color: var(--atencion-texto);
 }
 
-/* Ámbar oscuro: se distingue del rojo de "Revocada" y de la pizarra neutra */
-.sello--emisorNoReconocido {
-  color: var(--emisor-no-reconocido);
-}
-
+.sello--noEncontrada,
 .sello--noVerificable {
-  color: var(--no-encontrada);
+  color: var(--tinta-suave);
 }
 
-@keyframes estampar {
-  from {
-    opacity: 0;
-    transform: scale(1.7) rotate(-24deg);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) rotate(-8deg);
-  }
+/* "Comprobarlo por tu cuenta": plegado por defecto. */
+.pliegue {
+  border-top: 1px solid var(--borde);
+  margin-top: 0.5rem;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .sello {
-    animation: none;
-  }
+.pliegue summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: var(--objetivo);
+  padding-top: 0.75rem;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9375rem;
+  list-style: none;
+}
 
-  .carga__barra::after {
-    animation: none;
-    width: 100%;
-  }
+.pliegue summary::-webkit-details-marker {
+  display: none;
+}
+
+.pliegue summary::after {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-0.15rem) rotate(45deg);
+  transition: transform 200ms var(--suave);
+}
+
+.pliegue[open] summary::after {
+  transform: translateY(0.1rem) rotate(-135deg);
+}
+
+.pliegue__cuerpo {
+  padding-top: 0.5rem;
+  color: var(--tinta-suave);
+  font-size: 0.9375rem;
+}
+
+.pliegue__etiqueta {
+  font-size: 0.8125rem;
+  margin: 0;
+}
+
+.pliegue__codigo {
+  color: var(--tinta);
+  margin: 0;
+}
+
+.acciones--juntas {
+  margin-top: 1rem;
+  align-items: center;
+}
+
+.copia {
+  font-size: 0.875rem;
+  color: var(--tinta-suave);
 }

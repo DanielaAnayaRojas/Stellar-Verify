@@ -11,9 +11,7 @@
     "check:secrets": "node scripts/check-secrets.mjs"
   },
   "dependencies": {
-    "@fontsource/bricolage-grotesque": "^5.0.0",
-    "@fontsource/jetbrains-mono": "^5.0.0",
-    "@fontsource/public-sans": "^5.0.0",
+    "@fontsource-variable/inter": "^5.2.8",
     "@stellar/freighter-api": "6.0.1",
     "@stellar/stellar-sdk": "17.2.1",
     "qrcode": "^1.5.4",

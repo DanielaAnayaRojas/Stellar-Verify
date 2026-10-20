@@ -4,7 +4,7 @@ import textos from "../content/textos.json";
 import Pasos from "../components/Pasos.jsx";
 import ZonaArchivo from "../components/ZonaArchivo.jsx";
 import CampoCopiable from "../components/CampoCopiable.jsx";
-import IconoEstado from "../components/IconoEstado.jsx";
+import { Roseta } from "../components/Sello.jsx";
 import FirmaEstado from "../components/FirmaEstado.jsx";
 import { useSesionPanel } from "../components/PanelGate.jsx";
 import { validarDatos, prepararEvidencia, armarEnlace, enlaceTransaccion, generarQR } from "../services/emision.js";
@@ -118,7 +118,7 @@ export default function Emitir() {
   const enlaceDeTransaccion = creada ? enlaceTransaccion(creada.txId) : "";
 
   return (
-    <section aria-labelledby="titulo-paso">
+    <section aria-labelledby="titulo-paso" className="emitir">
       <Pasos actual={paso} />
       <p className="paso-de">
         {textos.emision.pasoDe.replace("{n}", paso).replace("{total}", TOTAL)}
@@ -133,9 +133,7 @@ export default function Emitir() {
           <div className="grupo">
             <p className="grupo__etiqueta">{textos.formulario.emisor.etiqueta}</p>
             <p className="ayuda">{textos.formulario.emisor.ayuda}</p>
-            <p>
-              <strong>{sesion.institutionName}</strong>
-            </p>
+            <p className="grupo__valor">{sesion.institutionName}</p>
           </div>
 
           <div className="grupo">
@@ -223,10 +221,6 @@ export default function Emitir() {
                   <dt>{textos.emision.evidencia.elegido}</dt>
                   <dd>{evidencia.nombreArchivo}</dd>
                 </div>
-                <div className="documento__campo">
-                  <dt>{textos.emision.evidencia.huella}</dt>
-                  <dd className="mono">{evidencia.huella}</dd>
-                </div>
               </dl>
               <div className="acciones">
                 <button type="button" className="boton" onClick={() => ir(3)}>
@@ -276,10 +270,6 @@ export default function Emitir() {
               <dt>{textos.emision.revision.archivo}</dt>
               <dd>{evidencia.nombreArchivo}</dd>
             </div>
-            <div className="documento__campo">
-              <dt>{textos.resultados.campos.huella}</dt>
-              <dd className="mono">{evidencia.huella}</dd>
-            </div>
           </dl>
           <div className="acciones">
             <button type="button" className="boton" onClick={() => ir(4)}>
@@ -325,7 +315,7 @@ export default function Emitir() {
       {paso === 5 && creada && (
         <div>
           <h1 id="titulo-paso" tabIndex="-1" ref={titulo} className="aviso-emitida">
-            <IconoEstado estado="valida" tamano={32} />
+            <Roseta tipo="valida" />
             {textos.emision.avisoEmitida}
           </h1>
           <p>{textos.emision.resultado.ayuda}</p>
@@ -339,18 +329,6 @@ export default function Emitir() {
               <dt>{textos.resultados.campos.fechaEmision}</dt>
               <dd>{formatearFecha(creada.fecha)}</dd>
             </div>
-            <CampoCopiable
-              etiqueta={textos.resultados.campos.huella}
-              valor={creada.huella}
-              boton={textos.resultados.copiar}
-              copiado={textos.resultados.copiada}
-            />
-            <CampoCopiable
-              etiqueta={textos.emision.resultado.enlace}
-              valor={creada.enlace}
-              boton={textos.emision.resultado.copiarEnlace}
-              copiado={textos.emision.resultado.enlaceCopiado}
-            />
             {enlaceDeTransaccion && (
               <div className="documento__campo">
                 <dt>{textos.emision.resultado.transaccion}</dt>
@@ -363,17 +341,28 @@ export default function Emitir() {
             )}
           </dl>
 
-          {qr && (
-            <figure className="qr">
-              <img
-                src={qr}
-                width="200"
-                height="200"
-                alt={textos.emision.resultado.qrAlt.replace("{curso}", creada.curso)}
+          <div className="compartir">
+            {qr && (
+              <figure className="qr">
+                <img
+                  src={qr}
+                  width="168"
+                  height="168"
+                  alt={textos.emision.resultado.qrAlt.replace("{curso}", creada.curso)}
+                />
+                <figcaption>{textos.emision.resultado.qr}</figcaption>
+              </figure>
+            )}
+            <dl className="compartir__enlace">
+              <CampoCopiable
+                etiqueta={textos.emision.resultado.enlace}
+                valor={creada.enlace}
+                boton={textos.emision.resultado.copiarEnlace}
+                copiado={textos.emision.resultado.enlaceCopiado}
+                mono={false}
               />
-              <figcaption>{textos.emision.resultado.qr}</figcaption>
-            </figure>
-          )}
+            </dl>
+          </div>
 
           <div className="acciones">
             <Link className="boton" to={`/verificar/${creada.huella}`}>
