@@ -1,0 +1,55 @@
+/* UI tech · certificaciones (CSS propio de T-Certificaciones.dc.html, portado con prefijo .sv). */
+
+body:has(.sv){margin:0}
+.sv .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}
+.sv .isearch{display:flex;align-items:center;gap:8px;height:44px;flex:1 1 280px;max-width:380px;padding:0 14px;box-sizing:border-box;border-radius:14px;background:var(--surface);box-shadow:0 0 0 1px var(--line)}
+.sv .isearch:focus-within{box-shadow:0 0 0 1.5px var(--green2),0 0 0 5px rgb(44 102 68 / .1)}
+.sv .isearch svg{width:16px;height:16px;color:var(--ink3);flex:none}
+.sv .isearch input{flex:1;min-width:0;height:100%;border:0;background:transparent;font-size:14px;outline:none}
+.sv .fsel{width:auto;min-width:170px}
+.sv .ctable{margin-top:14px;overflow:hidden}
+.sv .cscroll{overflow-x:auto}
+.sv .thead,.sv .trow{display:grid;grid-template-columns:minmax(260px,2.2fr) minmax(170px,1.3fr) minmax(110px,.8fr) minmax(110px,.8fr) minmax(120px,.8fr) 52px;align-items:center;min-width:920px}
+.sv .thead{height:44px;padding:0 10px;background:var(--surface2);border-bottom:1px solid var(--line);font-size:12px;font-weight:600;color:var(--ink3)}
+.sv .thead > span{padding:0 12px}
+.sv .trow{position:relative;min-height:66px;padding:0 10px;border-bottom:1px solid var(--line);background:var(--surface);transition:background-color 160ms ease;animation:rise 520ms var(--e-out) both}
+.sv .trow:last-child{border-bottom:0}
+.sv .trow:hover{background:#FCFAF5}
+.sv .trow > div{padding:0 12px;min-width:0}
+.sv .cname{display:flex;align-items:center;gap:12px;text-decoration:none}
+.sv .cname img{width:42px;height:42px;flex:none;transition:transform 380ms var(--spring)}
+.sv .trow:hover .cname img{transform:rotate(-10deg) scale(1.08)}
+.sv .cname b{display:block;font-size:14px;font-weight:620;line-height:1.25}
+.sv .cname small{display:block;font-size:12px;color:var(--ink3)}
+.sv .cname:hover b{text-decoration:underline;text-underline-offset:3px}
+.sv .vb{min-width:94px}
+.sv .more{display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:10px;background:transparent;color:var(--ink3);cursor:pointer;opacity:.5;transition:opacity 160ms ease,background-color 160ms ease;position:relative}
+.sv .more::after{content:"";position:absolute;inset:-4px}
+.sv .more svg{width:18px;height:18px}
+.sv .trow:hover .more{opacity:1}
+.sv .more:hover{background:var(--side)}
+.sv .foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 18px;border-top:1px solid var(--line);font-size:12px;color:var(--ink3)}
+.sv .pager{display:flex;gap:4px}
+.sv .pg{display:grid;place-items:center;min-width:34px;height:34px;padding:0 8px;border:0;border-radius:10px;background:transparent;font-size:13px;font-weight:600;color:var(--ink2);cursor:pointer;position:relative}
+.sv .pg::after{content:"";position:absolute;inset:-5px}
+.sv .pg.is-on{background:var(--green);color:#FBF7EE}
+.sv .empty{padding:28px;text-align:center;color:var(--ink3)}
+@media (prefers-reduced-motion:reduce){
+  .sv .trow{animation:fadein 200ms ease both}
+}
+
+/* Ajustes de la lista de credenciales real (4 columnas: credencial, fecha, estado, verificar). */
+.sv .ctable-4 .thead,.sv .ctable-4 .trow{grid-template-columns:minmax(240px,2.4fr) minmax(130px,1fr) minmax(120px,.9fr) minmax(120px,.9fr);min-width:760px}
+.sv .cname-plano{cursor:default}
+.sv .cname small{overflow-wrap:anywhere;white-space:normal}
+.sv .c-alerta{display:grid;place-items:center;width:42px;height:42px;flex:none;border-radius:12px;background:var(--amber-bg);color:var(--amber)}
+.sv .c-alerta svg{width:20px;height:20px}
+.sv .c-ins-rev{filter:grayscale(.85);opacity:.7}
+.sv .c-fecha{font-size:13px}
+.sv .vb{min-width:94px}
+.sv .empty{display:flex;flex-direction:column;align-items:center;gap:10px}
+.sv .empty .btn{margin-top:4px}
+
+/* Pestaña activa marcada con aria-selected (role=tab): texto blanco sobre el pill nocturno y conteo en lima. */
+.sv .tab[aria-selected="true"]{color:#fff}
+.sv .tab[aria-selected="true"] .tab-n{background:var(--lime);color:var(--night)}

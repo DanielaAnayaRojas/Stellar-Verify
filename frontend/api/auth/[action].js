@@ -17,7 +17,9 @@ import { errorResponse } from "../_lib/panelErrors.js";
 //   POST /api/auth/logout     -> { authenticated: false } y borra la cookie
 
 function identity(config) {
-  return { publicKey: config.institutionPublicKey, institutionName: config.institutionName };
+  // El DID y la cuenta de la institución son datos públicos; el panel los muestra como identificador y prueba
+  // de origen de la credencial. No son secretos.
+  return { publicKey: config.institutionPublicKey, institutionDid: config.institutionDid, institutionName: config.institutionName };
 }
 
 async function challenge({ request, runtime }) {
